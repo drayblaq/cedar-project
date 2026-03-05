@@ -1,84 +1,232 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getStudentForCurrentUser } from "@/lib/student-auth";
 
-export default async function StudentCalendarPage() {
+// Helper to get start of week (Monday)
+function getStartOfWeek(date: Date) {
+  const d = new Date(date);
+  const day = d.getDay(),
+    diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+  return new Date(d.setDate(diff));
+}
+
+// Helper to generate the 7 days of the week
+function getDaysOfWeek(startDate: Date) {
+  return Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+}
+
+// Convert "HH:MM" or "HH:MM:SS" to minutes since midnight
+function timeToMinutes(timeStr: string) {
+  if (!timeStr) return 0;
+  const [h, m] = timeStr.split(":");
+  return parseInt(h) * 60 + parseInt(m);
+}
+
+// The page component
+export default async function StudentCalendarPage(props: { searchParams: Promise<{ date?: string }> }) {
+  const searchParams = await props.searchParams;
   const result = await getStudentForCurrentUser();
   if (!result) return null;
 
+  // Determine current week
+  const queryDate = searchParams.date ? new Date(searchParams.date) : new Date();
+  if (isNaN(queryDate.getTime())) {
+    queryDate.setTime(new Date().getTime());
+  }
+
+  const startOfWeek = getStartOfWeek(queryDate);
+  const daysOfWeek = getDaysOfWeek(startOfWeek);
+
+  const weekStartStr = daysOfWeek[0].toISOString().slice(0, 10);
+  const weekEndStr = daysOfWeek[6].toISOString().slice(0, 10);
+
+  // Navigation dates
+  const prevWeek = new Date(startOfWeek);
+  prevWeek.setDate(prevWeek.getDate() - 7);
+  const nextWeek = new Date(startOfWeek);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+
   const supabase = await createClient();
+  // Fetch events for the week
   const { data: events } = await supabase
     .from("calendar_events")
-    .select("id, title, description, event_date, event_type")
+    .select("id, title, description, event_date, event_type, start_time, end_time")
+    .gte("event_date", weekStartStr)
+    .lte("event_date", weekEndStr)
     .order("event_date", { ascending: true })
-    .limit(50);
+    .order("start_time", { ascending: true });
 
-  const today = new Date().toISOString().slice(0, 10);
-  const upcoming = events?.filter((e) => e.event_date >= today) ?? [];
-  const past = events?.filter((e) => e.event_date < today) ?? [];
+  const weekEvents = events ?? [];
 
-  const eventTypeBadge = (type: string | null) => {
-    if (!type || type === "other") return "bg-slate-100 text-slate-700";
-    if (type === "exam") return "bg-red-100 text-red-800";
-    if (type === "holiday") return "bg-emerald-100 text-emerald-800";
-    if (type === "deadline") return "bg-amber-100 text-amber-800";
-    return "bg-slate-100 text-slate-700";
+  // Separate all-day events vs timed events
+  const allDayEvents = weekEvents.filter(e => !e.start_time || !e.end_time);
+  const timedEvents = weekEvents.filter(e => e.start_time && e.end_time);
+
+  const eventTypeColors: Record<string, string> = {
+    holiday: "bg-emerald-100 text-emerald-800 border-emerald-300",
+    exam: "bg-red-100 text-red-800 border-red-300",
+    deadline: "bg-amber-100 text-amber-800 border-amber-300",
+    other: "bg-indigo-100 text-indigo-800 border-indigo-300",
   };
 
-  return (
-    <div className="px-4 sm:px-6">
-      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">Student portal</p>
-      <h1 className="mt-2 text-3xl font-bold text-slate-900">Calendar</h1>
-      <p className="mt-2 text-slate-600">Academic events, exams, and deadlines.</p>
+  // Calendar parameters
+  const START_HOUR = 8; // 8 AM
+  const END_HOUR = 20;  // 8 PM
+  const TOTAL_HOURS = END_HOUR - START_HOUR + 1;
+  const HOUR_HEIGHT = 60; // pixels per hour
 
-      {!events?.length ? (
-        <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-lg">
-          <p className="text-slate-500">No events yet.</p>
+  return (
+    <div className="px-4 sm:px-6 py-8 max-w-[1400px] mx-auto animate-fade-in-up">
+      {/* Header & Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <p className="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-1">Schedule</p>
+          <h1 className="text-3xl font-extrabold text-slate-900">Weekly Calendar</h1>
         </div>
-      ) : (
-        <div className="mt-8 space-y-10">
-          {upcoming.length > 0 && (
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">Upcoming</h2>
-              <ul className="mt-4 space-y-3">
-                {upcoming.map((e) => (
-                  <li key={e.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-lg">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-slate-900">{e.title}</span>
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${eventTypeBadge(e.event_type)}`}>
-                        {e.event_type ?? "other"}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {new Date(e.event_date).toLocaleDateString()}
-                    </p>
-                    {e.description && <p className="mt-2 text-slate-600">{e.description}</p>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {past.length > 0 && (
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">Past events</h2>
-              <ul className="mt-4 space-y-3">
-                {past.map((e) => (
-                  <li key={e.id} className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-slate-700">{e.title}</span>
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${eventTypeBadge(e.event_type)}`}>
-                        {e.event_type ?? "other"}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {new Date(e.event_date).toLocaleDateString()}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+
+        <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200">
+          <Link
+            href={`/dashboard/student/calendar?date=${prevWeek.toISOString().slice(0, 10)}`}
+            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          </Link>
+          <div className="text-sm font-semibold text-slate-700 w-48 text-center">
+            {startOfWeek.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – {daysOfWeek[6].toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
+          <Link
+            href={`/dashboard/student/calendar?date=${nextWeek.toISOString().slice(0, 10)}`}
+            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+          </Link>
+          <Link
+            href={`/dashboard/student/calendar`}
+            className="ml-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 hidden sm:block"
+          >
+            Today
+          </Link>
         </div>
-      )}
+      </div>
+
+      {/* Calendar Grid Container */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        {/* Days Header */}
+        <div className="grid grid-cols-8 border-b border-slate-200 bg-slate-50">
+          <div className="py-4 px-2 border-r border-slate-200 flex items-center justify-center">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Time</span>
+          </div>
+          {daysOfWeek.map((day, i) => {
+            const isToday = day.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10);
+            return (
+              <div key={i} className={`py-3 px-2 text-center border-r border-slate-200 last:border-r-0 ${isToday ? 'bg-emerald-50/50' : ''}`}>
+                <div className={`text-xs font-bold uppercase tracking-wider mb-1 ${isToday ? 'text-emerald-600' : 'text-slate-500'}`}>
+                  {day.toLocaleDateString(undefined, { weekday: 'short' })}
+                </div>
+                <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-black ${isToday ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-800'}`}>
+                  {day.getDate()}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* All day events section */}
+        {allDayEvents.length > 0 && (
+          <div className="grid grid-cols-8 border-b border-slate-200">
+            <div className="py-2 px-2 border-r border-slate-200 flex items-center justify-center bg-slate-50">
+              <span className="text-xs font-medium text-slate-400 text-center">All Day</span>
+            </div>
+            {daysOfWeek.map((day, i) => {
+              const dayStr = day.toISOString().slice(0, 10);
+              const dayEvents = allDayEvents.filter(e => e.event_date === dayStr);
+              return (
+                <div key={i} className="p-1 border-r border-slate-200 last:border-r-0">
+                  {dayEvents.map(e => (
+                    <div key={e.id} className={`mb-1 px-2 py-1 text-xs font-semibold rounded ${eventTypeColors[e.event_type || 'other'] || eventTypeColors.other}`}>
+                      {e.title}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Time Grid Scrollable Area */}
+        <div className="overflow-y-auto" style={{ maxHeight: '70vh' }}>
+          <div className="grid grid-cols-8 relative" style={{ minHeight: TOTAL_HOURS * HOUR_HEIGHT }}>
+
+            {/* Hour Rows */}
+            {Array.from({ length: TOTAL_HOURS }).map((_, i) => {
+              const hour = START_HOUR + i;
+              return (
+                <div key={i} className="col-span-8 grid grid-cols-8 absolute w-full" style={{ top: i * HOUR_HEIGHT, height: HOUR_HEIGHT }}>
+                  {/* Time column */}
+                  <div className="border-r border-b border-slate-100 flex items-start justify-center p-2 bg-slate-50/30">
+                    <span className="text-xs font-medium text-slate-400 relative -top-3">
+                      {hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
+                    </span>
+                  </div>
+                  {/* Grid cells */}
+                  {Array.from({ length: 7 }).map((_, col) => (
+                    <div key={col} className="border-r border-b border-slate-100 last:border-r-0 transition-colors hover:bg-slate-50/50"></div>
+                  ))}
+                </div>
+              );
+            })}
+
+            {/* Timed Events plotted on the grid */}
+            {timedEvents.map(event => {
+              // Find the column index based on day
+              const eventDate = new Date(event.event_date);
+              const dayIndex = daysOfWeek.findIndex(d => d.toISOString().slice(0, 10) === event.event_date);
+              if (dayIndex === -1) return null; // Outside week scope somehow
+
+              const startMin = timeToMinutes(event.start_time);
+              const endMin = timeToMinutes(event.end_time);
+              const gridStartMin = START_HOUR * 60;
+
+              const topMinutes = Math.max(0, startMin - gridStartMin);
+              const durationMinutes = Math.max(15, endMin - startMin); // min 15 mins block height
+
+              const topPx = (topMinutes / 60) * HOUR_HEIGHT;
+              const heightPx = (durationMinutes / 60) * HOUR_HEIGHT;
+
+              // Only render if it overlaps with our visible hours
+              if (endMin <= gridStartMin || startMin >= (END_HOUR + 1) * 60) return null;
+
+              return (
+                <div
+                  key={event.id}
+                  className="absolute px-1"
+                  style={{
+                    top: `${topPx}px`,
+                    height: `${heightPx}px`,
+                    left: `${((dayIndex + 1) / 8) * 100}%`,
+                    width: `${(1 / 8) * 100}%`
+                  }}
+                >
+                  <div className={`w-full h-full rounded-md border-l-4 p-1.5 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md hover:z-10 bg-white/90 backdrop-blur-sm ${eventTypeColors[event.event_type || 'other'] || eventTypeColors.other}`}>
+                    <span className="text-[10px] font-bold opacity-75 leading-tight mb-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                      {event.start_time.substring(0, 5)} - {event.end_time.substring(0, 5)}
+                    </span>
+                    <span className="text-xs font-bold leading-tight line-clamp-2">
+                      {event.title}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Current Time Indicator logic could be added here later */}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

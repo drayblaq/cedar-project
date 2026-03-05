@@ -1,4 +1,4 @@
-import Link from"next/link";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -16,17 +16,17 @@ export default function HomePage() {
           <p className="mx-auto mt-6 max-w-2xl animate-fade-in-up text-lg font-medium leading-relaxed text-slate-700 animate-delay-200 sm:text-xl">
             Accelerate your career and open global opportunities with structured, professional English programs.
           </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4 animate-fade-in-up animate-delay-300">
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animate-delay-300">
             <Link
               href="/register"
-              className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-emerald-500/30 transition-all hover:scale-105 hover:shadow-emerald-500/40"
+              className="group w-full sm:w-auto text-center relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-emerald-500/30 transition-all hover:scale-105 hover:shadow-emerald-500/40"
             >
               <span className="relative z-10">Start your journey</span>
               <div className="absolute inset-0 z-0 h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[150%] skew-x-[30deg] transition-transform duration-700 group-hover:translate-x-[150%]"></div>
             </Link>
             <Link
               href="/courses"
-              className="glass-panel rounded-xl px-8 py-4 text-base font-semibold text-slate-700 transition hover:bg-slate-50/50 hover:text-emerald-700:bg-slate-800/50:text-emerald-300"
+              className="glass-panel w-full sm:w-auto text-center rounded-xl px-8 py-4 text-base font-semibold text-slate-700 transition hover:bg-slate-50/50 hover:text-emerald-700"
             >
               View programs &rarr;
             </Link>
