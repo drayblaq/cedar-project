@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+:root {
+  --green:       #2ea82a;
+  --green-dark:  #1a6b18;
+  --green-deep:  #0f4a0d;
+  --green-mid:   #246e22;
+  --mint:        #e8f7e8;
+  --mint-med:    #d0f0d0;
+  --mint-deep:   #b8e8b8;
+  --cream:       #f5faf5;
+  --gold:        #d4a843;
+  --white:       #ffffff;
+  --text:        #0f3d0d;
+  --text-mid:    #246e22;
+  --text-muted:  rgba(15,61,13,0.55);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  background: var(--mint);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(48px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes floatPill {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-8px); }
+}
+
+.animate-slide-up   { animation: slideUp   0.9s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-slide-right{ animation: slideRight 1.1s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-marquee    { animation: marquee 20s linear infinite; }
+.animate-float-pill { animation: floatPill 4s ease-in-out infinite; }
+.animate-float-pill-2 { animation: floatPill 4s ease-in-out 2s infinite; }
+
+/* Scroll reveal */
+.reveal, .reveal-left, .reveal-right {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal       { transform: translateY(36px); }
+.reveal-left  { transform: translateX(-36px); }
+.reveal-right { transform: translateX(36px); }
+.reveal.visible, .reveal-left.visible, .reveal-right.visible {
+  opacity: 1; transform: translateY(0) translateX(0);
+}
+
+/* Hero BG word */
+.hero-bg-word {
+  position: absolute; left: -2%; bottom: -5%;
+  font-family: var(--font-syne), sans-serif;
+  font-weight: 800;
+  font-size: clamp(8rem, 18vw, 22rem);
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(46,168,42,0.12);
+  line-height: 0.85; letter-spacing: -0.04em;
+  user-select: none; pointer-events: none; z-index: 0;
+  white-space: nowrap;
+}
+
+/* Inner page bg word */
+.inner-hero-word {
+  position: absolute; right: -2%; bottom: -15%;
+  font-family: var(--font-syne), sans-serif; font-weight: 800;
+  font-size: clamp(6rem, 12vw, 16rem);
+  color: transparent; -webkit-text-stroke: 2px rgba(46,168,42,0.1);
+  line-height: 0.85; letter-spacing: -0.04em;
+  user-select: none; pointer-events: none;
+}
+
+/* CTA bg word */
+.cta-bg-word {
+  position: absolute; right: -2%; bottom: -10%;
+  font-family: var(--font-syne), sans-serif; font-weight: 800;
+  font-size: clamp(8rem, 16vw, 20rem);
+  color: transparent; -webkit-text-stroke: 2px rgba(46,168,42,0.12);
+  line-height: 0.85; letter-spacing: -0.04em;
+  user-select: none; pointer-events: none;
+}
+
+/* Glass nav */
+.glass-nav {
+  background: rgba(232,247,232,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1.5px solid rgba(46,168,42,0.18);
+}
+.glass-nav-scrolled {
+  background: rgba(255,255,255,0.97);
+  box-shadow: 0 4px 32px rgba(46,168,42,0.1);
+}
+
+/* Program card hover */
+.program-card {
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, box-shadow 0.35s;
+}
+.program-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--green) !important;
+  box-shadow: 0 24px 64px rgba(46,168,42,0.2);
+}
+.program-card:hover img { transform: scale(1.06); }
+.program-card img { transition: transform 0.5s; }
+
+/* Value card hover */
+.value-card {
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.value-card:hover {
+  border-color: var(--green) !important;
+  box-shadow: 0 8px 32px rgba(46,168,42,0.12);
+}
+
+/* Why feature hover */
+.why-feature {
+  transition: all 0.3s;
+}
+.why-feature:hover {
+  border-color: var(--green) !important;
+  box-shadow: 0 12px 40px rgba(46,168,42,0.15);
+  transform: translateY(-3px);
+}
+
+/* Delay utilities */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.25s; }
+.delay-300 { animation-delay: 0.4s; }
+.delay-400 { animation-delay: 0.55s; }
+.delay-500 { animation-delay: 0.7s; }
+.delay-300r { animation-delay: 0.2s; }
+
+.td-1 { transition-delay: 0.1s; }
+.td-2 { transition-delay: 0.2s; }
+.td-3 { transition-delay: 0.3s; }
+.td-4 { transition-delay: 0.4s; }
