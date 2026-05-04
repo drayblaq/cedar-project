@@ -14,16 +14,15 @@ function siteUrl(): string {
   return "http://localhost:3000";
 }
 
-function isAllowedAdminPasswordlessEmail(email: string): boolean {
+function adminPasswordlessAllowlist(): Set<string> | null {
   const raw = process.env.ADMIN_PASSWORDLESS_EMAILS?.trim();
-  if (!raw) return false;
-  const allowed = new Set(
+  if (!raw) return null;
+  return new Set(
     raw
       .split(",")
       .map((e) => e.trim().toLowerCase())
       .filter(Boolean)
   );
-  return allowed.has(email.trim().toLowerCase());
 }
 
 /**
@@ -44,10 +43,17 @@ export async function redirectAdminInstant(
   if (!trimmed) {
     return { error: "Enter your email." };
   }
-  if (!isAllowedAdminPasswordlessEmail(trimmed)) {
+  const allowlist = adminPasswordlessAllowlist();
+  if (allowlist === null) {
     return {
       error:
-        "This email is not listed in ADMIN_PASSWORDLESS_EMAILS on the server.",
+        "ADMIN_PASSWORDLESS_EMAILS is not set on this server (e.g. missing in Vercel → Settings → Environment Variables for Production). Add it and redeploy.",
+    };
+  }
+  if (!allowlist.has(trimmed)) {
+    return {
+      error:
+        "This email does not match ADMIN_PASSWORDLESS_EMAILS for this deployment (check spelling and commas in the host env).",
     };
   }
 

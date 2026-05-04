@@ -41,12 +41,6 @@ export function PublicHeader() {
               {label}
             </Link>
           ))}
-          <Link
-            href="/auth/login"
-            className="ml-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:scale-105 hover:shadow-emerald-500/40 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-          >
-              {t("nav.signin")}
-          </Link>
           <div className="ml-3">
             <LanguageSwitcher />
           </div>
@@ -84,17 +78,8 @@ export function PublicHeader() {
               {label}
             </Link>
           ))}
-          <div className="pt-2">
-            <div className="mb-3">
-              <LanguageSwitcher />
-            </div>
-            <Link
-              href="/auth/login"
-              onClick={() => setIsOpen(false)}
-              className="block text-center w-full rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all active:scale-95"
-            >
-              {t("nav.signin")}
-            </Link>
+          <div className="border-t border-slate-100 pt-4">
+            <LanguageSwitcher />
           </div>
         </div>
       )}

@@ -14,7 +14,7 @@ export function PublicFooter() {
   return (
     <footer className="border-t border-slate-200 bg-slate-50">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           <div>
             <div className="flex items-center gap-3">
               <Logo size="sm" link={false} className="shrink-0" />
@@ -54,19 +54,6 @@ export function PublicFooter() {
             >
               Get directions →
             </Link>
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-              {t("footer.portal")}
-            </h3>
-            <p className="mt-4 text-sm text-slate-600">
-              <Link
-                href="/auth/login"
-                className="font-medium text-emerald-600 hover:underline"
-              >
-                {t("footer.signin")}
-              </Link>
-            </p>
           </div>
         </div>
         <p className="mt-12 border-t border-slate-200 pt-8 text-center text-xs text-slate-500">
