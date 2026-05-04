@@ -7,6 +7,17 @@ import { submitPublicRegistration } from "./actions";
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5;
 
+const card =
+  "rounded-2xl border-[1.5px] border-[var(--mint-deep)] bg-white p-6 shadow-[0_8px_40px_rgba(46,168,42,0.08)] sm:p-8";
+const inputClass =
+  "mt-1 w-full rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3 text-[var(--text)] transition outline-none focus:border-[var(--green)] focus:ring-2 focus:ring-[rgba(46,168,42,0.2)]";
+const labelClass =
+  "block text-[0.78rem] font-bold uppercase tracking-[0.07em] text-[var(--text-muted)]";
+const btnPrimary =
+  "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-0 bg-[var(--green)] px-8 py-3.5 font-extrabold text-white shadow-[0_8px_32px_rgba(46,168,42,0.28)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto";
+const btnPrimaryFont = { fontFamily: "var(--font-syne)" } as React.CSSProperties;
+const btnGhost = "text-sm font-medium text-[var(--text-muted)] hover:text-[var(--green-dark)]";
+
 export default function RegisterWizard() {
   const t = useTranslations("marketing.registerFlow");
   const [step, setStep] = useState<Step>(0);
@@ -64,21 +75,33 @@ export default function RegisterWizard() {
   if (placementToken) {
     const testUrl = `/register/placement-test?token=${encodeURIComponent(placementToken)}`;
     return (
-      <div className="mx-auto max-w-lg px-4 py-16 sm:px-6">
-        <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-10 text-center shadow-xl">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-2xl font-bold text-white">
+      <div className="mx-auto max-w-lg px-4 py-12 sm:px-6">
+        <div
+          className={`${card} text-center`}
+          style={{ borderColor: "rgba(46,168,42,0.35)", background: "linear-gradient(145deg, var(--mint) 0%, var(--white) 55%)" }}
+        >
+          <div
+            className="mx-auto flex h-16 w-16 items-center justify-center rounded-full text-2xl font-extrabold text-white"
+            style={{ background: "var(--green)", fontFamily: "var(--font-syne)" }}
+          >
             ✓
           </div>
-          <h2 className="mt-6 text-2xl font-bold text-slate-900">{t("successTitle")}</h2>
-          <p className="mt-3 text-slate-600">{t("successBody")}</p>
+          <h2 className="mt-6 text-2xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
+            {t("successTitle")}
+          </h2>
+          <p className="mt-3 text-[var(--text-muted)]">{t("successBody")}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
               href={testUrl}
-              className="inline-flex justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 font-semibold text-white shadow-lg"
+              className="inline-flex justify-center rounded-xl px-6 py-3 font-bold text-white no-underline"
+              style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 28px rgba(46,168,42,0.35)" }}
             >
               {t("takeTestNow")}
             </Link>
-            <Link href="/" className="inline-flex justify-center rounded-xl border border-slate-300 px-6 py-3 font-medium text-slate-700 hover:bg-slate-50">
+            <Link
+              href="/"
+              className="inline-flex justify-center rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-white px-6 py-3 font-semibold text-[var(--green-dark)] no-underline hover:bg-[var(--mint)]"
+            >
               {t("takeTestLater")}
             </Link>
           </div>
@@ -87,50 +110,51 @@ export default function RegisterWizard() {
     );
   }
 
-  const input =
-    "mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20";
-  const label = "block text-sm font-medium text-slate-700";
-
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">{t("eyebrow")}</p>
-        <span className="text-xs font-medium text-slate-500">
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--green)]" style={{ fontFamily: "var(--font-syne)" }}>
+          {t("eyebrow")}
+        </p>
+        <span className="text-xs font-semibold text-[var(--text-muted)]">
           {t("stepIndicator", { current: step + 1, total: 6 })}
         </span>
       </div>
 
       {step === 0 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">{t("introTitle")}</h1>
-          <p className="mx-auto mt-4 max-w-lg text-lg text-slate-600">{t("introBody")}</p>
-          <button
-            type="button"
-            onClick={() => setStep(1)}
-            className="mt-10 inline-flex rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-10 py-3.5 font-semibold text-white shadow-lg"
-          >
+        <div className={`${card} text-center`}>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--green-deep)] sm:text-3xl" style={{ fontFamily: "var(--font-syne)" }}>
+            {t("introTitle")}
+          </h1>
+          <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">{t("introBody")}</p>
+          <button type="button" onClick={() => setStep(1)} className={`${btnPrimary} mt-10 w-full max-w-xs sm:mx-auto`} style={btnPrimaryFont}>
             {t("start")}
           </button>
         </div>
       )}
 
       {step === 1 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
-          <button type="button" onClick={() => setStep(0)} className="text-sm text-slate-500 hover:text-slate-800">
+        <div className={`${card} space-y-4`}>
+          <button type="button" onClick={() => setStep(0)} className={btnGhost}>
             ← {t("back")}
           </button>
-          <h2 className="mt-4 text-xl font-bold text-slate-900">{t("checklistTitle")}</h2>
-          <p className="mt-2 text-sm text-slate-600">{t("checklistIntro")}</p>
-          <ul className="mt-6 space-y-3">
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
+            {t("checklistTitle")}
+          </h2>
+          <p className="text-sm text-[var(--text-muted)]">{t("checklistIntro")}</p>
+          <ul className="mt-4 space-y-3">
             {checklistItems.map((text, i) => (
-              <li key={i} className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+              <li
+                key={i}
+                className="flex items-start gap-3 rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-[var(--mint)] px-3 py-3 sm:px-4"
+              >
                 <input
                   type="checkbox"
                   checked={checklist[i]}
                   onChange={() => toggleCheck(i)}
-                  className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600"
+                  className="mt-1 h-4 w-4 shrink-0 rounded border-[var(--mint-deep)] text-[var(--green)] focus:ring-[var(--green)]"
                 />
-                <span className="text-sm text-slate-700">{text}</span>
+                <span className="text-sm leading-relaxed text-[var(--green-dark)]">{text}</span>
               </li>
             ))}
           </ul>
@@ -138,7 +162,8 @@ export default function RegisterWizard() {
             type="button"
             disabled={!allChecked}
             onClick={() => setStep(2)}
-            className="mt-8 w-full rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3 font-semibold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-40"
+            className={`${btnPrimary} mt-6 w-full`}
+            style={btnPrimaryFont}
           >
             {t("next")}
           </button>
@@ -146,25 +171,27 @@ export default function RegisterWizard() {
       )}
 
       {step === 2 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg space-y-5">
-          <button type="button" onClick={() => setStep(1)} className="text-sm text-slate-500 hover:text-slate-800">
+        <div className={`${card} space-y-5`}>
+          <button type="button" onClick={() => setStep(1)} className={btnGhost}>
             ← {t("back")}
           </button>
-          <h2 className="text-xl font-bold text-slate-900">{t("personalTitle")}</h2>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
+            {t("personalTitle")}
+          </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className={label}>{t("firstName")} *</label>
+              <label className={labelClass}>{t("firstName")} *</label>
               <input
-                className={input}
+                className={inputClass}
                 value={fields.first_name}
                 onChange={(e) => setFields((f) => ({ ...f, first_name: e.target.value }))}
                 required
               />
             </div>
             <div>
-              <label className={label}>{t("lastName")} *</label>
+              <label className={labelClass}>{t("lastName")} *</label>
               <input
-                className={input}
+                className={inputClass}
                 value={fields.last_name}
                 onChange={(e) => setFields((f) => ({ ...f, last_name: e.target.value }))}
                 required
@@ -172,117 +199,191 @@ export default function RegisterWizard() {
             </div>
           </div>
           <div>
-            <span className={label}>{t("gender.label")} *</span>
-            <div className="mt-2 flex flex-wrap gap-4">
+            <span className={labelClass}>{t("gender.label")} *</span>
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               {(["male", "female", "other"] as const).map((g) => (
-                <label key={g} className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-4 py-3">
+                <label
+                  key={g}
+                  className="flex cursor-pointer items-center gap-2 rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3 sm:flex-1"
+                >
                   <input
                     type="radio"
                     name="gender"
                     value={g}
                     checked={fields.gender === g}
                     onChange={() => setFields((f) => ({ ...f, gender: g }))}
+                    className="text-[var(--green)] focus:ring-[var(--green)]"
                   />
-                  <span className="text-sm">{t(`gender.${g}`)}</span>
+                  <span className="text-sm text-[var(--green-dark)]">{t(`gender.${g}`)}</span>
                 </label>
               ))}
             </div>
           </div>
           <div>
-            <label className={label}>{t("dob")} *</label>
+            <label className={labelClass}>{t("dob")} *</label>
             <input
               type="date"
-              className={input}
+              className={inputClass}
               value={fields.date_of_birth}
               onChange={(e) => setFields((f) => ({ ...f, date_of_birth: e.target.value }))}
               required
             />
           </div>
           <div>
-            <label className={label}>{t("nationality")} *</label>
-            <input className={input} value={fields.nationality} onChange={(e) => setFields((f) => ({ ...f, nationality: e.target.value }))} required />
+            <label className={labelClass}>{t("nationality")} *</label>
+            <input
+              className={inputClass}
+              value={fields.nationality}
+              onChange={(e) => setFields((f) => ({ ...f, nationality: e.target.value }))}
+              required
+            />
           </div>
-          <button type="button" onClick={() => setStep(3)} className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white">
+          <button type="button" onClick={() => setStep(3)} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
             {t("next")}
           </button>
         </div>
       )}
 
       {step === 3 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg space-y-5">
-          <button type="button" onClick={() => setStep(2)} className="text-sm text-slate-500 hover:text-slate-800">
+        <div className={`${card} space-y-5`}>
+          <button type="button" onClick={() => setStep(2)} className={btnGhost}>
             ← {t("back")}
           </button>
-          <h2 className="text-xl font-bold text-slate-900">{t("contactTitle")}</h2>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
+            {t("contactTitle")}
+          </h2>
           <div>
-            <label className={label}>{t("email")} *</label>
-            <input type="email" className={input} value={fields.email} onChange={(e) => setFields((f) => ({ ...f, email: e.target.value }))} required />
+            <label className={labelClass}>{t("email")} *</label>
+            <input
+              type="email"
+              className={inputClass}
+              value={fields.email}
+              onChange={(e) => setFields((f) => ({ ...f, email: e.target.value }))}
+              required
+            />
           </div>
           <div>
-            <label className={label}>{t("whatsapp")} *</label>
-            <input type="tel" className={input} value={fields.whatsapp} onChange={(e) => setFields((f) => ({ ...f, whatsapp: e.target.value }))} required />
+            <label className={labelClass}>{t("whatsapp")} *</label>
+            <input
+              type="tel"
+              className={inputClass}
+              value={fields.whatsapp}
+              onChange={(e) => setFields((f) => ({ ...f, whatsapp: e.target.value }))}
+              required
+            />
           </div>
           <div>
-            <label className={label}>{t("address")} *</label>
-            <input className={input} value={fields.address_line} onChange={(e) => setFields((f) => ({ ...f, address_line: e.target.value }))} required />
+            <label className={labelClass}>{t("address")} *</label>
+            <input
+              className={inputClass}
+              value={fields.address_line}
+              onChange={(e) => setFields((f) => ({ ...f, address_line: e.target.value }))}
+              required
+            />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className={label}>{t("country")} *</label>
-              <input className={input} value={fields.country} onChange={(e) => setFields((f) => ({ ...f, country: e.target.value }))} required />
+              <label className={labelClass}>{t("country")} *</label>
+              <input
+                className={inputClass}
+                value={fields.country}
+                onChange={(e) => setFields((f) => ({ ...f, country: e.target.value }))}
+                required
+              />
             </div>
             <div>
-              <label className={label}>{t("city")} *</label>
-              <input className={input} value={fields.city} onChange={(e) => setFields((f) => ({ ...f, city: e.target.value }))} required />
+              <label className={labelClass}>{t("city")} *</label>
+              <input
+                className={inputClass}
+                value={fields.city}
+                onChange={(e) => setFields((f) => ({ ...f, city: e.target.value }))}
+                required
+              />
             </div>
           </div>
-          <button type="button" onClick={() => setStep(4)} className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white">
+          <button type="button" onClick={() => setStep(4)} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
             {t("next")}
           </button>
         </div>
       )}
 
       {step === 4 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg space-y-5">
-          <button type="button" onClick={() => setStep(3)} className="text-sm text-slate-500 hover:text-slate-800">
+        <div className={`${card} space-y-5`}>
+          <button type="button" onClick={() => setStep(3)} className={btnGhost}>
             ← {t("back")}
           </button>
-          <h2 className="text-xl font-bold text-slate-900">{t("academicTitle")}</h2>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
+            {t("academicTitle")}
+          </h2>
           <div>
-            <label className={label}>{t("bacYear")} *</label>
-            <input className={input} value={fields.bac_year} onChange={(e) => setFields((f) => ({ ...f, bac_year: e.target.value }))} required />
+            <label className={labelClass}>{t("bacYear")} *</label>
+            <input
+              className={inputClass}
+              value={fields.bac_year}
+              onChange={(e) => setFields((f) => ({ ...f, bac_year: e.target.value }))}
+              required
+            />
           </div>
           <div>
-            <label className={label}>{t("bacSeries")} *</label>
-            <input className={input} value={fields.bac_series} onChange={(e) => setFields((f) => ({ ...f, bac_series: e.target.value }))} required />
+            <label className={labelClass}>{t("bacSeries")} *</label>
+            <input
+              className={inputClass}
+              value={fields.bac_series}
+              onChange={(e) => setFields((f) => ({ ...f, bac_series: e.target.value }))}
+              required
+            />
           </div>
           <div>
-            <label className={label}>{t("previousSchool")} *</label>
-            <input className={input} value={fields.previous_school} onChange={(e) => setFields((f) => ({ ...f, previous_school: e.target.value }))} required />
+            <label className={labelClass}>{t("previousSchool")} *</label>
+            <input
+              className={inputClass}
+              value={fields.previous_school}
+              onChange={(e) => setFields((f) => ({ ...f, previous_school: e.target.value }))}
+              required
+            />
           </div>
-          <button type="button" onClick={() => setStep(5)} className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white">
+          <button type="button" onClick={() => setStep(5)} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
             {t("next")}
           </button>
         </div>
       )}
 
       {step === 5 && (
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg space-y-5">
-          <button type="button" onClick={() => setStep(4)} className="text-sm text-slate-500 hover:text-slate-800">
+        <form onSubmit={handleSubmit} className={`${card} space-y-5`}>
+          <button type="button" onClick={() => setStep(4)} className={btnGhost}>
             ← {t("back")}
           </button>
-          <h2 className="text-xl font-bold text-slate-900">{t("parentTitle")}</h2>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
+            {t("parentTitle")}
+          </h2>
           <div>
-            <label className={label}>{t("parentWhatsapp")} *</label>
-            <input type="tel" className={input} value={fields.parent_whatsapp} onChange={(e) => setFields((f) => ({ ...f, parent_whatsapp: e.target.value }))} required />
+            <label className={labelClass}>{t("parentWhatsapp")} *</label>
+            <input
+              type="tel"
+              className={inputClass}
+              value={fields.parent_whatsapp}
+              onChange={(e) => setFields((f) => ({ ...f, parent_whatsapp: e.target.value }))}
+              required
+            />
           </div>
           <div>
-            <label className={label}>{t("parentEmail")} *</label>
-            <input type="email" className={input} value={fields.parent_email} onChange={(e) => setFields((f) => ({ ...f, parent_email: e.target.value }))} required />
+            <label className={labelClass}>{t("parentEmail")} *</label>
+            <input
+              type="email"
+              className={inputClass}
+              value={fields.parent_email}
+              onChange={(e) => setFields((f) => ({ ...f, parent_email: e.target.value }))}
+              required
+            />
           </div>
           <div>
-            <label className={label}>{t("discovery.label")} *</label>
-            <select className={input} value={fields.discovery_channel} onChange={(e) => setFields((f) => ({ ...f, discovery_channel: e.target.value }))} required>
+            <label className={labelClass}>{t("discovery.label")} *</label>
+            <select
+              className={inputClass}
+              value={fields.discovery_channel}
+              onChange={(e) => setFields((f) => ({ ...f, discovery_channel: e.target.value }))}
+              required
+            >
               <option value="">{t("discovery.placeholder")}</option>
               <option value="social_media">{t("discovery.social_media")}</option>
               <option value="friend_family">{t("discovery.friend_family")}</option>
@@ -293,8 +394,12 @@ export default function RegisterWizard() {
             </select>
           </div>
           <div>
-            <label className={label}>{t("preferredLevel")}</label>
-            <select className={input} value={fields.level} onChange={(e) => setFields((f) => ({ ...f, level: e.target.value }))}>
+            <label className={labelClass}>{t("preferredLevel")}</label>
+            <select
+              className={inputClass}
+              value={fields.level}
+              onChange={(e) => setFields((f) => ({ ...f, level: e.target.value }))}
+            >
               <option value="">{t("levelPlaceholder")}</option>
               <option value="beginner">{t("levels.beginner")}</option>
               <option value="elementary">{t("levels.elementary")}</option>
@@ -306,16 +411,12 @@ export default function RegisterWizard() {
             </select>
           </div>
           <div>
-            <label className={label}>{t("message")}</label>
-            <textarea rows={3} className={input} value={fields.message} onChange={(e) => setFields((f) => ({ ...f, message: e.target.value }))} />
+            <label className={labelClass}>{t("message")}</label>
+            <textarea rows={3} className={inputClass} value={fields.message} onChange={(e) => setFields((f) => ({ ...f, message: e.target.value }))} />
           </div>
-          <p className="text-xs text-slate-500">{t("securityNote")}</p>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 font-semibold text-white shadow-lg disabled:opacity-70"
-          >
+          <p className="text-xs text-[var(--text-muted)]">{t("securityNote")}</p>
+          {error && <p className="text-sm font-medium text-red-600">{error}</p>}
+          <button type="submit" disabled={loading} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
             {loading ? t("submitting") : t("submit")}
           </button>
         </form>

@@ -38,9 +38,9 @@ export default function CoursesPage() {
   return (
     <div>
       {/* Hero */}
-      <div style={{ padding: "140px 80px 80px", background: "var(--mint)", position: "relative", overflow: "hidden", borderBottom: "2px solid var(--mint-deep)" }}>
+      <div className="relative overflow-hidden border-b-2 border-[var(--mint-deep)] bg-[var(--mint)] px-4 pb-12 pt-28 sm:px-6 sm:pb-16 sm:pt-32 lg:px-12 lg:pb-20 lg:pt-36 xl:px-20">
         <div aria-hidden="true" style={{ position: "absolute", right: "-2%", bottom: "-15%", fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "clamp(6rem,12vw,16rem)", color: "transparent", WebkitTextStroke: "2px rgba(46,168,42,0.1)", lineHeight: 0.85, letterSpacing: "-0.04em", userSelect: "none", pointerEvents: "none" }}>PROGRAMS</div>
-        <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 2 }}>
+        <div className="relative z-[2] mx-auto max-w-6xl">
           <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
             <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />Programs
           </p>
@@ -54,38 +54,45 @@ export default function CoursesPage() {
       </div>
 
       {/* Program rows */}
-      <div style={{ background: "var(--white)", padding: "80px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
+      <div className="bg-[var(--white)] px-4 py-12 sm:px-8 sm:py-16 lg:px-12">
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 sm:gap-10">
           {programs.map(({ img, level, title, desc, reverse }) => (
-            <div key={title} style={{ display: "grid", gridTemplateColumns: reverse ? "2fr 1fr" : "1fr 2fr", gap: 0, borderRadius: 24, overflow: "hidden", boxShadow: "0 8px 40px rgba(46,168,42,0.1)", border: "1.5px solid var(--mint-deep)" }}>
-              {reverse ? (
-                <>
-                  <div style={{ padding: 40, background: "var(--white)" }}>
-                    <span style={{ background: "rgba(46,168,42,0.1)", color: "var(--green-dark)", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.7rem", padding: "5px 12px", borderRadius: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>{level}</span>
-                    <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "2rem", fontWeight: 800, color: "var(--green-deep)", margin: "16px 0 12px", lineHeight: 1.05 }}>{title}</h3>
-                    <p style={{ color: "var(--text-muted)", lineHeight: 1.78, fontSize: "0.95rem", marginBottom: 24 }}>{desc}</p>
-                    <a href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.875rem", padding: "12px 24px", borderRadius: 10, textDecoration: "none" }}>Enroll →</a>
-                  </div>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img} alt={title} style={{ width: "100%", height: 280, objectFit: "cover", display: "block" }} />
-                </>
-              ) : (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img} alt={title} style={{ width: "100%", height: 280, objectFit: "cover", display: "block" }} />
-                  <div style={{ padding: "40px 40px 40px 40px", background: "var(--white)" }}>
-                    <span style={{ background: "rgba(46,168,42,0.1)", color: "var(--green-dark)", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.7rem", padding: "5px 12px", borderRadius: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>{level}</span>
-                    <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "2rem", fontWeight: 800, color: "var(--green-deep)", margin: "16px 0 12px", lineHeight: 1.05 }}>{title}</h3>
-                    <p style={{ color: "var(--text-muted)", lineHeight: 1.78, fontSize: "0.95rem", marginBottom: 24 }}>{desc}</p>
-                    <a href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.875rem", padding: "12px 24px", borderRadius: 10, textDecoration: "none" }}>Enroll →</a>
-                  </div>
-                </>
-              )}
+            <div
+              key={title}
+              className={`grid grid-cols-1 overflow-hidden rounded-3xl border-[1.5px] border-[var(--mint-deep)] shadow-[0_8px_40px_rgba(46,168,42,0.1)] md:gap-0 ${reverse ? "md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]" : "md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]"}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img}
+                alt={title}
+                className={`order-1 block h-52 w-full object-cover sm:h-64 md:h-full md:min-h-[260px] ${reverse ? "md:order-2" : "md:order-1"}`}
+              />
+              <div
+                className={`order-2 bg-[var(--white)] p-6 sm:p-8 md:p-10 ${reverse ? "md:order-1" : "md:order-2"}`}
+              >
+                <span
+                  className="inline-block rounded-lg px-3 py-1.5 text-[0.7rem] font-bold uppercase tracking-wide text-[var(--green-dark)]"
+                  style={{ background: "rgba(46,168,42,0.1)", fontFamily: "var(--font-syne)" }}
+                >
+                  {level}
+                </span>
+                <h3 className="mt-4 text-xl font-extrabold leading-tight text-[var(--green-deep)] sm:text-2xl lg:text-[2rem]" style={{ fontFamily: "var(--font-syne)" }}>
+                  {title}
+                </h3>
+                <p className="mb-6 mt-3 text-[0.95rem] leading-relaxed text-[var(--text-muted)]">{desc}</p>
+                <a
+                  href="/register"
+                  className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--green)] px-5 py-3 text-sm font-bold text-white no-underline"
+                  style={{ fontFamily: "var(--font-syne)" }}
+                >
+                  Enroll →
+                </a>
+              </div>
             </div>
           ))}
 
           {/* Levels */}
-          <div style={{ background: "var(--green-deep)", borderRadius: 28, padding: 52, marginTop: 12 }}>
+          <div className="mt-4 rounded-[28px] bg-[var(--green-deep)] px-5 py-10 sm:px-8 sm:py-12 lg:p-12">
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--mint)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />English Levels
             </p>

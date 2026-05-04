@@ -39,12 +39,15 @@ export function PublicNav() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 px-12 h-[76px] flex items-center justify-between transition-all duration-300 glass-nav${scrolled ? " glass-nav-scrolled" : ""}`}
+        className={`fixed top-0 left-0 right-0 z-50 flex h-[72px] items-center justify-between px-4 transition-all duration-300 sm:h-[76px] sm:px-6 lg:px-10 xl:px-12 glass-nav${scrolled ? " glass-nav-scrolled" : ""}`}
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 shrink-0 no-underline">
-          <Image src="/logo.png" alt="Cedar Training Center" width={52} height={52} className="object-contain" priority />
-          <span style={{ fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "1.05rem", color: "var(--green-dark)", lineHeight: 1.15 }}>
+        <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 no-underline sm:gap-3">
+          <Image src="/logo.png" alt="Cedar Training Center" width={44} height={44} className="object-contain sm:h-[52px] sm:w-[52px]" priority />
+          <span
+            className="hidden min-[400px]:block"
+            style={{ fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "0.95rem", color: "var(--green-dark)", lineHeight: 1.15 }}
+          >
             Cedar <span style={{ color: "var(--green)" }}>Training</span>
             <br />Center
           </span>

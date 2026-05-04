@@ -138,9 +138,9 @@ export default function HomePage() {
   return (
     <div>
       {/* ── HERO ── */}
-      <section style={{ minHeight: "100vh", paddingTop: 76, background: "var(--mint)", position: "relative", overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-        <div aria-hidden="true" className="hero-bg-word">APPRENDRE<br />L'ANGLAIS</div>
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "80px 60px 80px 80px", position: "relative", zIndex: 2 }}>
+      <section className="relative grid min-h-0 grid-cols-1 overflow-hidden bg-[var(--mint)] pt-[72px] sm:pt-[76px] lg:min-h-screen lg:grid-cols-2">
+        <div aria-hidden="true" className="hero-bg-word hidden sm:block">APPRENDRE<br />L'ANGLAIS</div>
+        <div className="relative z-[2] flex flex-col justify-center px-4 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-20 xl:pl-20">
           <p className="animate-slide-up delay-100" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 24 }}>
             <span style={{ display: "block", width: 28, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.eyebrow}
           </p>
@@ -158,7 +158,7 @@ export default function HomePage() {
               {tr.explore}
             </Link>
           </div>
-          <div className="animate-slide-up delay-500" style={{ display: "flex", gap: 40, marginTop: 56, paddingTop: 36, borderTop: "1.5px solid rgba(46,168,42,0.18)" }}>
+          <div className="animate-slide-up delay-500 mt-12 flex flex-wrap gap-8 border-t border-[rgba(46,168,42,0.18)] pt-8 sm:gap-10 sm:pt-10 lg:mt-14 lg:gap-12 lg:pt-9">
             {[{ ref: c1, suffix: "+", label: tr.stat1 }, { ref: c2, suffix: "", label: tr.stat2 }, { ref: c3, suffix: "", label: tr.stat3 }].map(({ ref, suffix, label }, i) => (
               <div key={i}>
                 <div style={{ fontFamily: "var(--font-syne)", fontSize: "2.4rem", fontWeight: 800, color: "var(--green-deep)", lineHeight: 1 }}>
@@ -170,13 +170,13 @@ export default function HomePage() {
           </div>
         </div>
         {/* Hero right photo */}
-        <div className="animate-slide-right delay-300r" style={{ position: "relative", overflow: "hidden" }}>
+        <div className="animate-slide-right delay-300r relative order-first min-h-[44vh] w-full overflow-hidden lg:order-none lg:min-h-0 lg:h-full">
           <Image src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=900&q=85&fit=crop&crop=faces" alt="Students learning English" fill style={{ objectFit: "cover" }} priority />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, var(--mint) 0%, transparent 20%, transparent 80%, var(--mint) 100%)" }} />
-          <div className="animate-float-pill" style={{ position: "absolute", top: 30, right: 30, zIndex: 5, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "0.78rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "10px 18px", borderRadius: 50, boxShadow: "0 8px 24px rgba(46,168,42,0.4)" }}>
+          <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(to right, var(--mint) 0%, transparent 20%, transparent 80%, var(--mint) 100%)" }} />
+          <div className="animate-float-pill absolute right-4 top-4 z-[5] rounded-full px-3 py-2 text-[0.65rem] font-extrabold uppercase tracking-wide text-white sm:right-8 sm:top-8 sm:px-[18px] sm:py-2.5 sm:text-[0.78rem]" style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 24px rgba(46,168,42,0.4)" }}>
             IELTS · TOEFL · TOEIC
           </div>
-          <div className="animate-float-pill-2" style={{ position: "absolute", bottom: 40, right: 40, zIndex: 5, background: "white", color: "var(--green-dark)", fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "0.78rem", padding: "12px 20px", borderRadius: 12, border: "2px solid var(--mint-deep)", boxShadow: "0 8px 32px rgba(46,168,42,0.15)", display: "flex", alignItems: "center", gap: 10 }}>
+          <div className="animate-float-pill-2 absolute bottom-6 right-4 z-[5] flex items-center gap-2 rounded-xl border-2 border-[var(--mint-deep)] bg-white px-3 py-2.5 text-[0.7rem] font-extrabold sm:bottom-10 sm:right-10 sm:gap-2.5 sm:px-5 sm:py-3 sm:text-[0.78rem]" style={{ color: "var(--green-dark)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 32px rgba(46,168,42,0.15)" }}>
             <span style={{ fontSize: "1.6rem", color: "var(--green)" }}>98%</span>
             <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--green-dark)", lineHeight: 1.3 }}>Student<br />Satisfaction</div>
           </div>
@@ -195,9 +195,9 @@ export default function HomePage() {
       </div>
 
       {/* ── ABOUT ── */}
-      <section style={{ background: "var(--white)", padding: "120px 80px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
-          <div className="reveal-left" style={{ position: "relative", height: 580 }}>
+      <section className="bg-[var(--white)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
+          <div className="reveal-left relative mx-auto h-[340px] w-full max-w-lg sm:h-[440px] lg:mx-0 lg:h-[580px] lg:max-w-none">
             <div style={{ position: "absolute", top: 0, left: 0, width: "65%", height: "76%", borderRadius: 24, overflow: "hidden", boxShadow: "0 32px 80px rgba(46,168,42,0.15)" }}>
               <Image src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=700&q=85&fit=crop&crop=faces" alt="Students learning" fill style={{ objectFit: "cover" }} />
             </div>
@@ -235,9 +235,9 @@ export default function HomePage() {
       </section>
 
       {/* ── PROGRAMS ── */}
-      <section style={{ background: "var(--green-deep)", padding: "120px 80px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 64 }}>
+      <section className="bg-[var(--green-deep)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 text-center sm:mb-16">
             <p style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--mint)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whatWeOffer}
             </p>
@@ -245,10 +245,10 @@ export default function HomePage() {
               {tr.progT}<br /><span style={{ color: "var(--green)" }}>{tr.progA}</span>
             </h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 xl:gap-6">
             {programs.map((prog, i) => (
-              <div key={i} className="program-card" style={{ background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(255,255,255,0.1)", borderRadius: 20, overflow: "hidden" }}>
-                <div style={{ height: 220, overflow: "hidden", position: "relative" }}>
+              <div key={i} className="program-card overflow-hidden rounded-[20px] border-[1.5px] border-white/10 bg-white/[0.06]">
+                <div className="relative h-48 overflow-hidden sm:h-52 md:h-[220px]">
                   <Image src={prog.img} alt={prog.t} fill style={{ objectFit: "cover" }} />
                   <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 40%, rgba(15,74,13,0.7) 100%)" }} />
                   <span style={{ position: "absolute", top: 14, right: 14, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.7rem", padding: "5px 12px", borderRadius: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>{prog.lv}</span>
@@ -261,7 +261,7 @@ export default function HomePage() {
               </div>
             ))}
             {/* CTA card spanning 2 cols */}
-            <div className="program-card" style={{ background: "var(--green)", border: "none", borderRadius: 20, display: "flex", flexDirection: "column", justifyContent: "center", padding: 40, alignItems: "flex-start", gridColumn: "span 2" }}>
+            <div className="program-card col-span-1 flex flex-col items-start justify-center rounded-[20px] border-none bg-[var(--green)] p-8 sm:col-span-2 sm:p-10">
               <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1.7rem", fontWeight: 800, color: "white", marginBottom: 14, lineHeight: 1.1 }}>{tr.ctaCardT}</h3>
               <p style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.65, marginBottom: 28 }}>{tr.ctaCardP}</p>
               <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "white", color: "var(--green-dark)", fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "0.9rem", padding: "14px 26px", borderRadius: 10, textDecoration: "none" }}>
@@ -273,8 +273,8 @@ export default function HomePage() {
       </section>
 
       {/* ── WHY CEDAR ── */}
-      <section style={{ background: "var(--mint)", padding: "120px 80px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+      <section className="bg-[var(--mint)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div>
             <p className="eyebrow-label reveal" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whyCedar}
@@ -283,7 +283,7 @@ export default function HomePage() {
               {tr.whyT}<br /><span style={{ color: "var(--green)" }}>{tr.whyA}</span>
             </h2>
             <p className="reveal td-2" style={{ marginTop: 18, fontSize: "1rem", color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 480 }}>{tr.whySub}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 40 }}>
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-10">
               {[{ n:"01",t:tr.f1t,p:tr.f1p},{n:"02",t:tr.f2t,p:tr.f2p},{n:"03",t:tr.f3t,p:tr.f3p},{n:"04",t:tr.f4t,p:tr.f4p}].map(({n,t:ft,p},i)=>(
                 <div key={i} className={`why-feature reveal td-${i+1}`} style={{ background: "var(--white)", border: "1.5px solid var(--mint-deep)", borderRadius: 18, padding: 26, boxShadow: "0 4px 20px rgba(46,168,42,0.06)" }}>
                   <div style={{ fontFamily: "var(--font-syne)", fontSize: "2rem", fontWeight: 800, color: "var(--green)", opacity: 0.4, lineHeight: 1, marginBottom: 10 }}>{n}</div>
@@ -293,11 +293,11 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-          <div className="reveal-right" style={{ position: "relative" }}>
-            <div style={{ borderRadius: 24, overflow: "hidden", aspectRatio: "3/4" }}>
+          <div className="reveal-right relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-3xl">
               <Image src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=700&q=85&fit=crop&crop=faces" alt="Students at Cedar" fill style={{ objectFit: "cover" }} />
             </div>
-            <div style={{ position: "absolute", bottom: -24, left: -24, background: "var(--green)", color: "white", borderRadius: 20, padding: "22px 28px", fontFamily: "var(--font-syne)", boxShadow: "0 16px 48px rgba(46,168,42,0.4)", border: "4px solid var(--white)" }}>
+            <div className="absolute -bottom-3 -left-1 rounded-2xl border-4 border-white px-5 py-4 text-white sm:-bottom-6 sm:-left-4 sm:px-7 sm:py-5" style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 16px 48px rgba(46,168,42,0.4)" }}>
               <div style={{ fontSize: "2.6rem", fontWeight: 800, lineHeight: 1 }}>98%</div>
               <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 4, opacity: 0.85 }}>Student satisfaction</div>
             </div>
@@ -306,14 +306,14 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA SECTION ── */}
-      <section style={{ background: "var(--green-deep)", position: "relative", overflow: "hidden", padding: "120px 80px" }}>
-        <div aria-hidden="true" className="cta-bg-word">APPLY</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 60, alignItems: "center", maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 2 }}>
+      <section className="relative overflow-hidden bg-[var(--green-deep)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+        <div aria-hidden="true" className="cta-bg-word hidden md:block">APPLY</div>
+        <div className="relative z-[2] mx-auto grid max-w-6xl grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-14">
           <h2 style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(2.6rem, 4.5vw, 5rem)", fontWeight: 800, color: "white", lineHeight: 1.0, letterSpacing: "-0.04em" }}>
             {tr.ctaL1}<br /><span style={{ color: "var(--green)" }}>{tr.ctaL2}</span><br /><span style={{ opacity: 0.4 }}>{tr.ctaL3}</span>
           </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start", flexShrink: 0 }}>
-            <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "1rem", padding: "18px 40px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)", whiteSpace: "nowrap" }}>
+          <div className="flex w-full shrink-0 flex-col items-stretch gap-3 sm:items-start lg:w-auto lg:items-start">
+            <Link href="/register" className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-8 py-4 text-center text-base font-bold text-white no-underline sm:w-auto sm:whitespace-nowrap" style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.ctaApply}
             </Link>
             <Link href="/contact" style={{ color: "var(--mint)", fontWeight: 600, fontSize: "0.9rem", textDecoration: "none", opacity: 0.65 }}>
@@ -324,8 +324,8 @@ export default function HomePage() {
       </section>
 
       {/* ── LOCATION ── */}
-      <section style={{ background: "var(--white)", padding: "120px 80px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
+      <section className="bg-[var(--white)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div className="reveal-left" style={{ borderRadius: 24, overflow: "hidden", boxShadow: "0 16px 64px rgba(46,168,42,0.12)", aspectRatio: "4/3" }}>
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.8!2d2.3915!3d6.3645!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x102355b28a37a4cb%3A0x0!2sGb%C3%A9djrom%C3%A9d%C3%A9%2C+Cotonou!5e0!3m2!1sen!2sbj!4v1714825200000"

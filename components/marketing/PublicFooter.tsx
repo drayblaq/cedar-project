@@ -42,8 +42,8 @@ export function PublicFooter() {
   const lang = locale === "fr" ? "fr" : "en";
   const t = footerT[lang];
   return (
-    <footer style={{ background: "var(--green-deep)", padding: "80px" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 60 }}>
+    <footer className="bg-[var(--green-deep)] px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 md:grid-cols-2 md:gap-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-14">
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
             <Image src="/logo.png" alt="Cedar Training Center" width={52} height={52} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
@@ -78,7 +78,7 @@ export function PublicFooter() {
           </ul>
         </div>
       </div>
-      <div style={{ maxWidth: 1280, margin: "56px auto 0", paddingTop: 28, borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+      <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-3 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.25)" }}>
           © {new Date().getFullYear()} <span style={{ color: "var(--green)" }}>Cedar Training Center</span>. {t.rights}
         </p>

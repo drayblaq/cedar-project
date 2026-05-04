@@ -10,13 +10,7 @@ export default function RegisterPage() {
   return (
     <div>
       <div
-        style={{
-          padding: "140px 80px 80px",
-          background: "var(--mint)",
-          position: "relative",
-          overflow: "hidden",
-          borderBottom: "2px solid var(--mint-deep)",
-        }}
+        className="relative overflow-hidden border-b-2 border-[var(--mint-deep)] bg-[var(--mint)] px-4 pb-12 pt-28 sm:px-6 sm:pb-16 sm:pt-32 lg:px-12 lg:pb-20 lg:pt-36 xl:px-20"
       >
         <div
           aria-hidden="true"
@@ -37,7 +31,7 @@ export default function RegisterPage() {
         >
           APPLY
         </div>
-        <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 2 }}>
+        <div className="relative z-[2] mx-auto max-w-6xl">
           <p
             style={{
               display: "inline-flex",
@@ -73,7 +67,7 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
-      <div style={{ background: "var(--white)", padding: "48px 24px 80px" }} className="sm:px-8">
+      <div className="bg-[var(--white)] px-4 pb-16 pt-8 sm:px-6 sm:pb-20 lg:px-12">
         <RegisterWizard />
       </div>
     </div>

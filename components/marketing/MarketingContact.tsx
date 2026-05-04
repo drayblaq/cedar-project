@@ -19,15 +19,7 @@ export default function MarketingContact() {
 
   return (
     <div>
-      <div
-        style={{
-          padding: "140px 80px 80px",
-          background: "var(--mint)",
-          position: "relative",
-          overflow: "hidden",
-          borderBottom: "2px solid var(--mint-deep)",
-        }}
-      >
+      <div className="relative overflow-hidden border-b-2 border-[var(--mint-deep)] bg-[var(--mint)] px-4 pb-12 pt-28 sm:px-6 sm:pb-16 sm:pt-32 lg:px-12 lg:pb-20 lg:pt-36 xl:px-20">
         <div
           aria-hidden="true"
           style={{
@@ -47,7 +39,7 @@ export default function MarketingContact() {
         >
           CONTACT
         </div>
-        <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 2 }}>
+        <div className="relative z-[2] mx-auto max-w-6xl">
           <p
             style={{
               display: "inline-flex",
@@ -84,8 +76,8 @@ export default function MarketingContact() {
         </div>
       </div>
 
-      <div style={{ background: "var(--white)", padding: "80px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
+      <div className="bg-[var(--white)] px-4 py-12 sm:px-8 sm:py-16 lg:px-12">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-20">
           <div>
             <h2 style={{ fontFamily: "var(--font-syne)", fontSize: "1.6rem", fontWeight: 800, color: "var(--green-deep)", marginBottom: 32 }}>
               Send us a message
