@@ -5,14 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
-import { redirectAdminInstant } from "@/app/auth/actions";
-
-const ROLE_DASHBOARD: Record<string, string> = {
-  admin: "/admin",
-  staff: "/staff",
-  student: "/student",
-  parent: "/parent",
-};
+import { getPostLoginRedirect, redirectAdminInstant } from "@/app/auth/actions";
 
 function LoginForm() {
   const router = useRouter();
@@ -59,27 +52,8 @@ function LoginForm() {
       return;
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role_id")
-      .eq("id", authData.user.id)
-      .single();
-
-    let roleName: string | null = null;
-    if (profile?.role_id) {
-      const { data: role } = await supabase
-        .from("roles")
-        .select("name")
-        .eq("id", profile.role_id)
-        .single();
-      roleName = role?.name ?? null;
-    }
-
-    const home = roleName && ROLE_DASHBOARD[roleName] ? ROLE_DASHBOARD[roleName] : "";
-    const path =
-      roleName === "admin" && next.startsWith("/admin")
-        ? next
-        : home || next || "/auth/login";
+    router.refresh();
+    const path = await getPostLoginRedirect(next);
     setLoading(false);
     router.push(path);
     router.refresh();

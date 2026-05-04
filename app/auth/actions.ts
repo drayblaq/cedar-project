@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import { isAdminPasswordlessEmail, parseAdminPasswordlessAllowlist } from "@/lib/auth/admin-allowlist";
 
 function siteUrl(): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
@@ -12,17 +14,6 @@ function siteUrl(): string {
     return v.startsWith("http") ? v : `https://${v}`;
   }
   return "http://localhost:3000";
-}
-
-function adminPasswordlessAllowlist(): Set<string> | null {
-  const raw = process.env.ADMIN_PASSWORDLESS_EMAILS?.trim();
-  if (!raw) return null;
-  return new Set(
-    raw
-      .split(",")
-      .map((e) => e.trim().toLowerCase())
-      .filter(Boolean)
-  );
 }
 
 /**
@@ -43,7 +34,7 @@ export async function redirectAdminInstant(
   if (!trimmed) {
     return { error: "Enter your email." };
   }
-  const allowlist = adminPasswordlessAllowlist();
+  const allowlist = parseAdminPasswordlessAllowlist();
   if (allowlist === null) {
     return {
       error:
@@ -94,4 +85,44 @@ export async function redirectAdminInstant(
   }
 
   redirect(actionLink);
+}
+
+const ROLE_HOME = {
+  admin: "/admin",
+  staff: "/staff",
+  student: "/student",
+  parent: "/parent",
+} as const;
+
+/**
+ * After password sign-in, use the server session to pick the dashboard URL.
+ * Admin (DB role or allowlisted email) always goes to /admin or ?next=/admin/...
+ */
+export async function getPostLoginRedirect(next: string): Promise<string> {
+  const safeNext =
+    typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : "";
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.id) return "/auth/login";
+
+  const { data: profile } = await supabase.from("profiles").select("role_id").eq("id", user.id).single();
+
+  let roleName: string | null = null;
+  if (profile?.role_id) {
+    const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
+    roleName = role?.name ?? null;
+  }
+
+  const email = user.email ?? "";
+  const treatAsAdmin = roleName === "admin" || isAdminPasswordlessEmail(email);
+  if (treatAsAdmin) {
+    return safeNext.startsWith("/admin") ? safeNext : "/admin";
+  }
+
+  const home =
+    roleName && roleName in ROLE_HOME ? ROLE_HOME[roleName as keyof typeof ROLE_HOME] : "";
+  return home || safeNext || "/auth/login";
 }
