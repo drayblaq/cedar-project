@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   });
 
   if (!code) {
-    return NextResponse.redirect(new URL("/auth/login?error=missing_code", url.origin));
+    return NextResponse.redirect(new URL(`/auth/login?next=${encodeURIComponent(next)}`, url.origin));
   }
 
   const { error } = await supabase.auth.exchangeCodeForSession(code);

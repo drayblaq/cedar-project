@@ -56,7 +56,7 @@ export async function redirectAdminInstant(
   }
 
   const base = siteUrl();
-  const redirectTo = `${base}/auth/callback?next=${encodeURIComponent(safeNext)}`;
+  const redirectTo = `${base}/auth/login?next=${encodeURIComponent(safeNext)}`;
 
   const { error: createErr } = await admin.auth.admin.createUser({
     email: trimmed,

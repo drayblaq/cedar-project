@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -28,6 +28,41 @@ function LoginForm() {
     }
   }
   const showAdminMagicLink = next.startsWith("/admin");
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash.startsWith("#")) return;
+    const params = new URLSearchParams(hash.slice(1));
+    const accessToken = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
+    if (!accessToken || !refreshToken) return;
+
+    let cancelled = false;
+    const finishTokenLogin = async () => {
+      const supabase = createClient();
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (sessionError) {
+        if (!cancelled) setError(sessionError.message);
+        return;
+      }
+
+      // Drop auth tokens from URL once session cookie is set.
+      window.history.replaceState({}, "", window.location.pathname + window.location.search);
+      const path = await getPostLoginRedirect(next);
+      if (!cancelled) {
+        router.replace(path);
+        router.refresh();
+      }
+    };
+
+    void finishTokenLogin();
+    return () => {
+      cancelled = true;
+    };
+  }, [next, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
