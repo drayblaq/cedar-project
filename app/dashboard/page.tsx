@@ -6,37 +6,7 @@ import { OverviewCharts } from "./OverviewCharts";
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role_id")
-    .eq("id", user.id)
-    .single();
-  const roleId = profile?.role_id;
-
-  let roleName = "";
-  if (roleId) {
-    const { data: role } = await supabase.from("roles").select("name").eq("id", roleId).single();
-    roleName = role?.name ?? "";
-  }
-
-  // Send each role to their own dashboard so they never see admin overview
-  if (roleName === "student") redirect("/dashboard/student");
-  if (roleName === "staff") redirect("/dashboard/staff");
-  if (roleName === "parent") redirect("/dashboard/parent");
-  if (roleName !== "admin") {
-    return (
-      <div className="px-4 sm:px-6">
-        <h1 className="text-2xl font-bold text-slate-900">
-          Welcome to Cedar Training Center
-        </h1>
-        <p className="mt-2 text-slate-600">
-          Use the links above to navigate. Your role: <strong>{roleName || "—"}</strong>
-        </p>
-      </div>
-    );
-  }
+  if (!user) redirect("/auth/login");
 
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
@@ -73,10 +43,10 @@ export default async function DashboardPage() {
     .limit(5);
 
   const statCards = [
-    { label: "Total students", value: totalStudents, href: "/dashboard/students", accent: "stat-accent-emerald" },
-    { label: "Payments recorded", value: totalPayments, href: "/dashboard/payments", accent: "stat-accent-amber" },
-    { label: "Attendance records", value: totalAttendance, href: "/dashboard/attendance", accent: "stat-accent-sky" },
-    { label: "Revenue this month (XOF)", value: revenueThisMonth.toLocaleString(), href: "/dashboard/payments", accent: "border-l-4 border-l-violet-500" },
+    { label: "Total students", value: totalStudents, href: "/admin/students", accent: "stat-accent-emerald" },
+    { label: "Payments recorded", value: totalPayments, href: "/admin/payments", accent: "stat-accent-amber" },
+    { label: "Attendance records", value: totalAttendance, href: "/admin/attendance", accent: "stat-accent-sky" },
+    { label: "Revenue this month (XOF)", value: revenueThisMonth.toLocaleString(), href: "/admin/payments", accent: "border-l-4 border-l-violet-500" },
   ];
 
   return (

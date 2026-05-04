@@ -26,31 +26,31 @@ export async function DashboardNav() {
   if (roleName === "admin") {
     return (
       <nav className="mb-8 flex flex-wrap gap-2">
-        <Link href="/dashboard" className={linkClass}>
+        <Link href="/admin" className={linkClass}>
           Overview
         </Link>
-        <Link href="/dashboard/students" className={linkClass}>
+        <Link href="/admin/students" className={linkClass}>
           Students
         </Link>
-        <Link href="/dashboard/payments" className={linkClass}>
+        <Link href="/admin/payments" className={linkClass}>
           Payments
         </Link>
-        <Link href="/dashboard/attendance" className={linkClass}>
+        <Link href="/admin/attendance" className={linkClass}>
           Attendance
         </Link>
-        <Link href="/dashboard/grades" className={linkClass}>
+        <Link href="/admin/grades" className={linkClass}>
           Grades
         </Link>
-        <Link href="/dashboard/announcements" className={linkClass}>
+        <Link href="/admin/announcements" className={linkClass}>
           Announcements
         </Link>
-        <Link href="/dashboard/calendar" className={linkClass}>
+        <Link href="/admin/calendar" className={linkClass}>
           Calendar
         </Link>
-        <Link href="/dashboard/classes" className={linkClass}>
+        <Link href="/admin/classes" className={linkClass}>
           Classes
         </Link>
-        <Link href="/dashboard/parent-links" className={linkClass}>
+        <Link href="/admin/parent-links" className={linkClass}>
           Parent links
         </Link>
       </nav>
@@ -59,44 +59,44 @@ export async function DashboardNav() {
 
   return (
     <nav className="mb-8 flex flex-wrap gap-2">
-      <Link href="/dashboard" className={linkClass}>
+      <Link href={roleName === "staff" ? "/staff" : roleName === "student" ? "/student" : "/parent"} className={linkClass}>
         Dashboard
       </Link>
       {roleName === "staff" && (
         <>
-          <Link href="/dashboard/staff" className={linkClass}>
+          <Link href="/staff" className={linkClass}>
             My classes
           </Link>
-          <Link href="/dashboard/staff/attendance" className={linkClass}>
+          <Link href="/staff/attendance" className={linkClass}>
             Attendance
           </Link>
         </>
       )}
       {roleName === "student" && (
         <>
-          <Link href="/dashboard/student" className={linkClass}>
+          <Link href="/student" className={linkClass}>
             My progress
           </Link>
-          <Link href="/dashboard/student/grades" className={linkClass}>
+          <Link href="/student/grades" className={linkClass}>
             Grades
           </Link>
-          <Link href="/dashboard/student/attendance" className={linkClass}>
+          <Link href="/student/attendance" className={linkClass}>
             Attendance
           </Link>
-          <Link href="/dashboard/student/announcements" className={linkClass}>
+          <Link href="/student/announcements" className={linkClass}>
             Announcements
           </Link>
-          <Link href="/dashboard/student/calendar" className={linkClass}>
+          <Link href="/student/calendar" className={linkClass}>
             Calendar
           </Link>
         </>
       )}
       {roleName === "parent" && (
         <>
-          <Link href="/dashboard/parent" className={linkClass}>
+          <Link href="/parent" className={linkClass}>
             My children
           </Link>
-          <Link href="/dashboard/parent/announcements" className={linkClass}>
+          <Link href="/parent/announcements" className={linkClass}>
             Announcements
           </Link>
         </>

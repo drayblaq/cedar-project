@@ -66,7 +66,7 @@ export default async function StaffDashboardPage() {
                   <p className="text-sm text-slate-500">{c.levelName ?? "—"}</p>
                 </div>
                 <Link
-                  href={`/dashboard/staff/attendance?class=${c.id}&date=${new Date().toISOString().slice(0, 10)}`}
+                  href={`/staff/attendance?class=${c.id}&date=${new Date().toISOString().slice(0, 10)}`}
                   className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-lg"
                 >
                   Mark attendance

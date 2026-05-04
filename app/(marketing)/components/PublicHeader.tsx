@@ -2,18 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Logo } from "@/components/Logo";
-
-const nav = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/courses", label: "Courses" },
-  { href: "/contact", label: "Contact" },
-  { href: "/register", label: "Register" },
-];
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function PublicHeader() {
+  const t = useTranslations("marketing");
   const [isOpen, setIsOpen] = useState(false);
+  const nav = [
+    { href: "/", label: t("nav.home") },
+    { href: "/about", label: t("nav.about") },
+    { href: "/courses", label: t("nav.courses") },
+    { href: "/contact", label: t("nav.contact") },
+    { href: "/register", label: t("nav.register") },
+  ];
 
   return (
     <header className="sticky top-0 z-50 glass-header transition-all duration-300">
@@ -24,7 +26,7 @@ export function PublicHeader() {
         >
           <Logo size="sm" link={false} className="shrink-0" />
           <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent text-[15px] sm:text-xl leading-tight">
-            Cedar Training Center
+            {t("brand")}
           </span>
         </Link>
 
@@ -43,8 +45,11 @@ export function PublicHeader() {
             href="/auth/login"
             className="ml-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:scale-105 hover:shadow-emerald-500/40 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
           >
-            Sign in
+              {t("nav.signin")}
           </Link>
+          <div className="ml-3">
+            <LanguageSwitcher />
+          </div>
         </nav>
 
         {/* Mobile menu button */}
@@ -80,12 +85,15 @@ export function PublicHeader() {
             </Link>
           ))}
           <div className="pt-2">
+            <div className="mb-3">
+              <LanguageSwitcher />
+            </div>
             <Link
               href="/auth/login"
               onClick={() => setIsOpen(false)}
               className="block text-center w-full rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all active:scale-95"
             >
-              Sign in
+              {t("nav.signin")}
             </Link>
           </div>
         </div>

@@ -28,7 +28,10 @@ export function InviteStudentButton({
 
   if (disabled) {
     return (
-      <span className="text-xs text-slate-400" title="Student needs at least one payment and no existing login">
+      <span
+        className="text-xs text-slate-400"
+        title="Requires active enrollment, at least one recorded payment, and no existing portal login"
+      >
         —
       </span>
     );

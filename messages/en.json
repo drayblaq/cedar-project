@@ -1,0 +1,167 @@
+{
+  "marketing": {
+    "nav": {
+      "home": "Home",
+      "about": "About",
+      "courses": "Programs",
+      "contact": "Contact",
+      "register": "Apply",
+      "signin": "Sign in"
+    },
+    "brand": "Cedar Training Center",
+    "homepage": {
+      "eyebrow": "English Training in Cotonou",
+      "title": "Build confidence in English with Cedar Training Center",
+      "subtitle": "We support every learner in acquiring English to improve integration and success in an international environment.",
+      "primaryCta": "Apply now",
+      "secondaryCta": "Explore programs",
+      "aboutCardTitle": "Mission and vision",
+      "aboutCardText": "Mission: Deliver high-quality English training that helps learners communicate with confidence and efficiency. Vision: Become a reference center recognized for excellence, innovation and impact.",
+      "aboutCardLink": "Learn more about CTC",
+      "programCardTitle": "Programs",
+      "programCardText": "General English, Business English, international test preparation (TOEIC, TOEFL, IELTS), communication workshops, and personalized intensive tracks.",
+      "programCardLink": "View all programs"
+    },
+    "about": {
+      "eyebrow": "About us",
+      "title": "A center dedicated to English learning",
+      "intro": "Cedar Training Center helps learners develop language skills for studies, career growth and integration in international contexts.",
+      "missionTitle": "Mission",
+      "missionText": "Offer high-quality English training that allows learners to communicate with confidence and effectiveness.",
+      "visionTitle": "Vision",
+      "visionText": "Become a reference center in language training, recognized for excellence, innovation and impact.",
+      "methodTitle": "Our methodology",
+      "methodText": "Dynamic courses, real-life scenarios, intensive speaking practice and individual support to guarantee measurable progress."
+    },
+    "courses": {
+      "eyebrow": "Programs",
+      "title": "Training tracks at Cedar",
+      "intro": "Our programs are designed for practical communication and measurable progression.",
+      "list": {
+        "general": "General English",
+        "business": "Business English",
+        "tests": "International test preparation (TOEIC, TOEFL, IELTS, etc.)",
+        "workshops": "Communication and conversation workshops",
+        "intensive": "Personalized and intensive programs"
+      },
+      "cta": "Apply for a program"
+    },
+    "contact": {
+      "eyebrow": "Contact",
+      "title": "Get in touch with Cedar Training Center",
+      "intro": "Call, email, or visit us in Cotonou.",
+      "phoneLabel": "Phone",
+      "emailLabel": "Email",
+      "addressLabel": "Address",
+      "addressValue": "Gbédjromédé, street before Nagueze school, coming from Carrefour 16 ampoules, Ola Fitness buildings, Auto tours entrance.",
+      "mapLink": "Open in Google Maps"
+    },
+    "register": {
+      "eyebrow": "Apply",
+      "title": "Registration form",
+      "intro": "Complete this form and our team will contact you with next steps.",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "level": "Preferred level (optional)",
+      "message": "Message (optional)",
+      "levels": {
+        "placeholder": "Select a level",
+        "beginner": "Beginner",
+        "elementary": "Elementary",
+        "preIntermediate": "Pre-Intermediate",
+        "intermediate": "Intermediate",
+        "upperIntermediate": "Upper-Intermediate",
+        "advanced": "Advanced",
+        "toefl": "TOEIC / TOEFL / IELTS preparation"
+      },
+      "submit": "Submit registration",
+      "submitting": "Submitting...",
+      "successTitle": "Thank you for registering",
+      "successText": "We received your information and will contact you shortly.",
+      "newSubmission": "Submit another registration"
+    },
+    "registerFlow": {
+      "eyebrow": "Pre-registration",
+      "stepIndicator": "Step {current} of {total}",
+      "back": "Back",
+      "next": "Next",
+      "start": "Start",
+      "introTitle": "Apply to Cedar Training Center",
+      "introBody": "Welcome to the pre-registration form. Complete each step with accurate information. Our team will review your application and contact you about admission and payment.",
+      "checklistTitle": "Information to confirm before continuing",
+      "checklistIntro": "Please confirm each point. Training is offered at our center in Cotonou.",
+      "checklistItems": [
+        "I understand that courses are delivered in person at Cedar Training Center in Cotonou.",
+        "I understand that fees and schedules will be confirmed by the center after my application is reviewed.",
+        "I agree to provide accurate personal and contact information.",
+        "I understand that an English placement test may be required to assign the right level.",
+        "I understand that a portal login is created only after admission and payment are confirmed.",
+        "I confirm that the parent / financial contact details I provide may be used for billing communication.",
+        "I will not share passwords or sensitive banking details through this form.",
+        "I have read the above and wish to continue my application."
+      ],
+      "personalTitle": "Personal information",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "gender": {
+        "label": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "dob": "Date of birth",
+      "nationality": "Nationality",
+      "contactTitle": "Contact information",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "address": "Residential address",
+      "country": "Country of residence",
+      "city": "City of residence",
+      "academicTitle": "Academic background",
+      "bacYear": "Year of BAC (or equivalent)",
+      "bacSeries": "BAC series / track",
+      "previousSchool": "Previous school",
+      "parentTitle": "Parent / financial contact",
+      "parentWhatsapp": "Parent or guardian WhatsApp",
+      "parentEmail": "Parent or guardian email",
+      "discovery": {
+        "label": "How did you hear about us?",
+        "placeholder": "Select one",
+        "social_media": "Social media",
+        "friend_family": "Friend or family",
+        "search_engine": "Search engine",
+        "school_partner": "School or partner",
+        "advertisement": "Advertisement",
+        "other": "Other"
+      },
+      "preferredLevel": "Preferred English level (optional)",
+      "levelPlaceholder": "Select a level (optional)",
+      "levels": {
+        "beginner": "Beginner",
+        "elementary": "Elementary",
+        "preIntermediate": "Pre-Intermediate",
+        "intermediate": "Intermediate",
+        "upperIntermediate": "Upper-Intermediate",
+        "advanced": "Advanced",
+        "toefl": "TOEIC / TOEFL / IELTS preparation"
+      },
+      "message": "Additional message (optional)",
+      "securityNote": "Never share passwords or full bank card numbers through this form.",
+      "submit": "Submit application",
+      "submitting": "Submitting…",
+      "successTitle": "Application received",
+      "successBody": "Your pre-registration was saved. You may take the optional English placement test now or return later using the same link from your confirmation email.",
+      "takeTestNow": "Take placement test now",
+      "takeTestLater": "I'll do it later"
+    },
+    "footer": {
+      "description": "English language training in Cotonou with practical, learner-centered programs.",
+      "quickLinks": "Quick links",
+      "location": "Location",
+      "portal": "Portal",
+      "signin": "Sign in to your account",
+      "rights": "All rights reserved."
+    }
+  }
+}

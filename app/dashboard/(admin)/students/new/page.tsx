@@ -10,7 +10,7 @@ export default async function NewStudentPage() {
     <div>
       <div className="mb-6 flex items-center gap-4">
         <Link
-          href="/dashboard/students"
+          href="/admin/students"
           className="text-sm text-slate-500 hover:text-slate-700"
         >
           &larr; Students
@@ -73,6 +73,21 @@ export default async function NewStudentPage() {
           </select>
         </div>
         <div>
+          <label htmlFor="status" className="block text-sm font-medium text-slate-700">
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            defaultValue="active"
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3"
+          >
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div>
           <label htmlFor="enrollment_date" className="block text-sm font-medium text-slate-700">
             Enrollment date
           </label>
@@ -102,7 +117,7 @@ export default async function NewStudentPage() {
             Save student
           </button>
           <Link
-            href="/dashboard/students"
+            href="/admin/students"
             className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Cancel

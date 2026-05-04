@@ -15,14 +15,14 @@ export default async function AdminSectionsLayout({
     .select("role_id")
     .eq("id", user.id)
     .single();
-  if (!profile?.role_id) redirect("/dashboard");
+  if (!profile?.role_id) redirect("/auth/login");
 
   const { data: role } = await supabase
     .from("roles")
     .select("name")
     .eq("id", profile.role_id)
     .single();
-  if (role?.name !== "admin") redirect("/dashboard");
+  if (role?.name !== "admin") redirect("/auth/login");
 
   return <>{children}</>;
 }

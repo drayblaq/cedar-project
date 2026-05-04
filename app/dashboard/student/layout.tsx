@@ -7,6 +7,6 @@ export default async function StudentPortalLayout({
   children: React.ReactNode;
 }) {
   const result = await getStudentForCurrentUser();
-  if (result === null) redirect("/dashboard");
+  if (result === null) redirect("/auth/login");
   return <>{children}</>;
 }

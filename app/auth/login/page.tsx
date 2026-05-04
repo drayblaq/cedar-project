@@ -5,23 +5,36 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { redirectAdminInstant } from "@/app/auth/actions";
 
 const ROLE_DASHBOARD: Record<string, string> = {
-  admin: "/dashboard",
-  staff: "/dashboard",
-  student: "/dashboard",
-  parent: "/dashboard",
+  admin: "/admin",
+  staff: "/staff",
+  student: "/student",
+  parent: "/parent",
 };
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "";
+  const rawNext = searchParams.get("next") || "";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [adminInstantLoading, setAdminInstantLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const rawUrlError = searchParams.get("error");
+  let urlError: string | null = null;
+  if (rawUrlError) {
+    try {
+      urlError = decodeURIComponent(rawUrlError);
+    } catch {
+      urlError = rawUrlError;
+    }
+  }
+  const showAdminMagicLink = next.startsWith("/admin");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,12 +75,32 @@ function LoginForm() {
       roleName = role?.name ?? null;
     }
 
-    const path = roleName && ROLE_DASHBOARD[roleName]
-      ? ROLE_DASHBOARD[roleName]
-      : next || "/dashboard";
+    const home = roleName && ROLE_DASHBOARD[roleName] ? ROLE_DASHBOARD[roleName] : "";
+    const path =
+      roleName === "admin" && next.startsWith("/admin")
+        ? next
+        : home || next || "/auth/login";
     setLoading(false);
     router.push(path);
     router.refresh();
+  }
+
+  async function handleAdminInstant(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    if (!email.trim()) {
+      setError("Enter the email listed in ADMIN_PASSWORDLESS_EMAILS.");
+      return;
+    }
+    setAdminInstantLoading(true);
+    try {
+      const result = await redirectAdminInstant(email, next || "/admin");
+      if (result?.error) {
+        setError(result.error);
+      }
+    } finally {
+      setAdminInstantLoading(false);
+    }
   }
 
   return (
@@ -86,21 +119,69 @@ function LoginForm() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-1">
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                Email address
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="block w-full rounded-xl border border-slate-300 bg-white/50 px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm backdrop-blur-sm transition focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20:bg-slate-900"
-                placeholder="you@example.com"
-              />
+          {urlError && (
+            <div
+              className="mb-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50/80 p-3 text-sm text-amber-900"
+              role="status"
+            >
+              {urlError}
             </div>
+          )}
+
+          {showAdminMagicLink && (
+            <form onSubmit={handleAdminInstant} className="mb-8 space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
+              <p className="text-sm font-semibold text-emerald-900">Admin: email only</p>
+              <p className="text-xs text-emerald-800/90">
+                Enter the exact address in <code className="rounded bg-white/80 px-1">ADMIN_PASSWORDLESS_EMAILS</code>, then
+                continue — you are sent through Supabase once and land on the admin area (no inbox step). You still need the{" "}
+                <strong>admin</strong> role on that user (see <code className="rounded bg-white/80 px-1">set-admin-by-email.sql</code>).
+                Requires <code className="rounded bg-white/80 px-1">SUPABASE_SERVICE_ROLE_KEY</code> on the server.
+              </p>
+              <div className="space-y-1">
+                <label htmlFor="admin-magic-email" className="block text-sm font-medium text-slate-700">
+                  Email
+                </label>
+                <input
+                  id="admin-magic-email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  placeholder="admin@your-domain.com"
+                  autoComplete="email"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={adminInstantLoading}
+                className="w-full rounded-xl border border-emerald-600 bg-white px-4 py-3 text-sm font-semibold text-emerald-800 shadow-sm transition hover:bg-emerald-50 disabled:opacity-70"
+              >
+                {adminInstantLoading ? "Redirecting…" : "Continue to admin"}
+              </button>
+            </form>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {!showAdminMagicLink && (
+              <div className="space-y-1">
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="block w-full rounded-xl border border-slate-300 bg-white/50 px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm backdrop-blur-sm transition focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20:bg-slate-900"
+                  placeholder="you@example.com"
+                />
+              </div>
+            )}
+            {showAdminMagicLink && (
+              <p className="text-sm font-medium text-slate-700">Or sign in with password (same email as above)</p>
+            )}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="block text-sm font-medium text-slate-700">
@@ -170,6 +251,16 @@ function LoginForm() {
           <p className="mt-6 text-center text-sm text-slate-500">
             Student portal access is sent to your email by the center after you register and pay.
           </p>
+          {!showAdminMagicLink && (
+            <p className="mt-3 text-center text-sm">
+              <Link
+                href="/auth/login?next=/admin"
+                className="font-medium text-emerald-700 underline-offset-2 hover:underline"
+              >
+                Staff admin sign-in (password or link)
+              </Link>
+            </p>
+          )}
           <p className="mt-4 text-center">
             <Link href="/" className="inline-flex items-center gap-1 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

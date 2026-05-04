@@ -2,6 +2,21 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getStudentForCurrentUser, levelName } from "@/lib/student-auth";
 
+/** Supabase may type embedded `academic_terms` as an object or a one-row array. */
+function academicTermName(terms: unknown): string | undefined {
+  if (terms == null) return undefined;
+  if (Array.isArray(terms)) {
+    const first = terms[0] as { name?: unknown } | undefined;
+    const n = first?.name;
+    return typeof n === "string" ? n : undefined;
+  }
+  if (typeof terms === "object" && terms !== null && "name" in terms) {
+    const n = (terms as { name: unknown }).name;
+    return typeof n === "string" ? n : undefined;
+  }
+  return undefined;
+}
+
 export default async function StudentDashboardPage() {
   const result = await getStudentForCurrentUser();
   if (!result?.student) {
@@ -79,7 +94,7 @@ export default async function StudentDashboardPage() {
 
         {/* Quick action button (Optional) */}
         <Link
-          href="/dashboard/student/calendar"
+          href="/student/calendar"
           className="group inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-medium shadow-md transition-all hover:bg-slate-800 hover:shadow-lg active:scale-95"
         >
           <svg className="w-5 h-5 text-slate-300 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +108,7 @@ export default async function StudentDashboardPage() {
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Grades Card */}
         <Link
-          href="/dashboard/student/grades"
+          href="/student/grades"
           className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-emerald-100"
         >
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-emerald-50 to-teal-100 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out"></div>
@@ -116,7 +131,7 @@ export default async function StudentDashboardPage() {
 
         {/* Attendance Card */}
         <Link
-          href="/dashboard/student/attendance"
+          href="/student/attendance"
           className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-100"
         >
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out"></div>
@@ -141,7 +156,7 @@ export default async function StudentDashboardPage() {
 
         {/* Calendar Card */}
         <Link
-          href="/dashboard/student/calendar"
+          href="/student/calendar"
           className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-amber-100 md:col-span-2 lg:col-span-1"
         >
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-amber-50 to-orange-100 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out"></div>
@@ -164,7 +179,7 @@ export default async function StudentDashboardPage() {
 
         {/* Announcements Card */}
         <Link
-          href="/dashboard/student/announcements"
+          href="/student/announcements"
           className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-purple-100 md:col-span-2 lg:col-span-1"
         >
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-purple-50 to-pink-100 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 ease-out"></div>
@@ -197,7 +212,7 @@ export default async function StudentDashboardPage() {
         <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-slate-900 tracking-tight">Recent grades</h2>
-            <Link href="/dashboard/student/grades" className="text-sm font-semibold text-slate-500 hover:text-emerald-600 transition-colors">
+            <Link href="/student/grades" className="text-sm font-semibold text-slate-500 hover:text-emerald-600 transition-colors">
               View all
             </Link>
           </div>
@@ -214,26 +229,27 @@ export default async function StudentDashboardPage() {
             </div>
           ) : (
             <ul className="space-y-4">
-              {grades.map((g) => (
-                <li key={g.id} className="group flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50 border border-transparent hover:border-emerald-100 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center font-bold text-slate-700 shadow-sm border border-slate-100 group-hover:text-emerald-600 group-hover:border-emerald-200 transition-colors">
-                      {g.subject_or_type.charAt(0).toUpperCase()}
+              {grades.map((g) => {
+                const term = academicTermName(g.academic_terms);
+                return (
+                  <li key={g.id} className="group flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50 border border-transparent hover:border-emerald-100 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center font-bold text-slate-700 shadow-sm border border-slate-100 group-hover:text-emerald-600 group-hover:border-emerald-200 transition-colors">
+                        {g.subject_or_type.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-900">{g.subject_or_type}</p>
+                        {term ? <p className="text-xs text-slate-500 font-medium">{term}</p> : null}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-slate-900">{g.subject_or_type}</p>
-                      {g.academic_terms?.name && (
-                        <p className="text-xs text-slate-500 font-medium">{g.academic_terms.name}</p>
-                      )}
+                    <div className="text-right">
+                      <span className="text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors">
+                        {g.score != null ? `${g.score}` : "—"}
+                      </span>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors">
-                      {g.score != null ? `${g.score}` : "—"}
-                    </span>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
@@ -242,7 +258,7 @@ export default async function StudentDashboardPage() {
         <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-slate-900 tracking-tight">Upcoming events</h2>
-            <Link href="/dashboard/student/calendar" className="text-sm font-semibold text-slate-500 hover:text-amber-600 transition-colors">
+            <Link href="/student/calendar" className="text-sm font-semibold text-slate-500 hover:text-amber-600 transition-colors">
               View all
             </Link>
           </div>
@@ -275,8 +291,8 @@ export default async function StudentDashboardPage() {
                         <p className="font-semibold text-slate-900">{e.title}</p>
                         <p className="text-xs text-slate-500 font-medium capitalize flex items-center gap-1 mt-0.5">
                           <span className={`inline-block w-1.5 h-1.5 rounded-full ${e.event_type === 'exam' ? 'bg-red-500' :
-                              e.event_type === 'holiday' ? 'bg-emerald-500' :
-                                e.event_type === 'deadline' ? 'bg-amber-500' : 'bg-slate-400'
+                            e.event_type === 'holiday' ? 'bg-emerald-500' :
+                              e.event_type === 'deadline' ? 'bg-amber-500' : 'bg-slate-400'
                             }`}></span>
                           {e.event_type ?? "Event"}
                         </p>

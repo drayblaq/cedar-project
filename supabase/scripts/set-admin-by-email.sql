@@ -1,6 +1,11 @@
 -- ============================================================
 -- Set your user to ADMIN by email (no need to copy any UUIDs)
 -- ============================================================
+-- Instant admin login (no inbox): add the same email to app env
+-- ADMIN_PASSWORDLESS_EMAILS (comma-separated), set SUPABASE_SERVICE_ROLE_KEY,
+-- and allow redirect URL in Supabase Auth → URL configuration:
+--   {YOUR_SITE}/auth/callback
+-- ============================================================
 -- If you see "(no role)" in the app, your user had no profile row.
 -- This script CREATES the profile if missing, then sets role to admin.
 --
@@ -12,7 +17,7 @@
 INSERT INTO public.profiles (id, role_id)
 SELECT u.id, (SELECT id FROM public.roles WHERE name = 'admin' LIMIT 1)
 FROM auth.users u
-WHERE u.email = 'drayblaq@gmail.com'
+WHERE u.email = 'YOUR_EMAIL_HERE'
 ON CONFLICT (id) DO UPDATE SET role_id = EXCLUDED.role_id;
 
 -- Check: run this in a new query (replace the email) to confirm you see role = admin

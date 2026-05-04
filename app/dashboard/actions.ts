@@ -1,5 +1,6 @@
 "use server";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -13,6 +14,7 @@ export async function createStudent(formData: FormData) {
   const level_id = (formData.get("level_id") as string) || null;
   const enrollment_date = (formData.get("enrollment_date") as string) || null;
   const notes = (formData.get("notes") as string) || null;
+  const status = (formData.get("status") as string) || "active";
 
   const { error } = await supabase.from("students").insert({
     full_name,
@@ -20,13 +22,14 @@ export async function createStudent(formData: FormData) {
     phone,
     level_id: level_id || null,
     enrollment_date: enrollment_date || null,
+    status,
     notes: notes || null,
   });
 
   if (error) return { error: error.message };
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/students");
-  redirect("/dashboard/students");
+  revalidatePath("/admin");
+  revalidatePath("/admin/students");
+  redirect("/admin/students");
 }
 
 export async function updateStudent(id: string, formData: FormData) {
@@ -37,6 +40,7 @@ export async function updateStudent(id: string, formData: FormData) {
   const level_id = (formData.get("level_id") as string) || null;
   const enrollment_date = (formData.get("enrollment_date") as string) || null;
   const notes = (formData.get("notes") as string) || null;
+  const status = (formData.get("status") as string) || "active";
 
   const { error } = await supabase
     .from("students")
@@ -46,16 +50,17 @@ export async function updateStudent(id: string, formData: FormData) {
       phone,
       level_id: level_id || null,
       enrollment_date: enrollment_date || null,
+      status,
       notes: notes || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
 
   if (error) return { error: error.message };
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/students");
-  revalidatePath(`/dashboard/students/${id}`);
-  redirect("/dashboard/students");
+  revalidatePath("/admin");
+  revalidatePath("/admin/students");
+  revalidatePath(`/admin/students/${id}`);
+  redirect("/admin/students");
 }
 
 export async function deleteStudent(id: string) {
@@ -63,7 +68,7 @@ export async function deleteStudent(id: string) {
   const { error } = await supabase.from("students").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/dashboard");
-  revalidatePath("/dashboard/students");
+  revalidatePath("/admin/students");
   return { error: null };
 }
 
@@ -84,9 +89,56 @@ export async function createPayment(formData: FormData) {
   });
 
   if (error) return { error: error.message };
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/payments");
-  redirect("/dashboard/payments");
+  await tryFinalizeEnrollmentAfterPayment(supabase, student_id);
+  revalidatePath("/admin");
+  revalidatePath("/admin/payments");
+  revalidatePath("/admin/students");
+  redirect("/admin/payments");
+}
+
+async function tryFinalizeEnrollmentAfterPayment(supabase: SupabaseClient, studentId: string) {
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, email, user_id, status, application_status")
+    .eq("id", studentId)
+    .maybeSingle();
+  if (!student || student.status !== "pending") return;
+  const appStatus = student.application_status ?? "submitted";
+  if (appStatus === "rejected") return;
+  if (appStatus !== "approved" && appStatus !== "awaiting_payment") return;
+
+  const { count } = await supabase
+    .from("payments")
+    .select("id", { count: "exact", head: true })
+    .eq("student_id", studentId);
+  if (!count || count < 1) return;
+
+  let authUserId = student.user_id as string | null;
+  if (!authUserId) {
+    try {
+      const admin = createAdminClient();
+      const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+      const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
+        student.email,
+        { redirectTo: `${siteUrl}/auth/login` }
+      );
+      if (inviteError) return;
+      authUserId = inviteData.user?.id ?? null;
+    } catch {
+      return;
+    }
+  }
+
+  await supabase
+    .from("students")
+    .update({
+      status: "active",
+      user_id: authUserId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", studentId);
 }
 
 export async function saveAttendance(formData: FormData) {
@@ -295,8 +347,42 @@ export async function inviteStudentLogin(studentId: string) {
     return { error: e instanceof Error ? e.message : "Failed to send invite" };
   }
 
-  revalidatePath("/dashboard/students");
+  revalidatePath("/admin/students");
   return { error: null };
+}
+
+export type ApplicationStatus =
+  | "submitted"
+  | "under_review"
+  | "awaiting_payment"
+  | "approved"
+  | "rejected";
+
+export async function setStudentApplicationStatus(
+  studentId: string,
+  applicationStatus: ApplicationStatus
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: profile } = await supabase.from("profiles").select("role_id").eq("id", user.id).single();
+  if (!profile?.role_id) return { error: "No role" };
+  const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
+  if (role?.name !== "admin") return { error: "Only admin can update admission status" };
+
+  const { error } = await supabase
+    .from("students")
+    .update({
+      application_status: applicationStatus,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", studentId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/admin/students");
+  revalidatePath(`/admin/students/${studentId}/application`);
+  return { error: null as null };
 }
 
 // ---------- Parent–student links (admin only) ----------

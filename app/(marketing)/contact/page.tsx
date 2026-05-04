@@ -1,44 +1,41 @@
+import { useTranslations } from "next-intl";
+
 export const metadata = {
   title:"Contact | Cedar Training Center",
   description:"Contact Cedar Training Center in Cotonou, Benin. Address, map, and get in touch.",
 };
 
 export default function ContactPage() {
+  const t = useTranslations("marketing.contact");
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
       <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">
-        Get in touch
+        {t("eyebrow")}
       </p>
       <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900">
-        Contact us
+        {t("title")}
       </h1>
       <p className="mt-4 text-lg text-slate-600">
-        Cedar Training Center is in Cotonou, Benin. Visit us or use the registration form to reach out.
+        {t("intro")}
       </p>
 
       <div className="mt-12 grid gap-8 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
           <h2 className="text-lg font-bold text-slate-900">
-            Location
+            {t("phoneLabel")}
           </h2>
           <p className="mt-3 text-slate-600">
-            Cotonou, Benin
+            +229 01 96 19 64 40
           </p>
-          <p className="mt-2 text-sm text-slate-500">
-            Exact address can be updated here. The map shows central Cotonou.
-          </p>
+          <h2 className="mt-6 text-lg font-bold text-slate-900">{t("emailLabel")}</h2>
+          <p className="mt-3 text-slate-600">trainingcentercedar@gmail.com</p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
           <h2 className="text-lg font-bold text-slate-900">
-            Get in touch
+            {t("addressLabel")}
           </h2>
-          <p className="mt-3 text-slate-600">
-            For course info, enrollment, or inquiries, use the{""}
-            <a href="/register" className="font-medium text-emerald-600 hover:underline">
-              registration form
-            </a>{""}
-            or visit during opening hours.
-          </p>
+          <p className="mt-3 text-slate-600">{t("addressValue")}</p>
         </div>
       </div>
 
@@ -60,7 +57,7 @@ export default function ContactPage() {
           rel="noopener noreferrer"
           className="text-sm font-medium text-emerald-600 hover:underline"
         >
-          Open in Google Maps →
+          {t("mapLink")} →
         </a>
       </p>
     </div>

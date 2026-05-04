@@ -67,7 +67,7 @@ export default async function ParentDashboardPage() {
         {summaries.map((s) => (
           <Link
             key={s.id}
-            href={`/dashboard/parent/child/${s.id}`}
+            href={`/parent/child/${s.id}`}
             className="block rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition hover:border-emerald-200 hover:shadow-emerald-100"
           >
             <h2 className="text-lg font-bold text-slate-900">{s.full_name}</h2>
@@ -85,7 +85,7 @@ export default async function ParentDashboardPage() {
       <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg">
         <h2 className="text-lg font-bold text-slate-900">Announcements</h2>
         <p className="mt-2 text-slate-600">Center-wide updates.</p>
-        <Link href="/dashboard/parent/announcements" className="mt-3 inline-block text-sm font-medium text-emerald-600 hover:underline">
+        <Link href="/parent/announcements" className="mt-3 inline-block text-sm font-medium text-emerald-600 hover:underline">
           View announcements →
         </Link>
       </div>

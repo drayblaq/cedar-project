@@ -1,5 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# --- Secrets & local env (never commit) ---
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+
 # dependencies
 /node_modules
 /.pnp
@@ -22,7 +30,6 @@
 
 # misc
 .DS_Store
-*.pem
 
 # debug
 npm-debug.log*
@@ -30,24 +37,24 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (never commit secrets)
-.env*
-
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
-# cursor / editor metadata
+# Supabase CLI local state (if you use `supabase start` / branching)
+supabase/.branches
+supabase/.temp
+
+# cursor / editor metadata (local)
 .cursor/
 .vscode/
 .idea/
 
 # local terminals and logs
-/.cursor/projects/**/terminals/
 *.log
 
 # OS files
 Thumbs.db
+ehthumbs.db
