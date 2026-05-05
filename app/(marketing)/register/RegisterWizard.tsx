@@ -21,7 +21,7 @@ const btnGhost = "text-sm font-medium text-[var(--text-muted)] hover:text-[var(-
 export default function RegisterWizard() {
   const t = useTranslations("marketing.registerFlow");
   const [step, setStep] = useState<Step>(0);
-  const [checklist, setChecklist] = useState<boolean[]>(() => Array(8).fill(false));
+  const [checklist, setChecklist] = useState<boolean[]>(() => Array(3).fill(false));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [placementToken, setPlacementToken] = useState<string | null>(null);
@@ -37,9 +37,7 @@ export default function RegisterWizard() {
     address_line: "",
     country: "",
     city: "",
-    bac_year: "",
-    bac_series: "",
-    previous_school: "",
+    education_level: "",
     parent_whatsapp: "",
     parent_email: "",
     discovery_channel: "",
@@ -315,30 +313,15 @@ export default function RegisterWizard() {
           <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
             {t("academicTitle")}
           </h2>
+          <p className="text-sm leading-relaxed text-[var(--text-muted)]">{t("educationLevelIntro")}</p>
           <div>
-            <label className={labelClass}>{t("bacYear")} *</label>
-            <input
+            <label className={labelClass}>{t("educationLevelLabel")} *</label>
+            <textarea
+              rows={4}
               className={inputClass}
-              value={fields.bac_year}
-              onChange={(e) => setFields((f) => ({ ...f, bac_year: e.target.value }))}
-              required
-            />
-          </div>
-          <div>
-            <label className={labelClass}>{t("bacSeries")} *</label>
-            <input
-              className={inputClass}
-              value={fields.bac_series}
-              onChange={(e) => setFields((f) => ({ ...f, bac_series: e.target.value }))}
-              required
-            />
-          </div>
-          <div>
-            <label className={labelClass}>{t("previousSchool")} *</label>
-            <input
-              className={inputClass}
-              value={fields.previous_school}
-              onChange={(e) => setFields((f) => ({ ...f, previous_school: e.target.value }))}
+              value={fields.education_level}
+              onChange={(e) => setFields((f) => ({ ...f, education_level: e.target.value }))}
+              placeholder={t("educationLevelPlaceholder")}
               required
             />
           </div>

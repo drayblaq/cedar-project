@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLocale } from "next-intl";
@@ -13,7 +13,6 @@ const t = {
     title1: "Learn", title2: "English", title3: "with Cedar",
     sub: "We support every learner in acquiring English for studies, career and international success. Based in Cotonou — serving all of Bénin.",
     apply: "Apply Now", explore: "Explore Programs",
-    stat1: "Students trained", stat2: "English levels", stat3: "Programs",
     whoWeAre: "Who We Are",
     aboutT: "A center", aboutA: "dedicated", aboutT2: "to your success",
     aboutLead: "Cedar Training Center helps learners develop English language skills for studies, career growth and integration in international contexts. Based in Gbédjromédé, Cotonou.",
@@ -44,7 +43,6 @@ const t = {
     title1: "Apprendre", title2: "l'Anglais", title3: "avec Cedar",
     sub: "Nous accompagnons chaque apprenant dans l'acquisition de l'anglais pour ses études, sa carrière et son succès international.",
     apply: "Candidater", explore: "Voir les programmes",
-    stat1: "Étudiants formés", stat2: "Niveaux", stat3: "Programmes",
     whoWeAre: "Qui sommes-nous",
     aboutT: "Un centre", aboutA: "dédié", aboutT2: "à votre réussite",
     aboutLead: "Cedar Training Center aide les apprenants à développer leurs compétences en anglais pour les études, la carrière et l'intégration dans des contextes internationaux. Situé à Gbédjromédé, Cotonou.",
@@ -85,37 +83,11 @@ function useReveal(locale: string) {
   }, [locale]);
 }
 
-function useCountUp(target: number, ref: React.RefObject<HTMLElement | null>) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      obs.disconnect();
-      const dur = 1600, start = performance.now();
-      const tick = (now: number) => {
-        const p = Math.min((now - start) / dur, 1);
-        el.textContent = String(Math.floor((1 - Math.pow(1 - p, 3)) * target));
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }, { threshold: 0.5 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [target, ref]);
-}
-
 export default function HomePage() {
   const locale = useLocale();
   const lang: Lang = locale === "fr" ? "fr" : "en";
   const tr = t[lang];
   useReveal(locale);
-  const c1 = useRef<HTMLSpanElement>(null);
-  const c2 = useRef<HTMLSpanElement>(null);
-  const c3 = useRef<HTMLSpanElement>(null);
-  useCountUp(500, c1);
-  useCountUp(7, c2);
-  useCountUp(5, c3);
 
   const marqueeItems = [
     lang === "en" ? "General English" : "Anglais général",
@@ -158,16 +130,6 @@ export default function HomePage() {
               {tr.explore}
             </Link>
           </div>
-          <div className="animate-slide-up delay-500 mt-12 flex flex-wrap gap-8 border-t border-[rgba(46,168,42,0.18)] pt-8 sm:gap-10 sm:pt-10 lg:mt-14 lg:gap-12 lg:pt-9">
-            {[{ ref: c1, suffix: "+", label: tr.stat1 }, { ref: c2, suffix: "", label: tr.stat2 }, { ref: c3, suffix: "", label: tr.stat3 }].map(({ ref, suffix, label }, i) => (
-              <div key={i}>
-                <div style={{ fontFamily: "var(--font-syne)", fontSize: "2.4rem", fontWeight: 800, color: "var(--green-deep)", lineHeight: 1 }}>
-                  <span ref={ref as React.RefObject<HTMLSpanElement>}>0</span>{suffix}
-                </div>
-                <div style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-muted)", marginTop: 4, letterSpacing: "0.05em", textTransform: "uppercase" }}>{label}</div>
-              </div>
-            ))}
-          </div>
         </div>
         {/* Hero right photo */}
         <div className="animate-slide-right delay-300r relative order-first min-h-[44vh] w-full overflow-hidden lg:order-none lg:min-h-0 lg:h-full">
@@ -203,9 +165,6 @@ export default function HomePage() {
             </div>
             <div style={{ position: "absolute", bottom: 0, right: 0, width: "54%", height: "56%", borderRadius: 24, overflow: "hidden", border: "5px solid var(--white)", boxShadow: "0 20px 60px rgba(46,168,42,0.18)" }}>
               <Image src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=500&q=85&fit=crop" alt="Student studying" fill style={{ objectFit: "cover" }} />
-            </div>
-            <div style={{ position: "absolute", bottom: "28%", left: "52%", transform: "translateX(-50%)", background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "2.2rem", width: 88, height: 88, borderRadius: "50%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "5px solid var(--white)", lineHeight: 1, zIndex: 3, boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
-              5+<span style={{ fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Years</span>
             </div>
           </div>
           <div className="reveal-right">

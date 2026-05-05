@@ -94,12 +94,7 @@
       "checklistItems": [
         "Je comprends que la formation se déroule en présentiel au Cedar Training Center à Cotonou.",
         "Je comprends que les frais et le planning seront confirmés par le centre après examen de mon dossier.",
-        "Je m'engage à fournir des informations personnelles et de contact exactes.",
-        "Je comprends qu'un test de niveau d'anglais peut être demandé pour attribuer le bon niveau.",
-        "Je comprends qu'un accès au portail élève n'est créé qu'après admission et confirmation du paiement.",
-        "J'accepte que les coordonnées du parent / responsable financier puissent être utilisées pour la facturation.",
-        "Je ne partagerai pas de mots de passe ni de données bancaires sensibles via ce formulaire.",
-        "J'ai lu les points ci-dessus et je souhaite poursuivre ma candidature."
+        "Je m'engage à fournir des informations personnelles et de contact exactes."
       ],
       "personalTitle": "Informations personnelles",
       "firstName": "Prénom",
@@ -119,9 +114,9 @@
       "country": "Pays de résidence",
       "city": "Ville de résidence",
       "academicTitle": "Parcours scolaire",
-      "bacYear": "Année d'obtention du Bac (ou équivalent)",
-      "bacSeries": "Série du baccalauréat",
-      "previousSchool": "École de provenance",
+      "educationLevelIntro": "Indiquez simplement votre situation scolaire ou universitaire actuelle.",
+      "educationLevelLabel": "Niveau actuel dans vos études",
+      "educationLevelPlaceholder": "ex. Terminale, Bac obtenu, Licence 1, en activité professionnelle et études à temps partiel…",
       "parentTitle": "Parent / contact financier",
       "parentWhatsapp": "WhatsApp du responsable financier",
       "parentEmail": "E-mail du responsable financier",

@@ -31,9 +31,7 @@ export async function submitPublicRegistration(formData: FormData) {
   const address_line = trim(formData.get("address_line"));
   const country = trim(formData.get("country"));
   const city = trim(formData.get("city"));
-  const bac_year = trim(formData.get("bac_year"));
-  const bac_series = trim(formData.get("bac_series"));
-  const previous_school = trim(formData.get("previous_school"));
+  const education_level = trim(formData.get("education_level"));
   const parent_whatsapp = trim(formData.get("parent_whatsapp"));
   const parent_email = trim(formData.get("parent_email")).toLowerCase() || null;
   const discovery_channel = trim(formData.get("discovery_channel"));
@@ -46,8 +44,8 @@ export async function submitPublicRegistration(formData: FormData) {
   if (!gender || !date_of_birth || !nationality || !whatsapp || !address_line || !country || !city) {
     return { error: "Please complete all required personal and contact fields." };
   }
-  if (!bac_year || !bac_series || !previous_school || !parent_whatsapp || !parent_email || !discovery_channel) {
-    return { error: "Please complete academic and parent contact sections." };
+  if (!education_level || !parent_whatsapp || !parent_email || !discovery_channel) {
+    return { error: "Please complete education and parent contact sections." };
   }
 
   const full_name = `${first_name} ${last_name}`.trim();
@@ -80,9 +78,9 @@ export async function submitPublicRegistration(formData: FormData) {
     address_line,
     country,
     city,
-    bac_year,
-    bac_series,
-    previous_school,
+    bac_year: "—",
+    bac_series: "—",
+    previous_school: education_level,
     parent_whatsapp,
     parent_email,
     discovery_channel,

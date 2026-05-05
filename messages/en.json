@@ -94,12 +94,7 @@
       "checklistItems": [
         "I understand that courses are delivered in person at Cedar Training Center in Cotonou.",
         "I understand that fees and schedules will be confirmed by the center after my application is reviewed.",
-        "I agree to provide accurate personal and contact information.",
-        "I understand that an English placement test may be required to assign the right level.",
-        "I understand that a portal login is created only after admission and payment are confirmed.",
-        "I confirm that the parent / financial contact details I provide may be used for billing communication.",
-        "I will not share passwords or sensitive banking details through this form.",
-        "I have read the above and wish to continue my application."
+        "I agree to provide accurate personal and contact information."
       ],
       "personalTitle": "Personal information",
       "firstName": "First name",
@@ -119,9 +114,9 @@
       "country": "Country of residence",
       "city": "City of residence",
       "academicTitle": "Academic background",
-      "bacYear": "Year of BAC (or equivalent)",
-      "bacSeries": "BAC series / track",
-      "previousSchool": "Previous school",
+      "educationLevelIntro": "Tell us where you are in your education right now (one answer is enough).",
+      "educationLevelLabel": "Current level in education",
+      "educationLevelPlaceholder": "e.g. Final year of secondary school, completed BAC, first year at university, working and studying part-time…",
       "parentTitle": "Parent / financial contact",
       "parentWhatsapp": "Parent or guardian WhatsApp",
       "parentEmail": "Parent or guardian email",
