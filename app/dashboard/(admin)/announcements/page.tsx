@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { createAnnouncement, deleteAnnouncement } from "@/app/dashboard/actions";
+import { createAnnouncement, deleteAnnouncement } from "@/app/dashboard/actions/index";
 
 export default async function AnnouncementsPage() {
   const supabase = await createClient();

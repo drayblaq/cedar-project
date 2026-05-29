@@ -48,6 +48,15 @@ export async function submitPublicRegistration(formData: FormData) {
     return { error: "Please complete education and parent contact sections." };
   }
 
+  const { data: existing } = await supabase
+    .from("students")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+  if (existing) {
+    return { error: "DUPLICATE_EMAIL" };
+  }
+
   const full_name = `${first_name} ${last_name}`.trim();
   const placement_access_token = randomUUID();
 

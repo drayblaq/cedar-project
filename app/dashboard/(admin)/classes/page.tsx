@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { createClass, assignStaffToClass, createAssignment } from "@/app/dashboard/actions";
+import { createClass, assignStaffToClass, createAssignment } from "@/app/dashboard/actions/index";
 
 export default async function ClassesPage() {
   const supabase = await createClient();

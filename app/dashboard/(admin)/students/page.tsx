@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { InviteStudentButton } from "./InviteStudentButton";
+import { ResendInviteButton } from "./ResendInviteButton";
 import { AdmissionActions } from "./AdmissionActions";
 
 export default async function StudentsPage() {
@@ -8,7 +8,7 @@ export default async function StudentsPage() {
   const { data: students } = await supabase
     .from("students")
     .select(
-      "id, full_name, first_name, last_name, email, phone, user_id, enrollment_date, status, application_status, levels(name)"
+      "id, full_name, first_name, last_name, email, phone, user_id, enrollment_date, status, application_status, last_invite_sent_at, levels(name)"
     )
     .order("full_name");
 
@@ -101,8 +101,13 @@ export default async function StudentsPage() {
                     <td className="px-5 py-4">
                       {hasLogin ? (
                         <span className="text-slate-500 text-xs">Has login</span>
+                      ) : canInvite ? (
+                        <ResendInviteButton
+                          studentId={s.id}
+                          lastInviteSentAt={(s as { last_invite_sent_at?: string | null }).last_invite_sent_at ?? null}
+                        />
                       ) : (
-                        <InviteStudentButton studentId={s.id} disabled={!canInvite} />
+                        <span className="text-xs text-slate-400" title="Requires active status and at least one recorded payment">—</span>
                       )}
                     </td>
                     <td className="px-5 py-4">

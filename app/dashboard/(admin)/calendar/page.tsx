@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { createAcademicTerm, createCalendarEvent, deleteCalendarEvent } from "@/app/dashboard/actions";
+import { createAcademicTerm, createCalendarEvent, deleteCalendarEvent } from "@/app/dashboard/actions/index";
 
 export default async function CalendarPage() {
   const supabase = await createClient();

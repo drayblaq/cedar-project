@@ -53,20 +53,66 @@ export default function RegisterWizard() {
 
   const allChecked = checklist.every(Boolean);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
+  function goToStep(next: Step) {
     setError(null);
-    const fd = new FormData();
-    Object.entries(fields).forEach(([k, v]) => fd.set(k, v));
-    const result = await submitPublicRegistration(fd);
-    setLoading(false);
-    if (result.error) {
-      setError(result.error);
+    setStep(next);
+  }
+
+  function advanceFromPersonal() {
+    const { first_name, last_name, gender, date_of_birth, nationality } = fields;
+    if (!first_name.trim() || !last_name.trim() || !gender || !date_of_birth || !nationality.trim()) {
+      setError(t("errors.requiredPersonal"));
       return;
     }
-    if ("placementToken" in result && result.placementToken) {
-      setPlacementToken(result.placementToken);
+    goToStep(3);
+  }
+
+  function advanceFromContact() {
+    const { email, whatsapp, address_line, country, city } = fields;
+    if (!email.trim() || !whatsapp.trim() || !address_line.trim() || !country.trim() || !city.trim()) {
+      setError(t("errors.requiredContact"));
+      return;
+    }
+    goToStep(4);
+  }
+
+  function advanceFromAcademic() {
+    if (!fields.education_level.trim()) {
+      setError(t("errors.requiredAcademic"));
+      return;
+    }
+    goToStep(5);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const { parent_whatsapp, parent_email, discovery_channel } = fields;
+    if (!parent_whatsapp.trim() || !parent_email.trim() || !discovery_channel) {
+      setError(t("errors.requiredParent"));
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      Object.entries(fields).forEach(([k, v]) => fd.set(k, v));
+      const result = await submitPublicRegistration(fd);
+      if (result.error) {
+        setError(
+          result.error === "DUPLICATE_EMAIL"
+            ? t("errors.duplicateEmail")
+            : result.error
+        );
+        return;
+      }
+      if ("placementToken" in result && result.placementToken) {
+        setPlacementToken(result.placementToken);
+      }
+    } catch {
+      setError(t("errors.generic"));
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -125,7 +171,7 @@ export default function RegisterWizard() {
             {t("introTitle")}
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">{t("introBody")}</p>
-          <button type="button" onClick={() => setStep(1)} className={`${btnPrimary} mt-10 w-full max-w-xs sm:mx-auto`} style={btnPrimaryFont}>
+          <button type="button" onClick={() => goToStep(1)} className={`${btnPrimary} mt-10 w-full max-w-xs sm:mx-auto`} style={btnPrimaryFont}>
             {t("start")}
           </button>
         </div>
@@ -133,7 +179,7 @@ export default function RegisterWizard() {
 
       {step === 1 && (
         <div className={`${card} space-y-4`}>
-          <button type="button" onClick={() => setStep(0)} className={btnGhost}>
+          <button type="button" onClick={() => goToStep(0)} className={btnGhost}>
             ← {t("back")}
           </button>
           <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
@@ -159,7 +205,7 @@ export default function RegisterWizard() {
           <button
             type="button"
             disabled={!allChecked}
-            onClick={() => setStep(2)}
+            onClick={() => goToStep(2)}
             className={`${btnPrimary} mt-6 w-full`}
             style={btnPrimaryFont}
           >
@@ -170,7 +216,7 @@ export default function RegisterWizard() {
 
       {step === 2 && (
         <div className={`${card} space-y-5`}>
-          <button type="button" onClick={() => setStep(1)} className={btnGhost}>
+          <button type="button" onClick={() => goToStep(1)} className={btnGhost}>
             ← {t("back")}
           </button>
           <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
@@ -183,7 +229,6 @@ export default function RegisterWizard() {
                 className={inputClass}
                 value={fields.first_name}
                 onChange={(e) => setFields((f) => ({ ...f, first_name: e.target.value }))}
-                required
               />
             </div>
             <div>
@@ -192,7 +237,6 @@ export default function RegisterWizard() {
                 className={inputClass}
                 value={fields.last_name}
                 onChange={(e) => setFields((f) => ({ ...f, last_name: e.target.value }))}
-                required
               />
             </div>
           </div>
@@ -224,7 +268,6 @@ export default function RegisterWizard() {
               className={inputClass}
               value={fields.date_of_birth}
               onChange={(e) => setFields((f) => ({ ...f, date_of_birth: e.target.value }))}
-              required
             />
           </div>
           <div>
@@ -233,10 +276,14 @@ export default function RegisterWizard() {
               className={inputClass}
               value={fields.nationality}
               onChange={(e) => setFields((f) => ({ ...f, nationality: e.target.value }))}
-              required
             />
           </div>
-          <button type="button" onClick={() => setStep(3)} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
+          {error && (
+            <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+          <button type="button" onClick={advanceFromPersonal} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
             {t("next")}
           </button>
         </div>
@@ -244,7 +291,7 @@ export default function RegisterWizard() {
 
       {step === 3 && (
         <div className={`${card} space-y-5`}>
-          <button type="button" onClick={() => setStep(2)} className={btnGhost}>
+          <button type="button" onClick={() => goToStep(2)} className={btnGhost}>
             ← {t("back")}
           </button>
           <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
@@ -257,7 +304,6 @@ export default function RegisterWizard() {
               className={inputClass}
               value={fields.email}
               onChange={(e) => setFields((f) => ({ ...f, email: e.target.value }))}
-              required
             />
           </div>
           <div>
@@ -267,7 +313,6 @@ export default function RegisterWizard() {
               className={inputClass}
               value={fields.whatsapp}
               onChange={(e) => setFields((f) => ({ ...f, whatsapp: e.target.value }))}
-              required
             />
           </div>
           <div>
@@ -276,7 +321,6 @@ export default function RegisterWizard() {
               className={inputClass}
               value={fields.address_line}
               onChange={(e) => setFields((f) => ({ ...f, address_line: e.target.value }))}
-              required
             />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -286,7 +330,6 @@ export default function RegisterWizard() {
                 className={inputClass}
                 value={fields.country}
                 onChange={(e) => setFields((f) => ({ ...f, country: e.target.value }))}
-                required
               />
             </div>
             <div>
@@ -295,11 +338,15 @@ export default function RegisterWizard() {
                 className={inputClass}
                 value={fields.city}
                 onChange={(e) => setFields((f) => ({ ...f, city: e.target.value }))}
-                required
               />
             </div>
           </div>
-          <button type="button" onClick={() => setStep(4)} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
+          {error && (
+            <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+          <button type="button" onClick={advanceFromContact} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
             {t("next")}
           </button>
         </div>
@@ -307,7 +354,7 @@ export default function RegisterWizard() {
 
       {step === 4 && (
         <div className={`${card} space-y-5`}>
-          <button type="button" onClick={() => setStep(3)} className={btnGhost}>
+          <button type="button" onClick={() => goToStep(3)} className={btnGhost}>
             ← {t("back")}
           </button>
           <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
@@ -322,10 +369,14 @@ export default function RegisterWizard() {
               value={fields.education_level}
               onChange={(e) => setFields((f) => ({ ...f, education_level: e.target.value }))}
               placeholder={t("educationLevelPlaceholder")}
-              required
             />
           </div>
-          <button type="button" onClick={() => setStep(5)} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
+          {error && (
+            <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+          <button type="button" onClick={advanceFromAcademic} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
             {t("next")}
           </button>
         </div>
@@ -333,7 +384,7 @@ export default function RegisterWizard() {
 
       {step === 5 && (
         <form onSubmit={handleSubmit} className={`${card} space-y-5`}>
-          <button type="button" onClick={() => setStep(4)} className={btnGhost}>
+          <button type="button" onClick={() => goToStep(4)} className={btnGhost}>
             ← {t("back")}
           </button>
           <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
@@ -346,7 +397,6 @@ export default function RegisterWizard() {
               className={inputClass}
               value={fields.parent_whatsapp}
               onChange={(e) => setFields((f) => ({ ...f, parent_whatsapp: e.target.value }))}
-              required
             />
           </div>
           <div>
@@ -356,7 +406,6 @@ export default function RegisterWizard() {
               className={inputClass}
               value={fields.parent_email}
               onChange={(e) => setFields((f) => ({ ...f, parent_email: e.target.value }))}
-              required
             />
           </div>
           <div>
@@ -365,7 +414,6 @@ export default function RegisterWizard() {
               className={inputClass}
               value={fields.discovery_channel}
               onChange={(e) => setFields((f) => ({ ...f, discovery_channel: e.target.value }))}
-              required
             >
               <option value="">{t("discovery.placeholder")}</option>
               <option value="social_media">{t("discovery.social_media")}</option>
@@ -398,8 +446,17 @@ export default function RegisterWizard() {
             <textarea rows={3} className={inputClass} value={fields.message} onChange={(e) => setFields((f) => ({ ...f, message: e.target.value }))} />
           </div>
           <p className="text-xs text-[var(--text-muted)]">{t("securityNote")}</p>
-          {error && <p className="text-sm font-medium text-red-600">{error}</p>}
-          <button type="submit" disabled={loading} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
+          {error && (
+            <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`${btnPrimary} w-full`}
+            style={btnPrimaryFont}
+          >
             {loading ? t("submitting") : t("submit")}
           </button>
         </form>

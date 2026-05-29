@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { setStudentApplicationStatus } from "@/app/dashboard/actions";
+import { setStudentApplicationStatus } from "@/app/dashboard/actions/index";
 
 export function AdmissionActions({
   studentId,

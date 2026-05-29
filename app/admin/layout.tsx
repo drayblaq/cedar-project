@@ -1,6 +1,5 @@
 import { PortalShell } from "@/components/PortalShell";
 import { createClient } from "@/lib/supabase/server";
-import { isAdminPasswordlessEmail } from "@/lib/auth/admin-allowlist";
 import { redirect } from "next/navigation";
 
 const ADMIN_LINKS = [
@@ -26,8 +25,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!profile?.role_id) redirect("/auth/login?next=/admin");
 
   const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
-  const allowlistedAdmin = isAdminPasswordlessEmail(user.email);
-  if (role?.name !== "admin" && !allowlistedAdmin) redirect("/auth/login?next=/admin");
+  if (role?.name !== "admin") redirect("/auth/login?next=/admin");
 
   return <PortalShell links={ADMIN_LINKS}>{children}</PortalShell>;
 }

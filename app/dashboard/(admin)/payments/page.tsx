@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { createPayment } from "@/app/dashboard/actions";
+import { createPayment } from "@/app/dashboard/actions/index";
 
 export default async function PaymentsPage() {
   const supabase = await createClient();
@@ -10,7 +10,7 @@ export default async function PaymentsPage() {
 
   const { data: payments } = await supabase
     .from("payments")
-    .select("id, amount, currency, paid_at, notes, students(full_name)")
+    .select("id, amount, currency, paid_at, notes, receipt_number, students(full_name)")
     .order("paid_at", { ascending: false })
     .limit(50);
 
@@ -136,10 +136,23 @@ export default async function PaymentsPage() {
                     <p className="text-xs text-slate-500">
                       {new Date(p.paid_at).toLocaleString()}
                     </p>
+                    <p className="text-xs text-slate-400 font-mono mt-0.5">
+                      {(p as { receipt_number?: string | null }).receipt_number ?? "PAY-" + p.id.slice(0, 8).toUpperCase()}
+                    </p>
                   </div>
-                  <span className="rounded-lg bg-emerald-50 px-3 py-1 font-semibold text-emerald-700">
-                    {p.amount} {p.currency}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="rounded-lg bg-emerald-50 px-3 py-1 font-semibold text-emerald-700">
+                      {p.amount} {p.currency}
+                    </span>
+                    <a
+                      href={`/admin/payments/${p.id}/receipt`}
+                      className="text-xs font-medium text-sky-600 hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Receipt
+                    </a>
+                  </div>
                 </li>
               );
               })}

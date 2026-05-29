@@ -1,5 +1,6 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { saveAttendance } from "@/app/dashboard/actions";
+import { saveAttendance } from "@/app/dashboard/actions/index";
 import AttendanceForm from "@/app/dashboard/(admin)/attendance/AttendanceForm";
 import Link from "next/link";
 
@@ -8,6 +9,8 @@ export default async function StaffAttendancePage({
 }: {
   searchParams: Promise<{ date?: string; class?: string }>;
 }) {
+  const t = await getTranslations("dashboard.staff");
+  const tc = await getTranslations("dashboard.common");
   const { date: dateParam, class: classIdParam } = await searchParams;
   const date = dateParam || new Date().toISOString().slice(0, 10);
 
@@ -71,14 +74,16 @@ export default async function StaffAttendancePage({
   return (
     <div>
       <div className="mb-4">
-        <Link href="/dashboard/staff" className="text-sm text-slate-500 hover:text-slate-700">
-          &larr; My classes
+        <Link href="/staff" className="text-sm text-slate-500 hover:text-slate-700">
+          ← {t("backToClasses")}
         </Link>
       </div>
-      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">Staff</p>
-      <h1 className="mt-2 text-3xl font-bold text-slate-900">Mark attendance</h1>
+      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">{t("staffPortal")}</p>
+      <h1 className="mt-2 text-3xl font-bold text-slate-900">{t("markAttendance")}</h1>
       <p className="mt-2 text-slate-600">
-        {selectedClass ? `Class: ${selectedClass.name} (${selectedClass.levelName})` : "Select a class below."}
+        {selectedClass
+          ? `${tc("level")}: ${selectedClass.name} (${selectedClass.levelName})`
+          : t("selectClass")}
       </p>
 
       {classList.length > 1 && (
@@ -86,7 +91,7 @@ export default async function StaffAttendancePage({
           {classList.map((c) => (
             <Link
               key={c.id}
-              href={`/dashboard/staff/attendance?class=${c.id}&date=${date}`}
+              href={`/staff/attendance?class=${c.id}&date=${date}`}
               className={`rounded-xl border px-4 py-2 text-sm font-medium ${classIdParam === c.id || (!classIdParam && c.id === classList[0]?.id) ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}
             >
               {c.name}
@@ -100,7 +105,7 @@ export default async function StaffAttendancePage({
         students={students}
         initialStatus={byStudent}
         saveAction={saveAttendance}
-        basePath="/dashboard/staff/attendance"
+        basePath="/staff/attendance"
       />
     </div>
   );

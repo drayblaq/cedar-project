@@ -1,6 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isAdminPasswordlessEmail } from "@/lib/auth/admin-allowlist";
 
 const ROLE_HOME: Record<string, string> = {
   admin: "/admin",
@@ -73,9 +72,6 @@ export async function middleware(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (pathname === "/auth/login" && user) {
-      if (isAdminPasswordlessEmail(user.email)) {
-        return NextResponse.redirect(new URL("/admin", request.url));
-      }
       const { data: profile } = await supabase
         .from("profiles")
         .select("roles(name)")
@@ -102,11 +98,7 @@ export async function middleware(request: NextRequest) {
       .single();
     const roleName = roleNameFromJoinedRoles(profile?.roles);
 
-    const expectedPrefix = isAdminPasswordlessEmail(user.email)
-      ? "/admin"
-      : roleName && ROLE_HOME[roleName]
-        ? ROLE_HOME[roleName]
-        : null;
+    const expectedPrefix = roleName && ROLE_HOME[roleName] ? ROLE_HOME[roleName] : null;
     if (expectedPrefix && !pathname.startsWith(expectedPrefix)) {
       return NextResponse.redirect(new URL(expectedPrefix, request.url));
     }

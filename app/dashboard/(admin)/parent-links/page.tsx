@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { linkParentToStudent, unlinkParentFromStudent } from "@/app/dashboard/actions";
+import { linkParentToStudent, unlinkParentFromStudent } from "@/app/dashboard/actions/index";
 
 export default async function ParentLinksPage() {
   const supabase = await createClient();

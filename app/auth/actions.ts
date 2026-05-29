@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { isAdminPasswordlessEmail, parseAdminPasswordlessAllowlist } from "@/lib/auth/admin-allowlist";
 
 function siteUrl(): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
@@ -17,9 +16,8 @@ function siteUrl(): string {
 }
 
 /**
- * Allowlisted email only. Uses service role to build a magic-link URL and
- * redirects the browser there immediately (no email sent). Supabase then
- * redirects back to /auth/callback with a code and a session is created.
+ * Sends a magic-link for any email. Access is determined by the user's
+ * database role (profiles.role_id → roles.name), not by an email allowlist.
  */
 export async function redirectAdminInstant(
   email: string,
@@ -33,19 +31,6 @@ export async function redirectAdminInstant(
 
   if (!trimmed) {
     return { error: "Enter your email." };
-  }
-  const allowlist = parseAdminPasswordlessAllowlist();
-  if (allowlist === null) {
-    return {
-      error:
-        "ADMIN_PASSWORDLESS_EMAILS is not set on this server (e.g. missing in Vercel → Settings → Environment Variables for Production). Add it and redeploy.",
-    };
-  }
-  if (!allowlist.has(trimmed)) {
-    return {
-      error:
-        "This email does not match ADMIN_PASSWORDLESS_EMAILS for this deployment (check spelling and commas in the host env).",
-    };
   }
 
   let admin: ReturnType<typeof createAdminClient>;
@@ -96,7 +81,7 @@ const ROLE_HOME = {
 
 /**
  * After password sign-in, use the server session to pick the dashboard URL.
- * Admin (DB role or allowlisted email) always goes to /admin or ?next=/admin/...
+ * Routing is determined entirely by the user's database role.
  */
 export async function getPostLoginRedirect(next: string): Promise<string> {
   const safeNext =
@@ -116,9 +101,7 @@ export async function getPostLoginRedirect(next: string): Promise<string> {
     roleName = role?.name ?? null;
   }
 
-  const email = user.email ?? "";
-  const treatAsAdmin = roleName === "admin" || isAdminPasswordlessEmail(email);
-  if (treatAsAdmin) {
+  if (roleName === "admin") {
     return safeNext.startsWith("/admin") ? safeNext : "/admin";
   }
 

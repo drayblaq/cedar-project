@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { createGrade, deleteGrade } from "@/app/dashboard/actions";
+import { createGrade, deleteGrade } from "@/app/dashboard/actions/index";
 import Link from "next/link";
 
 export default async function GradesPage() {

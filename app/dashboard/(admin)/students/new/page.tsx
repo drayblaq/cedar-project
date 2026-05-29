@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { createStudent } from "@/app/dashboard/actions";
+import { createStudent } from "@/app/dashboard/actions/index";
 import Link from "next/link";
 
 export default async function NewStudentPage() {

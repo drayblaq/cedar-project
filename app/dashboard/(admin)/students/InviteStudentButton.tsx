@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { inviteStudentLogin } from "@/app/dashboard/actions";
+import { inviteStudentLogin } from "@/app/dashboard/actions/index";
 
 export function InviteStudentButton({
   studentId,

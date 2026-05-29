@@ -1,101 +1,182 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
+function resolveNested<T>(val: T | T[] | null): T | null {
+  if (val == null) return null;
+  return Array.isArray(val) ? (val[0] ?? null) : val;
+}
+
+function attColor(pct: number | null) {
+  if (pct == null) return "bg-slate-100 text-slate-500";
+  if (pct >= 80) return "bg-emerald-100 text-emerald-700";
+  if (pct >= 60) return "bg-amber-100 text-amber-700";
+  return "bg-red-100 text-red-700";
+}
+
 export default async function ParentDashboardPage() {
+  const t = await getTranslations("dashboard.parent");
+  const ts = await getTranslations("dashboard.status");
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: profile } = await supabase.from("profiles").select("role_id").eq("id", user.id).single();
-  if (!profile?.role_id) return null;
-  const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
-  if (role?.name !== "parent") return null;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+  const parentName = (profile as { full_name?: string | null } | null)?.full_name ?? "";
 
   const { data: links } = await supabase
     .from("parent_students")
-    .select("id, student_id")
+    .select("student_id")
     .eq("parent_id", user.id);
+
   const studentIds = (links ?? []).map((l) => l.student_id);
-  if (studentIds.length === 0) {
+
+  if (!studentIds.length) {
     return (
       <div className="px-4 sm:px-6">
-        <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">Parent portal</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">My children</h1>
-        <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-slate-700">
-          No students are linked to your account yet. Please ask the center to link your child/children to your parent account. You will then see their progress, attendance, and payments here.
-        </p>
+        <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">{t("title")}</p>
+        <h1 className="mt-2 text-3xl font-bold text-slate-900">
+          {t("welcome")}{parentName ? `, ${parentName.split(" ")[0]}` : ""}
+        </h1>
+        <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center">
+          <p className="text-lg font-semibold text-amber-900">{t("myChildren")}</p>
+          <p className="mt-2 text-sm text-amber-700">{t("noChildren")}</p>
+        </div>
       </div>
     );
   }
 
   const { data: students } = await supabase
     .from("students")
-    .select("id, full_name, levels(name)")
+    .select("id, full_name, status, levels(name)")
     .in("id", studentIds);
 
-  const levelName = (l: { name?: string } | { name?: string }[] | null) => {
-    if (!l) return "—";
-    const name = Array.isArray(l) ? (l[0] as { name?: string })?.name : (l as { name?: string })?.name;
-    return name ?? "—";
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    .toISOString()
+    .slice(0, 10);
+
+  type ChildSummary = {
+    id: string;
+    full_name: string;
+    status: string;
+    level: string;
+    presentThisMonth: number;
+    totalThisMonth: number;
+    attPct: number | null;
+    gradeAvg: number | null;
   };
 
-  const summaries: { id: string; full_name: string; level: string; attendancePct: number | null; paymentsCount: number; gradesCount: number }[] = [];
+  const summaries: ChildSummary[] = [];
   for (const s of students ?? []) {
-    const { data: att } = await supabase.from("attendance").select("status").eq("student_id", s.id);
-    const total = att?.length ?? 0;
-    const presentOrLate = att?.filter((r) => r.status === "present" || r.status === "late").length ?? 0;
-    const attendancePct = total > 0 ? Math.round((presentOrLate / total) * 100) : null;
-    const { count: paymentsCount } = await supabase.from("payments").select("id", { count: "exact", head: true }).eq("student_id", s.id);
-    const { count: gradesCount } = await supabase.from("grades").select("id", { count: "exact", head: true }).eq("student_id", s.id);
+    const lvlRow = resolveNested(s.levels as { name?: string } | { name?: string }[] | null);
+    const level = lvlRow?.name ?? "—";
+
+    const { data: attRows } = await supabase
+      .from("attendance")
+      .select("status")
+      .eq("student_id", s.id)
+      .gte("date", monthStart);
+
+    const totalThisMonth = attRows?.length ?? 0;
+    const presentThisMonth =
+      attRows?.filter((r) => r.status === "present" || r.status === "late").length ?? 0;
+    const attPct =
+      totalThisMonth > 0 ? Math.round((presentThisMonth / totalThisMonth) * 100) : null;
+
+    const { data: gradeRows } = await supabase
+      .from("grades")
+      .select("score")
+      .eq("student_id", s.id)
+      .not("score", "is", null);
+
+    const scores = (gradeRows ?? [])
+      .map((g) => Number(g.score))
+      .filter((n) => !isNaN(n));
+    const gradeAvg =
+      scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
+
     summaries.push({
       id: s.id,
       full_name: s.full_name,
-      level: levelName(s.levels),
-      attendancePct: attendancePct ?? null,
-      paymentsCount: paymentsCount ?? 0,
-      gradesCount: gradesCount ?? 0,
+      status: s.status ?? "pending",
+      level,
+      presentThisMonth,
+      totalThisMonth,
+      attPct,
+      gradeAvg,
     });
   }
 
   return (
     <div className="px-4 sm:px-6">
-      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">Parent portal</p>
-      <h1 className="mt-2 text-3xl font-bold text-slate-900">My children</h1>
-      <p className="mt-2 text-slate-600">Progress, attendance, and payments for your linked students.</p>
+      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">{t("title")}</p>
+      <h1 className="mt-2 text-3xl font-bold text-slate-900">
+        {t("welcome")}{parentName ? `, ${parentName.split(" ")[0]}` : ""}
+      </h1>
+      <p className="mt-2 text-slate-500">{t("progressDesc")}</p>
 
-      <div className="mt-8 space-y-6">
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {summaries.map((s) => (
-          <Link
+          <div
             key={s.id}
-            href={`/parent/child/${s.id}`}
-            className="block rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition hover:border-emerald-200 hover:shadow-emerald-100"
+            className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md hover:border-emerald-200"
           >
-            <h2 className="text-lg font-bold text-slate-900">{s.full_name}</h2>
-            <p className="mt-1 text-sm text-slate-500">Level: {s.level}</p>
-            <div className="mt-4 flex flex-wrap gap-4 text-sm">
-              <span className="text-slate-600">Attendance: <strong>{s.attendancePct != null ? `${s.attendancePct}%` : "—"}</strong></span>
-              <span className="text-slate-600">Payments: <strong>{s.paymentsCount}</strong></span>
-              <span className="text-slate-600">Grades: <strong>{s.gradesCount}</strong></span>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">{s.full_name}</h2>
+                <p className="mt-0.5 text-sm text-slate-500">{t("gradesSummary")}: {s.level}</p>
+              </div>
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${
+                  s.status === "active"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-slate-100 text-slate-500"
+                }`}
+              >
+                {ts(s.status as "active" | "pending" | "inactive")}
+              </span>
             </div>
-            <p className="mt-2 text-emerald-600 text-sm font-medium">View details →</p>
-          </Link>
+
+            <div className="mt-5 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {t("attendanceThisMonth")}
+                </span>
+                <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${attColor(s.attPct)}`}>
+                  {s.attPct != null ? `${s.attPct}%` : "—"}
+                </span>
+              </div>
+              <p className="text-sm text-slate-600">
+                {s.totalThisMonth > 0
+                  ? `${t("present")} ${s.presentThisMonth} / ${s.totalThisMonth}`
+                  : t("noAttendanceThisMonth")}
+              </p>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                {t("gradeAverage")}
+              </span>
+              <span className="text-sm font-bold text-slate-700">
+                {s.gradeAvg != null ? `${s.gradeAvg} / 100` : "—"}
+              </span>
+            </div>
+
+            <Link
+              href={`/parent/student/${s.id}`}
+              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-emerald-600 hover:to-teal-600"
+            >
+              {t("viewDetails")} →
+            </Link>
+          </div>
         ))}
-      </div>
-
-      <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg">
-        <h2 className="text-lg font-bold text-slate-900">Announcements</h2>
-        <p className="mt-2 text-slate-600">Center-wide updates.</p>
-        <Link href="/parent/announcements" className="mt-3 inline-block text-sm font-medium text-emerald-600 hover:underline">
-          View announcements →
-        </Link>
-      </div>
-
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg">
-        <h2 className="text-lg font-bold text-slate-900">Contact the center</h2>
-        <p className="mt-2 text-slate-600">Questions about your child&apos;s progress or payments?</p>
-        <Link href="/contact" className="mt-3 inline-block rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-lg">
-          Go to Contact page
-        </Link>
       </div>
     </div>
   );

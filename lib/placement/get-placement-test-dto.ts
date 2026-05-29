@@ -16,6 +16,15 @@ export type PlacementTestDto = {
 
 const SLUG = "english-placement";
 
+// Score bands based on 60-point max (10×1 + 10×2 + 10×3)
+export function scoreToBand(score: number): string {
+  if (score >= 49) return "Advanced";
+  if (score >= 37) return "Upper-Intermediate";
+  if (score >= 25) return "Intermediate";
+  if (score >= 13) return "Elementary";
+  return "Beginner";
+}
+
 export async function getPlacementTestDto(): Promise<PlacementTestDto | null> {
   try {
     const admin = createAdminClient();

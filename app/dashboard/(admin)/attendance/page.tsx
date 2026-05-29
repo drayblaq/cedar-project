@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { saveAttendance } from "@/app/dashboard/actions";
+import { saveAttendance } from "@/app/dashboard/actions/index";
 import AttendanceForm from "./AttendanceForm";
 
 export default async function AttendancePage({

@@ -24,9 +24,13 @@ const t = {
     progT: "Programs built for", progA: "real results",
     p1t: "General English", p1p: "Build core skills across reading, writing, speaking and listening — from Beginner to Advanced.", p1tag: "A1 → C2", p1lv: "All levels",
     p2t: "Business English", p2p: "Master professional communication for meetings, emails, presentations and negotiations.", p2tag: "Intermediate → Advanced", p2lv: "Professional",
-    p3t: "IELTS · TOEFL · TOEIC", p3p: "Targeted preparation with proven strategies, practice tests and expert feedback.", p3tag: "All certifications", p3lv: "Exam Prep",
-    p4t: "Personalized & Intensive", p4p: "Fast-track programs built around your goals, timeline and schedule.", p4tag: "Custom track", p4lv: "Intensive",
-    ctaCardT: "Find your perfect program →", ctaCardP: "Take our placement test and start at the exact right level for you.", ctaCardBtn: "Apply Now →",
+    p3t: "International Test Preparation (TOEIC, TOEFL, IELTS, etc.)", p3p: "Targeted preparation with proven strategies, practice tests and expert feedback.", p3tag: "All certifications", p3lv: "Exam Prep",
+    p4t: "Communication and Conversation Workshops", p4p: "Interactive sessions focused on improving speaking fluency and active listening.", p4tag: "Speaking", p4lv: "Workshops",
+    p5t: "Personalized Courses and Intensive Programs", p5p: "Fast-track programs built around your goals, timeline and schedule.", p5tag: "Custom track", p5lv: "Intensive",
+    ctaCardT: "Pricing & Registration", ctaCardP: "Take our placement test and start at the exact right level for you.", ctaCardBtn: "Apply Now →",
+    priceMonthly: "50,000 CFA", priceMonthlySub: "per month",
+    priceSemi: "250,000 CFA", priceSemiSub: "for 6 months",
+
     whyCedar: "Why Cedar?", whyT: "The training center", whyA: "built different",
     whySub: "We don't just teach English — we engineer confidence. Every element of our program is designed to get you speaking, writing and thinking in English faster than you thought possible.",
     f1t: "Small groups", f1p: "Max 15 students per class for personalized attention and real speaking time.",
@@ -53,10 +57,14 @@ const t = {
     whatWeOffer: "Nos offres",
     progT: "Des programmes pour", progA: "des résultats concrets",
     p1t: "Anglais général", p1p: "Développez les 4 compétences : lecture, écriture, expression et compréhension orale.", p1tag: "A1 → C2", p1lv: "Tous niveaux",
-    p2t: "Anglais des affaires", p2p: "Maîtrisez la communication professionnelle pour réunions, e-mails et présentations.", p2tag: "Intermédiaire → Avancé", p2lv: "Professionnel",
-    p3t: "IELTS · TOEFL · TOEIC", p3p: "Préparation ciblée avec stratégies éprouvées, tests blancs et feedback d'experts.", p3tag: "Toutes certifications", p3lv: "Certification",
-    p4t: "Personnalisé & Intensif", p4p: "Programme sur mesure selon vos objectifs, votre rythme et vos disponibilités.", p4tag: "Parcours personnalisé", p4lv: "Intensif",
-    ctaCardT: "Trouvez votre programme →", ctaCardP: "Passez notre test de niveau et commencez exactement là où il faut.", ctaCardBtn: "Candidater →",
+    p2t: "Anglais professionnel (Business English)", p2p: "Maîtrisez la communication professionnelle pour réunions, e-mails et présentations.", p2tag: "Intermédiaire → Avancé", p2lv: "Professionnel",
+    p3t: "Préparation aux tests internationaux (TOEIC, TOEFL, IELTS, etc.)", p3p: "Préparation ciblée avec stratégies éprouvées et tests blancs.", p3tag: "Toutes certifications", p3lv: "Certification",
+    p4t: "Ateliers de communication et de conversation", p4p: "Sessions interactives pour améliorer la fluidité et la compréhension orale en situation réelle.", p4tag: "Oral", p4lv: "Ateliers",
+    p5t: "Cours personnalisés et programmes intensifs", p5p: "Programme sur mesure selon vos objectifs, votre rythme et vos disponibilités.", p5tag: "Parcours personnalisé", p5lv: "Intensif",
+    ctaCardT: "Tarifs & Inscription", ctaCardP: "Passez notre test de niveau et rejoignez le programme idéal pour vous.", ctaCardBtn: "Candidater →",
+    priceMonthly: "50 000 CFA", priceMonthlySub: "par mois",
+    priceSemi: "250 000 CFA", priceSemiSub: "pour 6 mois",
+
     whyCedar: "Pourquoi Cedar ?", whyT: "Le centre de formation", whyA: "qui fait la différence",
     whySub: "Nous ne faisons pas qu'enseigner l'anglais — nous construisons la confiance. Chaque élément de notre programme est conçu pour vous faire progresser plus vite.",
     f1t: "Petits groupes", f1p: "Maximum 15 étudiants par classe pour un suivi personnalisé et du temps de parole réel.",
@@ -104,7 +112,8 @@ export default function HomePage() {
     { img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=600&q=85&fit=crop&crop=faces", lv: tr.p1lv, t: tr.p1t, p: tr.p1p, tag: tr.p1tag },
     { img: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&q=85&fit=crop", lv: tr.p2lv, t: tr.p2t, p: tr.p2p, tag: tr.p2tag },
     { img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=85&fit=crop&crop=faces", lv: tr.p3lv, t: tr.p3t, p: tr.p3p, tag: tr.p3tag },
-    { img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=85&fit=crop&crop=faces", lv: tr.p4lv, t: tr.p4t, p: tr.p4p, tag: tr.p4tag },
+    { img: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=600&q=85&fit=crop", lv: tr.p4lv, t: tr.p4t, p: tr.p4p, tag: tr.p4tag },
+    { img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=85&fit=crop&crop=faces", lv: tr.p5lv, t: tr.p5t, p: tr.p5p, tag: tr.p5tag },
   ];
 
   return (
@@ -121,7 +130,7 @@ export default function HomePage() {
             {tr.title2}<br />
             <span style={{ color: "var(--green)" }}>{tr.title3}</span>
           </h1>
-          <p className="animate-slide-up delay-300" style={{ marginTop: 28, fontSize: "1.1rem", lineHeight: 1.7, color: "var(--text-muted)", maxWidth: 420 }}>{tr.sub}</p>
+          <p className="animate-slide-up delay-300" style={{ marginTop: 28, fontSize: "1.1rem", lineHeight: 1.7, color: "var(--text)", fontWeight: 600, maxWidth: 420 }}>{tr.sub}</p>
           <div className="animate-slide-up delay-400" style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 44, flexWrap: "wrap" }}>
             <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.apply} →
@@ -174,14 +183,18 @@ export default function HomePage() {
             <h2 style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)" }}>
               {tr.aboutT} <span style={{ color: "var(--green)" }}>{tr.aboutA}</span><br />{tr.aboutT2}
             </h2>
-            <p style={{ fontSize: "1.1rem", lineHeight: 1.78, color: "var(--text-muted)", marginTop: 18, marginBottom: 32 }}>{tr.aboutLead}</p>
+            <p style={{ fontSize: "1.1rem", lineHeight: 1.78, color: "var(--text)", fontWeight: 600, marginTop: 18, marginBottom: 32 }}>{tr.aboutLead}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              {[{ icon: "🎯", t: tr.v1t, p: tr.v1p }, { icon: "🌍", t: tr.v2t, p: tr.v2p }, { icon: "💬", t: tr.v3t, p: tr.v3p }].map(({ icon, t: vt, p }) => (
+              {[
+                { icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>, t: tr.v1t, p: tr.v1p },
+                { icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>, t: tr.v2t, p: tr.v2p },
+                { icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, t: tr.v3t, p: tr.v3p }
+              ].map(({ icon, t: vt, p }) => (
                 <div key={vt} className="value-card" style={{ display: "flex", gap: 18, alignItems: "flex-start", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 16, padding: "18px 22px" }}>
                   <div style={{ width: 44, height: 44, flexShrink: 0, background: "rgba(46,168,42,0.12)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>{icon}</div>
                   <div>
                     <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 4 }}>{vt}</h3>
-                    <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", lineHeight: 1.65 }}>{p}</p>
+                    <p style={{ fontSize: "0.875rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>
                   </div>
                 </div>
               ))}
@@ -214,16 +227,26 @@ export default function HomePage() {
                 </div>
                 <div style={{ padding: 26 }}>
                   <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1.2rem", fontWeight: 800, color: "white", marginBottom: 10, lineHeight: 1.2 }}>{prog.t}</h3>
-                  <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.65, marginBottom: 18 }}>{prog.p}</p>
+                  <p style={{ fontSize: "0.875rem", color: "white", fontWeight: 600, lineHeight: 1.65, marginBottom: 18 }}>{prog.p}</p>
                   <span style={{ display: "inline-block", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.06em", padding: "5px 12px", borderRadius: 8, textTransform: "uppercase", background: "rgba(46,168,42,0.2)", color: "var(--mint-deep)" }}>{prog.tag}</span>
                 </div>
               </div>
             ))}
-            {/* CTA card spanning 2 cols */}
-            <div className="program-card col-span-1 flex flex-col items-start justify-center rounded-[20px] border-none bg-[var(--green)] p-8 sm:col-span-2 sm:p-10">
-              <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1.7rem", fontWeight: 800, color: "white", marginBottom: 14, lineHeight: 1.1 }}>{tr.ctaCardT}</h3>
-              <p style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.65, marginBottom: 28 }}>{tr.ctaCardP}</p>
-              <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "white", color: "var(--green-dark)", fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "0.9rem", padding: "14px 26px", borderRadius: 10, textDecoration: "none" }}>
+            {/* Pricing / CTA card */}
+            <div className="program-card col-span-1 flex flex-col items-start justify-center rounded-[20px] border-none bg-[var(--green)] p-8 sm:col-span-2 xl:col-span-1">
+              <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1.5rem", fontWeight: 800, color: "white", marginBottom: 14, lineHeight: 1.1 }}>{tr.ctaCardT}</h3>
+              
+              <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "16px", width: "100%", marginBottom: "16px" }}>
+                <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "white", fontFamily: "var(--font-syne)" }}>{tr.priceMonthly}</div>
+                <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "rgba(255,255,255,0.9)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{tr.priceMonthlySub}</div>
+              </div>
+
+              <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "16px", width: "100%", marginBottom: "24px" }}>
+                <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "white", fontFamily: "var(--font-syne)" }}>{tr.priceSemi}</div>
+                <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "rgba(255,255,255,0.9)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{tr.priceSemiSub}</div>
+              </div>
+
+              <Link href="/register" style={{ display: "inline-flex", width: "100%", justifyContent: "center", alignItems: "center", gap: 10, background: "white", color: "var(--green-dark)", fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "0.9rem", padding: "14px 26px", borderRadius: 10, textDecoration: "none" }}>
                 {tr.ctaCardBtn}
               </Link>
             </div>
@@ -241,13 +264,13 @@ export default function HomePage() {
             <h2 className="reveal td-1" style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)" }}>
               {tr.whyT}<br /><span style={{ color: "var(--green)" }}>{tr.whyA}</span>
             </h2>
-            <p className="reveal td-2" style={{ marginTop: 18, fontSize: "1rem", color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 480 }}>{tr.whySub}</p>
+            <p className="reveal td-2" style={{ marginTop: 18, fontSize: "1rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.8, maxWidth: 480 }}>{tr.whySub}</p>
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-10">
               {[{ n:"01",t:tr.f1t,p:tr.f1p},{n:"02",t:tr.f2t,p:tr.f2p},{n:"03",t:tr.f3t,p:tr.f3p},{n:"04",t:tr.f4t,p:tr.f4p}].map(({n,t:ft,p},i)=>(
                 <div key={i} className={`why-feature reveal td-${i+1}`} style={{ background: "var(--white)", border: "1.5px solid var(--mint-deep)", borderRadius: 18, padding: 26, boxShadow: "0 4px 20px rgba(46,168,42,0.06)" }}>
                   <div style={{ fontFamily: "var(--font-syne)", fontSize: "2rem", fontWeight: 800, color: "var(--green)", opacity: 0.4, lineHeight: 1, marginBottom: 10 }}>{n}</div>
                   <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 6 }}>{ft}</h3>
-                  <p style={{ fontSize: "0.83rem", color: "var(--text-muted)", lineHeight: 1.65 }}>{p}</p>
+                  <p style={{ fontSize: "0.83rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>
                 </div>
               ))}
             </div>
@@ -309,7 +332,7 @@ export default function HomePage() {
                 <div>
                   <h4 style={{ fontFamily: "var(--font-syne)", fontSize: "0.85rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 4 }}>{h}</h4>
                   {href ? <a href={href} style={{ fontSize: "0.875rem", color: "var(--green)", textDecoration: "none", fontWeight: 600 }}>{p}</a>
-                        : <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", lineHeight: 1.65 }}>{p}</p>}
+                        : <p style={{ fontSize: "0.875rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>}
                 </div>
               </div>
             ))}

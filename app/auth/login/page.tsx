@@ -98,7 +98,7 @@ function LoginForm() {
     e.preventDefault();
     setError(null);
     if (!email.trim()) {
-      setError("Enter the email listed in ADMIN_PASSWORDLESS_EMAILS.");
+      setError("Enter your email address.");
       return;
     }
     setAdminInstantLoading(true);
@@ -141,9 +141,8 @@ function LoginForm() {
             <form onSubmit={handleAdminInstant} className="mb-8 space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
               <p className="text-sm font-semibold text-emerald-900">Admin: email only</p>
               <p className="text-xs text-emerald-800/90">
-                Enter the exact address in <code className="rounded bg-white/80 px-1">ADMIN_PASSWORDLESS_EMAILS</code>, then
-                continue — you are sent through Supabase once and land on the admin area (no inbox step). You still need the{" "}
-                <strong>admin</strong> role on that user (see <code className="rounded bg-white/80 px-1">set-admin-by-email.sql</code>).
+                Enter your email address and continue — you will be sent a magic link and land on the admin area (no
+                password needed). Your account must have the <strong>admin</strong> role in the database.
                 Requires <code className="rounded bg-white/80 px-1">SUPABASE_SERVICE_ROLE_KEY</code> on the server.
               </p>
               <div className="space-y-1">

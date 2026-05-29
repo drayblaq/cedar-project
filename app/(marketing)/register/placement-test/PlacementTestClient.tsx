@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { PlacementTestDto } from "@/lib/placement/get-placement-test-dto";
+import { scoreToBand } from "@/lib/placement/get-placement-test-dto";
 import { submitPlacementAttempt } from "./actions";
 
 export default function PlacementTestClient({
@@ -67,13 +68,21 @@ export default function PlacementTestClient({
   }, [done]);
 
   if (done) {
+    const band = scoreToBand(Math.round((done.percent / 100) * maxPoints));
+    const mins = Math.floor(done.time / 60);
+    const secs = done.time % 60;
+    const timeLabel = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
     return (
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-slate-900">Test complete</h2>
-        <p className="mt-4 text-slate-600">
-          Score: {done.percent}% (of {maxPoints} points)
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-2xl">✓</div>
+        <h2 className="mt-6 text-2xl font-bold text-slate-900">Test complete</h2>
+        <p className="mt-4 text-lg font-semibold text-emerald-700">Suggested level: {band}</p>
+        <p className="mt-2 text-slate-500 text-sm">
+          Score: {done.percent}% · Time: {timeLabel}
         </p>
-        <p className="mt-2 text-sm text-slate-500">Time taken: {done.time}s</p>
+        <p className="mt-4 text-sm text-slate-400">
+          Our team will review your application and confirm your placement.
+        </p>
         <Link href="/" className="mt-8 inline-block rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white">
           Back to home
         </Link>
