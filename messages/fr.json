@@ -167,6 +167,21 @@
       "rights": "Tous droits réservés."
     }
   },
+  "programs": {
+    "general": "Anglais Général",
+    "business": "Anglais des Affaires",
+    "examPrep": "IELTS · TOEFL · TOEIC",
+    "workshops": "Ateliers et Formation Intensive",
+    "enroll": "S'inscrire",
+    "duration": "Durée",
+    "schedule": "Horaires",
+    "level": "Niveau",
+    "goal": "Objectif",
+    "for": "Pour",
+    "includes": "Comprend",
+    "preSelected": "Vous avez sélectionné : {program}",
+    "changeBelow": "Vous pouvez modifier ce choix ci-dessous"
+  },
   "dashboard": {
     "nav": {
       "dashboard": "Tableau de bord",
@@ -293,7 +308,16 @@
       "staffPortal": "Personnel",
       "staffDesc": "Consultez vos classes, étudiants et devoirs. Marquez les présences et ajoutez des notes.",
       "notAssigned": "Vous n'êtes assigné à aucune classe. Demandez à un administrateur de vous assigner depuis Tableau de bord → Classes.",
-      "more": "de plus"
+      "more": "de plus",
+      "todayAttendance": "Présences du jour",
+      "attendanceMarked": "Présences enregistrées ✓",
+      "attendanceNotMarked": "Présences non encore enregistrées",
+      "markNow": "Enregistrer →",
+      "markAllPresent": "Tous présents",
+      "markedCount": "{marked} sur {total} enregistrés",
+      "saveSuccess": "Présences enregistrées pour le {date} — {present} présents, {absent} absents, {late} en retard",
+      "weekSummary": "Cette semaine",
+      "noStudents": "Aucun étudiant dans cette classe pour le moment."
     },
     "admin": {
       "title": "Tableau de bord Admin",

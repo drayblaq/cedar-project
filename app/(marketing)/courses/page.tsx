@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Programs | Cedar Training Center",
@@ -7,34 +8,68 @@ export const metadata: Metadata = {
 
 const programs = [
   {
-    img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=600&q=85&fit=crop&crop=faces",
-    level: "All Levels", title: "General English",
+    slug: "general-english",
+    img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80",
+    levelBadge: "All Levels",
+    title: "General English",
     desc: "Build core English skills across reading, writing, speaking and listening. Progress from Beginner to Advanced with structured, communicative lessons.",
+    details: [
+      { labelKey: "duration", value: "3 months per level" },
+      { labelKey: "schedule", value: "Morning / Evening sessions" },
+      { labelKey: "level",    value: "Beginner → Advanced" },
+      { labelKey: "goal",     value: "Confident everyday communication" },
+    ],
     reverse: false,
   },
   {
-    img: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&q=85&fit=crop",
-    level: "Professional", title: "Business English",
+    slug: "business-english",
+    img: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80",
+    levelBadge: "Professional",
+    title: "Business English",
     desc: "Master professional communication for meetings, emails, presentations and negotiations. Designed for working professionals and those seeking international careers.",
+    details: [
+      { labelKey: "duration", value: "2 months intensive" },
+      { labelKey: "schedule", value: "Weekday evenings + Saturday" },
+      { labelKey: "for",      value: "Working professionals & job seekers" },
+      { labelKey: "goal",     value: "Professional & workplace English" },
+    ],
     reverse: true,
   },
   {
-    img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=85&fit=crop&crop=faces",
-    level: "Exam Prep", title: "IELTS · TOEFL · TOEIC",
+    slug: "ielts-toefl-toeic",
+    img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80",
+    levelBadge: "Exam Prep",
+    title: "IELTS · TOEFL · TOEIC",
     desc: "Targeted preparation for international certification exams with proven strategies, full practice tests and expert feedback to maximize your score.",
+    details: [
+      { labelKey: "duration", value: "6–8 weeks per exam" },
+      { labelKey: "schedule", value: "Flexible — weekdays or weekends" },
+      { labelKey: "includes", value: "Practice tests, score strategies, expert feedback" },
+      { labelKey: "goal",     value: "Target band / score achievement" },
+    ],
     reverse: false,
   },
   {
-    img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=400&q=85&fit=crop&crop=faces",
-    level: "Intensive", title: "Personalized & Intensive",
+    slug: "workshops",
+    img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
+    levelBadge: "Intensive",
+    title: "Workshops & Intensive",
     desc: "Custom fast-track programs built around your specific goals, timeline and availability. The fastest path from your current level to your target.",
+    details: [
+      { labelKey: "duration", value: "1–4 weeks" },
+      { labelKey: "schedule", value: "Small groups, immersive format" },
+      { labelKey: "includes", value: "Conversation, pronunciation, writing" },
+      { labelKey: "goal",     value: "Rapid improvement in one skill area" },
+    ],
     reverse: true,
   },
 ];
 
 const levels = ["A1 Beginner", "A2 Elementary", "B1 Pre-Intermediate", "B2 Intermediate", "C1 Upper-Intermediate", "C2 Advanced"];
 
-export default function CoursesPage() {
+export default async function CoursesPage() {
+  const t = await getTranslations("programs");
+
   return (
     <div>
       {/* Hero */}
@@ -56,9 +91,9 @@ export default function CoursesPage() {
       {/* Program rows */}
       <div className="bg-[var(--white)] px-4 py-12 sm:px-8 sm:py-16 lg:px-12">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 sm:gap-10">
-          {programs.map(({ img, level, title, desc, reverse }) => (
+          {programs.map(({ slug, img, levelBadge, title, desc, details, reverse }) => (
             <div
-              key={title}
+              key={slug}
               className={`grid grid-cols-1 overflow-hidden rounded-3xl border-[1.5px] border-[var(--mint-deep)] shadow-[0_8px_40px_rgba(46,168,42,0.1)] md:gap-0 ${reverse ? "md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]" : "md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]"}`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -67,25 +102,37 @@ export default function CoursesPage() {
                 alt={title}
                 className={`order-1 block h-52 w-full object-cover sm:h-64 md:h-full md:min-h-[260px] ${reverse ? "md:order-2" : "md:order-1"}`}
               />
-              <div
-                className={`order-2 bg-[var(--white)] p-6 sm:p-8 md:p-10 ${reverse ? "md:order-1" : "md:order-2"}`}
-              >
+              <div className={`order-2 bg-[var(--white)] p-6 sm:p-8 md:p-10 ${reverse ? "md:order-1" : "md:order-2"}`}>
                 <span
                   className="inline-block rounded-lg px-3 py-1.5 text-[0.7rem] font-bold uppercase tracking-wide text-[var(--green-dark)]"
                   style={{ background: "rgba(46,168,42,0.1)", fontFamily: "var(--font-syne)" }}
                 >
-                  {level}
+                  {levelBadge}
                 </span>
                 <h3 className="mt-4 text-xl font-extrabold leading-tight text-[var(--green-deep)] sm:text-2xl lg:text-[2rem]" style={{ fontFamily: "var(--font-syne)" }}>
                   {title}
                 </h3>
-                <p className="mb-6 mt-3 text-[0.95rem] leading-relaxed text-[var(--text-muted)]">{desc}</p>
+                <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--text-muted)]">{desc}</p>
+
+                {/* Detail badges */}
+                <dl className="mt-4 mb-6 flex flex-wrap gap-2">
+                  {details.map(({ labelKey, value }) => (
+                    <div
+                      key={labelKey}
+                      className="flex items-center gap-1.5 rounded-full border border-[var(--mint-deep)] bg-[var(--mint)] px-3 py-1 text-xs"
+                    >
+                      <span className="font-bold text-[var(--green-dark)]">{t(labelKey as "duration" | "schedule" | "level" | "goal" | "for" | "includes")}:</span>
+                      <span className="text-[var(--text-muted)]">{value}</span>
+                    </div>
+                  ))}
+                </dl>
+
                 <a
-                  href="/register"
+                  href={`/register?program=${slug}`}
                   className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--green)] px-5 py-3 text-sm font-bold text-white no-underline"
                   style={{ fontFamily: "var(--font-syne)" }}
                 >
-                  Enroll →
+                  {t("enroll")} →
                 </a>
               </div>
             </div>

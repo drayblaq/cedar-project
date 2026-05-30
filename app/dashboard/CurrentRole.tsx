@@ -1,47 +1,58 @@
 'use client';
 
-import { useEffect, useState } from"react";
-import { createClient } from"@/lib/supabase/client";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export function CurrentRole() {
-  const [role, setRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [display, setDisplay] = useState<{ name: string; role: string } | null>(null);
 
   useEffect(() => {
     async function load() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      if (!user) return;
+
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role_id")
+        .select("full_name, role_id")
         .eq("id", user.id)
         .single();
-      if (!profile?.role_id) {
-        setRole("(no role)");
-        setLoading(false);
-        return;
+
+      let roleName = "user";
+      if (profile?.role_id) {
+        const { data: roleRow } = await supabase
+          .from("roles")
+          .select("name")
+          .eq("id", profile.role_id)
+          .single();
+        roleName = roleRow?.name ?? "user";
       }
-      const { data: roleRow } = await supabase
-        .from("roles")
-        .select("name")
-        .eq("id", profile.role_id)
-        .single();
-      setRole(roleRow?.name ??"(unknown)");
-      setLoading(false);
+
+      const displayName =
+        (profile as { full_name?: string | null } | null)?.full_name?.trim() ||
+        user.email ||
+        "User";
+
+      setDisplay({ name: displayName, role: roleName });
     }
     load();
   }, []);
 
-  if (loading) return null;
-  if (!role) return null;
+  if (!display) return null;
 
   return (
-    <span className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700">
-      Logged in as: <strong className="text-emerald-600">{role}</strong>
-    </span>
+    <div className="hidden sm:flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-1.5">
+      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-white">
+        {display.name.charAt(0).toUpperCase()}
+      </div>
+      <div className="flex flex-col">
+        <span className="text-xs font-semibold text-slate-800 leading-tight max-w-[140px] truncate">
+          {display.name}
+        </span>
+        <span className="text-[10px] font-medium text-emerald-600 capitalize leading-tight">
+          {display.role}
+        </span>
+      </div>
+    </div>
   );
 }

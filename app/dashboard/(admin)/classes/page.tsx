@@ -21,8 +21,8 @@ export default async function ClassesPage() {
 
   return (
     <div>
-      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">Phase 5</p>
-      <h1 className="mt-2 text-3xl font-bold text-slate-900">Classes & staff</h1>
+      <p className="text-xs font-bold uppercase tracking-widest text-emerald-600">Management</p>
+      <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-900">Classes & staff</h1>
       <p className="mt-2 text-slate-600">Create classes by level and assign staff. Add assignments.</p>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
@@ -81,7 +81,11 @@ export default async function ClassesPage() {
       <div className="mt-10">
         <h2 className="text-lg font-bold text-slate-900">Classes</h2>
         {!classes?.length ? (
-          <p className="mt-4 text-slate-500">No classes yet.</p>
+          <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-white py-14 text-center">
+            <span className="text-5xl">🏫</span>
+            <p className="mt-4 text-lg font-semibold text-slate-700">No classes yet</p>
+            <p className="mt-1 text-sm text-slate-400">Create a class using the form above to get started.</p>
+          </div>
         ) : (
           <ul className="mt-4 space-y-2">
             {classes.map((c: { id: string; name: string; levels: { name: string } | { name: string }[] | null }) => {

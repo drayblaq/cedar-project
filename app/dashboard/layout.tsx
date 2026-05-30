@@ -11,8 +11,8 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="sticky top-0 z-50 glass-header">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link
             href="/"
             className="group flex items-center gap-3 text-lg font-bold text-slate-900"
@@ -22,14 +22,13 @@ export default function DashboardLayout({
               Cedar Training Center
             </span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <CurrentRole />
-            <div className="h-6 w-px bg-slate-200"></div>
             <SignOutButton />
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl py-8 animate-fade-in-up">
+      <main className="mx-auto max-w-7xl py-8 animate-fade-in-up">
         <DashboardNav />
         {children}
       </main>

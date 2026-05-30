@@ -13,6 +13,8 @@ export async function createPayment(formData: FormData) {
   const currency = (formData.get("currency") as string) || "XOF";
   const paid_at = (formData.get("paid_at") as string) || new Date().toISOString();
   const notes = (formData.get("notes") as string) || null;
+  const momo_reference = (formData.get("momo_reference") as string) || null;
+  const payment_method = (formData.get("payment_method") as string) || "momo";
 
   const { error } = await supabase.from("payments").insert({
     student_id,
@@ -20,6 +22,8 @@ export async function createPayment(formData: FormData) {
     currency,
     paid_at,
     notes,
+    momo_reference: momo_reference || null,
+    payment_method,
   });
 
   if (error) return { error: error.message };

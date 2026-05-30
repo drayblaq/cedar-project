@@ -167,6 +167,21 @@
       "rights": "All rights reserved."
     }
   },
+  "programs": {
+    "general": "General English",
+    "business": "Business English",
+    "examPrep": "IELTS · TOEFL · TOEIC",
+    "workshops": "Workshops & Intensive",
+    "enroll": "Enroll",
+    "duration": "Duration",
+    "schedule": "Schedule",
+    "level": "Level",
+    "goal": "Goal",
+    "for": "For",
+    "includes": "Includes",
+    "preSelected": "You selected: {program}",
+    "changeBelow": "You can change this below"
+  },
   "dashboard": {
     "nav": {
       "dashboard": "Dashboard",
@@ -293,7 +308,16 @@
       "staffPortal": "Staff",
       "staffDesc": "View your assigned classes, students, and assignments. Mark attendance and add grades.",
       "notAssigned": "You are not assigned to any class yet. Ask an admin to assign you from Dashboard → Classes.",
-      "more": "more"
+      "more": "more",
+      "todayAttendance": "Today's Attendance",
+      "attendanceMarked": "Attendance marked ✓",
+      "attendanceNotMarked": "Attendance not marked yet",
+      "markNow": "Mark Now →",
+      "markAllPresent": "Mark all present",
+      "markedCount": "{marked} of {total} marked",
+      "saveSuccess": "Attendance saved for {date} — {present} present, {absent} absent, {late} late",
+      "weekSummary": "This week",
+      "noStudents": "No students in this class yet."
     },
     "admin": {
       "title": "Admin Dashboard",

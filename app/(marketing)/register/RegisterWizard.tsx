@@ -18,13 +18,28 @@ const btnPrimary =
 const btnPrimaryFont = { fontFamily: "var(--font-syne)" } as React.CSSProperties;
 const btnGhost = "text-sm font-medium text-[var(--text-muted)] hover:text-[var(--green-dark)]";
 
-export default function RegisterWizard() {
+// Map a program slug to the display name and the level dropdown pre-selection
+const PROGRAM_META: Record<string, { name: string; level: string }> = {
+  "general-english":  { name: "General English",           level: "" },
+  "business-english": { name: "Business English",           level: "" },
+  "ielts-toefl-toeic":{ name: "IELTS · TOEFL · TOEIC",     level: "ielts-toefl" },
+  "workshops":        { name: "Workshops & Intensive",      level: "" },
+};
+
+interface Props {
+  initialProgram: string | null;
+}
+
+export default function RegisterWizard({ initialProgram }: Props) {
   const t = useTranslations("marketing.registerFlow");
+  const tp = useTranslations("programs");
   const [step, setStep] = useState<Step>(0);
   const [checklist, setChecklist] = useState<boolean[]>(() => Array(3).fill(false));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [placementToken, setPlacementToken] = useState<string | null>(null);
+
+  const programMeta = initialProgram ? PROGRAM_META[initialProgram] ?? null : null;
 
   const [fields, setFields] = useState({
     first_name: "",
@@ -41,8 +56,8 @@ export default function RegisterWizard() {
     parent_whatsapp: "",
     parent_email: "",
     discovery_channel: "",
-    level: "",
-    message: "",
+    level: programMeta?.level ?? "",
+    message: programMeta ? `Interested in: ${programMeta.name}` : "",
   });
 
   const checklistItems = t.raw("checklistItems") as string[];
@@ -171,6 +186,17 @@ export default function RegisterWizard() {
             {t("introTitle")}
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">{t("introBody")}</p>
+
+          {/* Pre-selected program banner */}
+          {programMeta && (
+            <div className="mx-auto mt-6 max-w-sm rounded-xl border border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3 text-left">
+              <p className="text-sm font-semibold text-[var(--green-dark)]">
+                {tp("preSelected", { program: programMeta.name })}
+              </p>
+              <p className="mt-0.5 text-xs text-[var(--text-muted)]">{tp("changeBelow")}</p>
+            </div>
+          )}
+
           <button type="button" onClick={() => goToStep(1)} className={`${btnPrimary} mt-10 w-full max-w-xs sm:mx-auto`} style={btnPrimaryFont}>
             {t("start")}
           </button>
@@ -390,6 +416,17 @@ export default function RegisterWizard() {
           <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
             {t("parentTitle")}
           </h2>
+
+          {/* Pre-selected program reminder */}
+          {programMeta && (
+            <div className="rounded-xl border border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3">
+              <p className="text-sm font-semibold text-[var(--green-dark)]">
+                {tp("preSelected", { program: programMeta.name })}
+              </p>
+              <p className="mt-0.5 text-xs text-[var(--text-muted)]">{tp("changeBelow")}</p>
+            </div>
+          )}
+
           <div>
             <label className={labelClass}>{t("parentWhatsapp")} *</label>
             <input
@@ -443,7 +480,12 @@ export default function RegisterWizard() {
           </div>
           <div>
             <label className={labelClass}>{t("message")}</label>
-            <textarea rows={3} className={inputClass} value={fields.message} onChange={(e) => setFields((f) => ({ ...f, message: e.target.value }))} />
+            <textarea
+              rows={3}
+              className={inputClass}
+              value={fields.message}
+              onChange={(e) => setFields((f) => ({ ...f, message: e.target.value }))}
+            />
           </div>
           <p className="text-xs text-[var(--text-muted)]">{t("securityNote")}</p>
           {error && (

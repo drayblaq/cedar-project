@@ -6,12 +6,24 @@ export const metadata: Metadata = {
   description: "Pre-register for English programs at Cedar Training Center, Cotonou, Bénin.",
 };
 
-export default function RegisterPage() {
+const VALID_PROGRAMS = new Set([
+  "general-english",
+  "business-english",
+  "ielts-toefl-toeic",
+  "workshops",
+]);
+
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ program?: string }>;
+}) {
+  const { program } = await searchParams;
+  const selectedProgram = program && VALID_PROGRAMS.has(program) ? program : null;
+
   return (
     <div>
-      <div
-        className="relative overflow-hidden border-b-2 border-[var(--mint-deep)] bg-[var(--mint)] px-4 pb-12 pt-28 sm:px-6 sm:pb-16 sm:pt-32 lg:px-12 lg:pb-20 lg:pt-36 xl:px-20"
-      >
+      <div className="relative overflow-hidden border-b-2 border-[var(--mint-deep)] bg-[var(--mint)] px-4 pb-12 pt-28 sm:px-6 sm:pb-16 sm:pt-32 lg:px-12 lg:pb-20 lg:pt-36 xl:px-20">
         <div
           aria-hidden="true"
           style={{
@@ -68,7 +80,7 @@ export default function RegisterPage() {
         </div>
       </div>
       <div className="bg-[var(--white)] px-4 pb-16 pt-8 sm:px-6 sm:pb-20 lg:px-12">
-        <RegisterWizard />
+        <RegisterWizard initialProgram={selectedProgram} />
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { AdmissionActions } from "../../AdmissionActions";
+import MomoPaymentForm from "./MomoPaymentForm";
 
 export default async function StudentApplicationPage({
   params,
