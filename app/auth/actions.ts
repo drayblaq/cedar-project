@@ -5,6 +5,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 function siteUrl(): string {
+  // In local dev always use localhost so magic links redirect back here.
+  // Set NEXT_PUBLIC_SITE_URL in Vercel env vars (not in .env.local) for production.
+  if (process.env.NODE_ENV === "development") {
+    return "http://localhost:3000";
+  }
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
   }
