@@ -20,17 +20,17 @@ type Student = {
 };
 
 const STATUS_BADGE: Record<string, string> = {
-  active:   "bg-emerald-100 text-emerald-700",
-  pending:  "bg-amber-100  text-amber-700",
-  inactive: "bg-slate-100  text-slate-500",
+  active:   "bg-green-100 text-green-700",
+  pending:  "bg-amber-100 text-amber-700",
+  inactive: "bg-slate-100 text-slate-500",
 };
 
 const APP_BADGE: Record<string, string> = {
-  approved:        "bg-emerald-100 text-emerald-700",
-  rejected:        "bg-red-100    text-red-700",
-  awaiting_payment:"bg-orange-100 text-orange-700",
-  under_review:    "bg-blue-100   text-blue-700",
-  submitted:       "bg-slate-100  text-slate-600",
+  approved:         "bg-green-100 text-green-700",
+  rejected:         "bg-red-100 text-red-700",
+  awaiting_payment: "bg-orange-100 text-orange-700",
+  under_review:     "bg-blue-100 text-blue-700",
+  submitted:        "bg-slate-100 text-slate-600",
 };
 
 const STATUS_FILTERS = ["All", "Pending", "Active", "Inactive"] as const;
@@ -51,13 +51,8 @@ export function StudentsTableClient({
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
     return students.filter((s) => {
-      const matchesQuery =
-        !q ||
-        s.full_name.toLowerCase().includes(q) ||
-        s.email.toLowerCase().includes(q);
-      const matchesStatus =
-        statusFilter === "All" ||
-        (s.status ?? "pending").toLowerCase() === statusFilter.toLowerCase();
+      const matchesQuery = !q || s.full_name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
+      const matchesStatus = statusFilter === "All" || (s.status ?? "pending").toLowerCase() === statusFilter.toLowerCase();
       return matchesQuery && matchesStatus;
     });
   }, [students, query, statusFilter]);
@@ -68,71 +63,55 @@ export function StudentsTableClient({
   }
 
   return (
-    <div className="mt-8 space-y-4">
-      {/* Search + filter row */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative max-w-xs flex-1">
+    <div className="space-y-4">
+      {/* Search + filters */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative flex-1 max-w-sm">
           <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
           </svg>
           <input
             type="text"
-            placeholder="Search by name or email…"
+            placeholder="Search name or email…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            className="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
           {STATUS_FILTERS.map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setStatusFilter(f)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                statusFilter === f
-                  ? "bg-emerald-600 text-white shadow"
-                  : "bg-white border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700"
-              }`}
-            >
+            <button key={f} type="button" onClick={() => setStatusFilter(f)}
+              className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                statusFilter === f ? "bg-green-600 text-white shadow-sm" : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+              }`}>
               {f}
             </button>
           ))}
         </div>
+        <span className="text-xs text-slate-400 whitespace-nowrap">{filtered.length} of {students.length}</span>
       </div>
 
-      {/* Count */}
-      <p className="text-xs font-medium text-slate-400">
-        Showing {filtered.length} of {students.length} students
-      </p>
-
-      {/* Table */}
       {!filtered.length ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-16 text-center">
           <span className="text-4xl">🔍</span>
-          <p className="mt-3 font-semibold text-slate-600">No students match your filter</p>
-          <button
-            type="button"
-            onClick={() => { setQuery(""); setStatusFilter("All"); }}
-            className="mt-3 text-sm font-medium text-emerald-600 hover:underline"
-          >
+          <p className="mt-3 font-semibold text-slate-600">No students match</p>
+          <button type="button" onClick={() => { setQuery(""); setStatusFilter("All"); }}
+            className="mt-3 text-sm font-medium text-green-600 hover:underline">
             Clear filters
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+          <table className="w-full text-sm">
+            <thead className="border-b border-slate-200 bg-slate-50">
               <tr>
-                <th className="px-5 py-4">Name</th>
-                <th className="px-5 py-4">Email</th>
-                <th className="px-5 py-4 hidden lg:table-cell">WhatsApp</th>
-                <th className="px-5 py-4 hidden md:table-cell">Level</th>
-                <th className="px-5 py-4">Admission</th>
-                <th className="px-5 py-4 hidden md:table-cell">Test</th>
-                <th className="px-5 py-4">Status</th>
-                <th className="px-5 py-4">Login</th>
-                <th className="px-5 py-4">Actions</th>
+                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Student</th>
+                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">Level</th>
+                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Admission</th>
+                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 hidden lg:table-cell">Test</th>
+                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
+                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Login</th>
+                <th className="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -142,28 +121,27 @@ export function StudentsTableClient({
                 const canInvite = hasPayment && !hasLogin && s.status === "active";
                 const displayName = s.first_name && s.last_name ? `${s.first_name} ${s.last_name}` : s.full_name;
                 const app = s.application_status ?? "submitted";
-                const wa = (s as { whatsapp?: string | null }).whatsapp ?? s.phone;
                 const enrollStatus = s.status ?? "pending";
-
                 return (
-                  <tr key={s.id} className="group transition hover:bg-slate-50">
+                  <tr key={s.id} className="hover:bg-slate-50 transition">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
                           {displayName.charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-semibold text-slate-900">{displayName}</span>
+                        <div>
+                          <p className="font-semibold text-slate-900">{displayName}</p>
+                          <p className="text-xs text-slate-400">{s.email}</p>
+                        </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-slate-500">{s.email}</td>
-                    <td className="px-5 py-4 text-slate-500 hidden lg:table-cell">{wa ?? "—"}</td>
-                    <td className="px-5 py-4 text-slate-600 hidden md:table-cell">{levelName(s.levels)}</td>
+                    <td className="px-5 py-4 text-sm text-slate-600 hidden md:table-cell">{levelName(s.levels)}</td>
                     <td className="px-5 py-4">
                       <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize whitespace-nowrap ${APP_BADGE[app] ?? "bg-slate-100 text-slate-600"}`}>
                         {app.replace(/_/g, " ")}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-slate-600 hidden md:table-cell">
+                    <td className="px-5 py-4 text-sm text-slate-500 hidden lg:table-cell">
                       {bestTestPct[s.id] != null ? `${bestTestPct[s.id]}%` : "—"}
                     </td>
                     <td className="px-5 py-4">
@@ -173,7 +151,7 @@ export function StudentsTableClient({
                     </td>
                     <td className="px-5 py-4">
                       {hasLogin ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-400">
                           ✓ Active
                         </span>
                       ) : canInvite ? (
@@ -182,17 +160,19 @@ export function StudentsTableClient({
                         <span className="text-xs text-slate-300">—</span>
                       )}
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="flex flex-col gap-1.5">
-                        <Link href={`/admin/students/${s.id}/application`} className="text-xs font-semibold text-sky-600 hover:text-sky-700 hover:underline">
-                          Application
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/admin/students/${s.id}/application`}
+                          className="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition">
+                          View
                         </Link>
-                        <Link href={`/admin/students/${s.id}/edit`} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">
+                        <Link href={`/admin/students/${s.id}/edit`}
+                          className="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition">
                           Edit
                         </Link>
-                        {enrollStatus === "pending" && app !== "rejected" ? (
+                        {enrollStatus === "pending" && app !== "rejected" && (
                           <AdmissionActions studentId={s.id} applicationStatus={app} />
-                        ) : null}
+                        )}
                       </div>
                     </td>
                   </tr>

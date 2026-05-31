@@ -35,18 +35,16 @@ export default async function AttendancePage({
     {}
   );
 
-  return (
-    <div>
-      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">
-        Daily
-      </p>
-      <h1 className="mt-2 text-3xl font-bold text-slate-900">
-        Attendance
-      </h1>
-      <p className="mt-2 text-slate-600">
-        Mark present, absent, or late for a given date.
-      </p>
+  const dateFormatted = new Date(date + "T12:00:00").toLocaleDateString("en-GB", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  });
 
+  return (
+    <div className="p-6 sm:p-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900">Attendance</h1>
+        <p className="mt-1 text-sm text-slate-500">{dateFormatted}</p>
+      </div>
       <AttendanceForm
         date={date}
         students={students}

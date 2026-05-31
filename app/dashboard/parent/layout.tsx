@@ -1,11 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { PortalShell } from "@/components/PortalShell";
-
-const PARENT_LINKS = [
-  { href: "/parent", label: "Dashboard" },
-  { href: "/parent/announcements", label: "Announcements" },
-];
 
 export default async function ParentPortalLayout({
   children,
@@ -32,5 +26,5 @@ export default async function ParentPortalLayout({
     .single();
   if (role?.name !== "parent") redirect("/auth/login");
 
-  return <PortalShell links={PARENT_LINKS}>{children}</PortalShell>;
+  return <>{children}</>;
 }

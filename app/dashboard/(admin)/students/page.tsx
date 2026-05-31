@@ -6,9 +6,7 @@ export default async function StudentsPage() {
   const supabase = await createClient();
   const { data: students } = await supabase
     .from("students")
-    .select(
-      "id, full_name, first_name, last_name, email, phone, user_id, enrollment_date, status, application_status, last_invite_sent_at, levels(name)"
-    )
+    .select("id, full_name, first_name, last_name, email, phone, user_id, enrollment_date, status, application_status, last_invite_sent_at, levels(name)")
     .order("full_name");
 
   const { data: paidRows } = await supabase.from("payments").select("student_id");
@@ -24,38 +22,35 @@ export default async function StudentsPage() {
       .order("completed_at", { ascending: false });
     for (const a of attempts ?? []) {
       if (bestTestPct[a.student_id] != null) continue;
-      const max = Number(a.max_score) || 1;
-      bestTestPct[a.student_id] = Math.round((Number(a.score) / max) * 100);
+      bestTestPct[a.student_id] = Math.round((Number(a.score) / (Number(a.max_score) || 1)) * 100);
     }
   }
 
   return (
-    <div className="px-4 sm:px-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+    <div className="p-6 sm:p-8">
+      <div className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-emerald-600">Management</p>
-          <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-900">Students & applicants</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Students & Applicants</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Review applications, set admission status, record payments, then send portal invites.
+            Review applications, track admission status, and manage portal access.
           </p>
         </div>
-        <Link
-          href="/admin/students/new"
-          className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-emerald-500/30 transition hover:bg-emerald-700"
-        >
-          + Add student
+        <Link href="/admin/students/new"
+          className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 transition shadow-sm">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Add student
         </Link>
       </div>
 
       {!students?.length ? (
-        <div className="mt-12 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-white py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-20 text-center">
           <span className="text-5xl">👥</span>
           <p className="mt-4 text-lg font-semibold text-slate-700">No students yet</p>
           <p className="mt-1 text-sm text-slate-400">Add your first student to get started.</p>
-          <Link
-            href="/admin/students/new"
-            className="mt-6 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-emerald-700"
-          >
+          <Link href="/admin/students/new"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 transition shadow-sm">
             Add first student →
           </Link>
         </div>
