@@ -2,14 +2,15 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
+const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18" };
+
 function getWeekDates(): string[] {
   const today = new Date();
-  const day = today.getDay(); // 0=Sun
+  const day = today.getDay();
   const mon = new Date(today);
   mon.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
   return Array.from({ length: 5 }, (_, i) => {
-    const d = new Date(mon);
-    d.setDate(mon.getDate() + i);
+    const d = new Date(mon); d.setDate(mon.getDate() + i);
     return d.toISOString().slice(0, 10);
   });
 }
@@ -21,224 +22,155 @@ export default async function StaffDashboardPage() {
   if (!user) return null;
 
   const today = new Date().toISOString().slice(0, 10);
-  const todayFormatted = new Date().toLocaleDateString(undefined, {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  });
+  const todayFormatted = new Date().toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long", year:"numeric" });
   const weekDates = getWeekDates();
 
-  const { data: myClasses } = await supabase
-    .from("staff_classes")
-    .select("class_id, classes(id, name, level_id, levels(name))")
-    .eq("profile_id", user.id);
-
+  const { data: myClasses } = await supabase.from("staff_classes").select("class_id, classes(id, name, level_id, levels(name))").eq("profile_id", user.id);
   const classList = (myClasses ?? []).map((row) => {
     const cls = Array.isArray(row.classes) ? row.classes[0] : row.classes;
-    const c = cls as { id?: string; name?: string; level_id?: string; levels?: { name?: string } | { name?: string }[] } | null;
-    const levelName = c?.levels && (Array.isArray(c.levels) ? c.levels[0]?.name : (c.levels as { name?: string }).name);
-    return c?.id ? { id: c.id, name: c.name ?? "", levelId: c.level_id ?? "", levelName: levelName ?? "" } : null;
-  }).filter(Boolean) as { id: string; name: string; levelId: string; levelName: string }[];
+    const c = cls as { id?:string; name?:string; level_id?:string; levels?:{name?:string}|{name?:string}[] } | null;
+    const levelName = c?.levels && (Array.isArray(c.levels) ? c.levels[0]?.name : (c.levels as {name?:string}).name);
+    return c?.id ? { id:c.id, name:c.name ?? "", levelId:c.level_id ?? "", levelName:levelName ?? "" } : null;
+  }).filter(Boolean) as { id:string; name:string; levelId:string; levelName:string }[];
 
-  // Student counts per class
-  const studentCounts: Record<string, number> = {};
+  const studentCounts: Record<string,number> = {};
   for (const c of classList) {
-    const { count } = await supabase
-      .from("students")
-      .select("id", { count: "exact", head: true })
-      .eq("level_id", c.levelId);
+    const { count } = await supabase.from("students").select("id",{count:"exact",head:true}).eq("level_id", c.levelId);
     studentCounts[c.id] = count ?? 0;
   }
 
-  // Check which classes have attendance marked today
   const markedToday = new Set<string>();
-  if (classList.length) {
-    for (const c of classList) {
-      const { count } = await supabase
-        .from("attendance")
-        .select("id", { count: "exact", head: true })
-        .eq("date", today)
-        .in(
-          "student_id",
-          (await supabase.from("students").select("id").eq("level_id", c.levelId)).data?.map(s => s.id) ?? []
-        );
+  for (const c of classList) {
+    const ids = (await supabase.from("students").select("id").eq("level_id", c.levelId)).data?.map(s=>s.id) ?? [];
+    if (ids.length) {
+      const { count } = await supabase.from("attendance").select("id",{count:"exact",head:true}).eq("date",today).in("student_id",ids);
       if ((count ?? 0) > 0) markedToday.add(c.id);
     }
   }
 
-  // Weekly attendance check per class
-  type WeekRecord = Record<string, boolean>; // dateStr → marked
-  const weeklyByClass: Record<string, WeekRecord> = {};
+  const weeklyByClass: Record<string, Record<string,boolean>> = {};
   for (const c of classList) {
-    const levelStudents = (await supabase.from("students").select("id").eq("level_id", c.levelId)).data?.map(s => s.id) ?? [];
-    const weekly: WeekRecord = {};
+    const ids = (await supabase.from("students").select("id").eq("level_id", c.levelId)).data?.map(s=>s.id) ?? [];
+    const weekly: Record<string,boolean> = {};
     for (const d of weekDates) {
-      if (levelStudents.length === 0) { weekly[d] = false; continue; }
-      const { count } = await supabase
-        .from("attendance")
-        .select("id", { count: "exact", head: true })
-        .eq("date", d)
-        .in("student_id", levelStudents);
+      if (!ids.length) { weekly[d]=false; continue; }
+      const { count } = await supabase.from("attendance").select("id",{count:"exact",head:true}).eq("date",d).in("student_id",ids);
       weekly[d] = (count ?? 0) > 0;
     }
     weeklyByClass[c.id] = weekly;
   }
 
-  // Assignments
-  const { data: assignments } = await supabase
-    .from("assignments")
-    .select("id, title, due_date, level_id, class_id")
-    .order("due_date", { ascending: false })
-    .limit(10);
-
-  const myAssignmentIds = new Set<string>();
-  const taughtLevels = new Set(classList.map((c) => c.levelId));
-  const taughtClasses = new Set(classList.map((c) => c.id));
+  const { data: assignments } = await supabase.from("assignments").select("id, title, due_date, level_id, class_id").order("due_date",{ascending:false}).limit(10);
+  const myIds = new Set<string>();
+  const taughtLevels = new Set(classList.map(c=>c.levelId));
+  const taughtClasses = new Set(classList.map(c=>c.id));
   for (const a of assignments ?? []) {
-    const classId = (a as { class_id?: string }).class_id;
-    const levelId = (a as { level_id?: string }).level_id;
-    if (classId && taughtClasses.has(classId)) myAssignmentIds.add((a as { id: string }).id);
-    if (levelId && taughtLevels.has(levelId)) myAssignmentIds.add((a as { id: string }).id);
+    const cid=(a as {class_id?:string}).class_id, lid=(a as {level_id?:string}).level_id;
+    if (cid && taughtClasses.has(cid)) myIds.add((a as {id:string}).id);
+    if (lid && taughtLevels.has(lid)) myIds.add((a as {id:string}).id);
   }
-  const myAssignments = (assignments ?? []).filter((a) => myAssignmentIds.has((a as { id: string }).id));
+  const myAssignments = (assignments ?? []).filter(a=>myIds.has((a as {id:string}).id));
+  const dayLabels = ["Mon","Tue","Wed","Thu","Fri"];
 
-  const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+  const totalStudents = classList.reduce((a,c)=>a+(studentCounts[c.id]??0),0);
 
   return (
-    <div className="px-4 sm:px-6 space-y-8">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">{t("title")}</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">{t("myClassesPage")}</h1>
-        <p className="mt-1 text-slate-500">{t("staffDesc")}</p>
+    <div style={{ padding:"30px 30px 60px" }}>
+      <div style={{ marginBottom:18 }}>
+        <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>{t("myClassesPage")}</h1>
+        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>{t("staffDesc")}</p>
       </div>
 
       {!classList.length ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-slate-500">{t("notAssigned")}</p>
-        </div>
+        <div className="cd-card" style={{ padding:40, textAlign:"center" }}><p style={{ color:C.muted }}>{t("notAssigned")}</p></div>
       ) : (
         <>
-          {/* ── Today's attendance cards ── */}
-          <section>
-            <h2 className="mb-3 text-lg font-bold text-slate-900">{t("todayAttendance")}</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {classList.map((c) => {
-                const marked = markedToday.has(c.id);
-                return (
-                  <div
-                    key={c.id}
-                    className={`rounded-2xl border p-5 shadow-sm ${
-                      marked
-                        ? "border-emerald-200 bg-emerald-50"
-                        : "border-orange-200 bg-orange-50"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className={`text-xs font-semibold uppercase tracking-wider ${marked ? "text-emerald-600" : "text-orange-600"}`}>
-                          {todayFormatted}
-                        </p>
-                        <p className="mt-1 text-base font-bold text-slate-900">{c.name}</p>
-                        <p className="text-sm text-slate-500">
-                          {c.levelName} · {studentCounts[c.id] ?? 0} students
-                        </p>
-                        <p className={`mt-2 text-sm font-semibold ${marked ? "text-emerald-700" : "text-orange-700"}`}>
-                          {marked ? t("attendanceMarked") : t("attendanceNotMarked")}
-                        </p>
-                      </div>
-                      {!marked && (
-                        <Link
-                          href={`/staff/attendance?class=${c.id}&date=${today}`}
-                          className="shrink-0 rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white shadow hover:bg-orange-600 transition"
-                        >
-                          {t("markNow")}
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+          {/* Stats */}
+          <div className="cd-grid-stats-3" style={{ marginBottom:18 }}>
+            <StatCard icon="layers" label={t("myClasses")} value={classList.length} tone="green" />
+            <StatCard icon="users"  label={t("students")} value={totalStudents} tone="blue" />
+            <StatCard icon="check"  label={t("todayAttendance")} value={`${markedToday.size}/${classList.length}`} tone="gold" />
+          </div>
 
-          {/* ── Weekly summary ── */}
-          <section>
-            <h2 className="mb-3 text-lg font-bold text-slate-900">{t("weekSummary")}</h2>
-            <div className="space-y-4">
-              {classList.map((c) => (
-                <div key={c.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                  <p className="mb-3 text-sm font-semibold text-slate-700">{c.name}</p>
-                  <div className="flex gap-2 flex-wrap">
-                    {weekDates.map((d, i) => {
-                      const marked = weeklyByClass[c.id]?.[d] ?? false;
-                      const isToday = d === today;
-                      const isPast = d <= today;
-                      return (
-                        <div
-                          key={d}
-                          className={`flex flex-col items-center rounded-xl px-3 py-2 text-center min-w-[52px] border ${
-                            isToday
-                              ? marked
-                                ? "border-emerald-400 bg-emerald-50"
-                                : "border-orange-300 bg-orange-50"
-                              : marked
-                              ? "border-emerald-200 bg-emerald-50"
-                              : isPast
-                              ? "border-slate-200 bg-slate-50"
-                              : "border-slate-100 bg-white"
-                          }`}
-                        >
-                          <span className="text-xs font-bold text-slate-500">{dayLabels[i]}</span>
-                          <span className={`mt-1 text-base font-black ${
-                            marked ? "text-emerald-600" : isPast ? "text-slate-300" : "text-slate-200"
-                          }`}>
-                            {marked ? "✓" : "—"}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
+          {/* Today's attendance */}
+          <h2 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:12 }}>{t("todayAttendance")}</h2>
+          <div className="cd-grid-cards" style={{ marginBottom:24 }}>
+            {classList.map(c => {
+              const marked = markedToday.has(c.id);
+              return (
+                <div key={c.id} className="cd-card" style={{ padding:20, background: marked?"rgba(46,168,42,.06)":"rgba(212,168,67,.07)", borderColor: marked?"rgba(46,168,42,.2)":"rgba(212,168,67,.3)" }}>
+                  <p style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.05em", color: marked?C.green:"#9a7822" }}>{todayFormatted}</p>
+                  <p style={{ fontSize:15.5, fontWeight:700, color:C.ink, marginTop:4 }}>{c.name}</p>
+                  <p style={{ fontSize:12.5, color:C.muted, marginTop:2 }}>{c.levelName} · {studentCounts[c.id] ?? 0} students</p>
+                  <p style={{ fontSize:13, fontWeight:700, marginTop:10, color: marked?C.greenDark:"#9a7822" }}>{marked ? t("attendanceMarked") : t("attendanceNotMarked")}</p>
+                  {!marked && (
+                    <Link href={`/staff/attendance?class=${c.id}&date=${today}`} className="cd-btn-primary" style={{ marginTop:14, width:"100%", justifyContent:"center", textDecoration:"none" }}>{t("markNow")}</Link>
+                  )}
                 </div>
-              ))}
-            </div>
-          </section>
+              );
+            })}
+          </div>
 
-          {/* ── Class detail cards ── */}
-          <section className="space-y-6">
-            {classList.map((c) => (
-              <div key={c.id} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-lg font-bold text-slate-900">{c.name}</h2>
-                    <p className="text-sm text-slate-500">{c.levelName ?? "—"}</p>
-                  </div>
-                  <Link
-                    href={`/staff/attendance?class=${c.id}&date=${today}`}
-                    className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-lg"
-                  >
-                    {t("markAttendance")}
-                  </Link>
+          {/* Weekly summary */}
+          <h2 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:12 }}>{t("weekSummary")}</h2>
+          <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom:24 }}>
+            {classList.map(c => (
+              <div key={c.id} className="cd-card" style={{ padding:18 }}>
+                <p style={{ fontSize:13, fontWeight:700, color:C.ink, marginBottom:12 }}>{c.name}</p>
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                  {weekDates.map((d,i) => {
+                    const marked = weeklyByClass[c.id]?.[d] ?? false;
+                    const isToday = d === today;
+                    return (
+                      <div key={d} style={{ display:"flex", flexDirection:"column", alignItems:"center", borderRadius:11, padding:"8px 12px", minWidth:52, textAlign:"center",
+                        background: marked?"rgba(46,168,42,.1)":"#f4f7f2", border:`1px solid ${isToday?"rgba(46,168,42,.4)":C.border}` }}>
+                        <span style={{ fontSize:11, fontWeight:700, color:C.muted }}>{dayLabels[i]}</span>
+                        <span style={{ fontSize:16, fontWeight:800, marginTop:2, color: marked?C.green:"#cbd5cb" }}>{marked?"✓":"—"}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
-          </section>
+          </div>
 
-          {/* ── Assignments ── */}
+          {/* Assignments */}
           {myAssignments.length > 0 && (
-            <section>
-              <h2 className="text-lg font-bold text-slate-900">{t("assignmentsForClasses")}</h2>
-              <ul className="mt-4 space-y-2">
-                {myAssignments.map((a: { id: string; title: string; due_date: string | null }) => (
-                  <li key={a.id} className="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
-                    <p className="font-medium text-slate-900">{a.title}</p>
-                    <p className="text-sm text-slate-500">
-                      {t("due")}: {a.due_date ? new Date(a.due_date).toLocaleDateString() : t("noDueDate")}
-                    </p>
-                  </li>
+            <>
+              <h2 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:12 }}>{t("assignmentsForClasses")}</h2>
+              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                {myAssignments.map((a:{id:string;title:string;due_date:string|null}) => (
+                  <div key={a.id} className="cd-card" style={{ padding:"14px 18px" }}>
+                    <p style={{ fontSize:13.5, fontWeight:700, color:C.ink }}>{a.title}</p>
+                    <p style={{ fontSize:12, color:C.muted, marginTop:2 }}>{t("due")}: {a.due_date ? new Date(a.due_date).toLocaleDateString("en-GB",{day:"numeric",month:"short"}) : t("noDueDate")}</p>
+                  </div>
                 ))}
-              </ul>
-            </section>
+              </div>
+            </>
           )}
         </>
       )}
+    </div>
+  );
+}
+
+function StatCard({ icon, label, value, tone="green" }: { icon:string; label:string; value:React.ReactNode; tone?:"green"|"gold"|"blue"|"dark" }) {
+  const toneColors = { green:C.green, gold:"#bf9636", blue:"#3f7d8c", dark:"#0e3b0c" };
+  const PATHS: Record<string,string> = {
+    layers:"M12 2L2 7l10 5 10-5-10-5z M2 17l10 5 10-5 M2 12l10 5 10-5",
+    users:"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75",
+    check:"M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11",
+  };
+  const d=PATHS[icon]; const paths=d?d.split(" M").map((s,i)=>i===0?s:"M"+s):[];
+  return (
+    <div className="cd-card" style={{ padding:20, display:"flex", flexDirection:"column", gap:14 }}>
+      <div style={{ width:40, height:40, borderRadius:11, background:C.greenWash, color:toneColors[tone], display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">{paths.map((p,i)=><path key={i} d={p}/>)}</svg>
+      </div>
+      <div>
+        <div style={{ fontSize:27, fontWeight:800, color:C.ink, lineHeight:1 }}>{value}</div>
+        <div style={{ fontSize:12.5, fontWeight:600, color:C.muted, marginTop:6 }}>{label}</div>
+      </div>
     </div>
   );
 }

@@ -1,33 +1,39 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
+const C = { ink:"#16241a", muted:"#687a6c", green:"#2ea82a", greenWash:"#eef6ec" };
+function fmtDate(iso:string){return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});}
+
 export default async function StudentAnnouncementsPage() {
   const t = await getTranslations("dashboard.student");
   const supabase = await createClient();
   const { data: announcements } = await supabase
-    .from("announcements")
-    .select("id, title, body, published_at")
-    .order("published_at", { ascending: false })
-    .limit(30);
+    .from("announcements").select("id, title, body, published_at").order("published_at",{ascending:false}).limit(30);
 
   return (
-    <div className="px-4 sm:px-6">
-      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">{t("title")}</p>
-      <h1 className="mt-2 text-3xl font-bold text-slate-900">{t("announcements")}</h1>
-      <p className="mt-2 text-slate-600">{t("latestUpdates")}</p>
+    <div style={{ padding:"30px 30px 60px" }}>
+      <div style={{ marginBottom:18 }}>
+        <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>{t("announcements")}</h1>
+        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>{t("latestUpdates")}</p>
+      </div>
 
       {!announcements?.length ? (
-        <p className="mt-8 text-slate-500">{t("noAnnouncements")}</p>
+        <div className="cd-card" style={{ padding:48, textAlign:"center" }}><p style={{ color:C.muted }}>{t("noAnnouncements")}</p></div>
       ) : (
-        <ul className="mt-8 space-y-3">
-          {announcements.map((a) => (
-            <li key={a.id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="font-semibold text-slate-900">{a.title}</p>
-              <p className="mt-1 text-xs text-slate-500">{new Date(a.published_at).toLocaleString()}</p>
-              {a.body ? <p className="mt-3 text-sm text-slate-700">{a.body}</p> : null}
-            </li>
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          {announcements.map(a => (
+            <div key={a.id} className="cd-card" style={{ padding:22, display:"flex", gap:16, alignItems:"flex-start" }}>
+              <div style={{ width:42, height:42, borderRadius:11, background:C.greenWash, color:C.green, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l15-6v14L3 13v-2z"/><path d="M3 11v2a3 3 0 0 0 3 3h1"/><path d="M11 19l-1.5 2"/></svg>
+              </div>
+              <div style={{ flex:1 }}>
+                <h3 style={{ fontSize:15, fontWeight:700, color:C.ink }}>{a.title}</h3>
+                {a.body && <p style={{ fontSize:13, color:C.muted, lineHeight:1.65, marginTop:5 }}>{a.body}</p>}
+                <div style={{ fontSize:11.5, color:C.muted, marginTop:8, opacity:.8 }}>{fmtDate(a.published_at)}</div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

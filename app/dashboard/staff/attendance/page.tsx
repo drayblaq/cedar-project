@@ -72,31 +72,28 @@ export default async function StaffAttendancePage({
   );
 
   return (
-    <div>
-      <div className="mb-4">
-        <Link href="/staff" className="text-sm text-slate-500 hover:text-slate-700">
-          ← {t("backToClasses")}
-        </Link>
+    <div style={{ padding: "30px 30px 60px" }}>
+      <Link href="/staff" style={{ fontSize: 13, color: "#687a6c", textDecoration: "none", display: "inline-block", marginBottom: 14 }}>
+        ← {t("backToClasses")}
+      </Link>
+      <div style={{ marginBottom: 18 }}>
+        <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: "#16241a" }}>{t("markAttendance")}</h1>
+        <p style={{ fontSize: 13.5, color: "#687a6c", marginTop: 4 }}>
+          {selectedClass ? `${tc("level")}: ${selectedClass.name} (${selectedClass.levelName})` : t("selectClass")}
+        </p>
       </div>
-      <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">{t("staffPortal")}</p>
-      <h1 className="mt-2 text-3xl font-bold text-slate-900">{t("markAttendance")}</h1>
-      <p className="mt-2 text-slate-600">
-        {selectedClass
-          ? `${tc("level")}: ${selectedClass.name} (${selectedClass.levelName})`
-          : t("selectClass")}
-      </p>
 
       {classList.length > 1 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {classList.map((c) => (
-            <Link
-              key={c.id}
-              href={`/staff/attendance?class=${c.id}&date=${date}`}
-              className={`rounded-xl border px-4 py-2 text-sm font-medium ${classIdParam === c.id || (!classIdParam && c.id === classList[0]?.id) ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}
-            >
-              {c.name}
-            </Link>
-          ))}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+          {classList.map((c) => {
+            const on = classIdParam === c.id || (!classIdParam && c.id === classList[0]?.id);
+            return (
+              <Link key={c.id} href={`/staff/attendance?class=${c.id}&date=${date}`}
+                className={"cd-chip" + (on ? " cd-chip-on" : "")} style={{ textDecoration: "none" }}>
+                {c.name}
+              </Link>
+            );
+          })}
         </div>
       )}
 
