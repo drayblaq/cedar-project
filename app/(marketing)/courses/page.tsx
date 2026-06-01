@@ -98,10 +98,10 @@ export default async function CoursesPage() {
           <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
             <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />Programs
           </p>
-          <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.8rem,5.5vw,6rem)", fontWeight: 800, lineHeight: 0.92, letterSpacing: "-0.04em", color: "var(--green-deep)", maxWidth: 700 }}>
+          <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.2rem,4vw,3.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.01em", color: "var(--green-deep)", maxWidth: 700 }}>
             Training tracks<br /><em style={{ fontStyle: "normal", color: "var(--green)" }}>built for results</em>
           </h1>
-          <p style={{ marginTop: 24, fontSize: "1.1rem", color: "var(--text-muted)", maxWidth: 520, lineHeight: 1.78 }}>
+          <p style={{ marginTop: 24, fontSize: "1rem", color: "#1f2d1e", fontWeight: 500, maxWidth: 520, lineHeight: 1.78 }}>
             From total beginner to international certification — we have a program for every goal.
           </p>
         </div>
@@ -128,7 +128,7 @@ export default async function CoursesPage() {
                 <h3 className="mt-4 text-xl font-extrabold leading-tight text-[var(--green-deep)] sm:text-2xl lg:text-[2rem]" style={{ fontFamily: "var(--font-inter)" }}>
                   {title}
                 </h3>
-                <p className="mt-3 text-[0.95rem] leading-relaxed text-[var(--text-muted)]">{desc}</p>
+                <p className="mt-3 text-[0.95rem] leading-relaxed font-medium" style={{ color: "#1f2d1e" }}>{desc}</p>
                 <dl className="mt-4 mb-6 flex flex-wrap gap-2">
                   {details.map(({ labelKey, value }) => (
                     <div key={labelKey} className="flex items-center gap-1.5 rounded-full border border-[var(--mint-deep)] bg-[var(--mint)] px-3 py-1 text-xs">
@@ -149,7 +149,7 @@ export default async function CoursesPage() {
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--mint)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />English Levels
             </p>
-            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "2.4rem", fontWeight: 800, color: "white", letterSpacing: "-0.03em", marginBottom: 36 }}>
+            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "2rem", fontWeight: 700, color: "white", letterSpacing: "-0.01em", marginBottom: 36 }}>
               Start at <span style={{ color: "var(--green)" }}>your level</span>
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 14 }}>

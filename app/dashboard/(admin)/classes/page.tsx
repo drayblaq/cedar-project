@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { createClass, assignStaffToClass, createAssignment } from "@/app/dashboard/actions/index";
+import { createClass, assignStaffToClass, createAssignment, createMaterial, deleteMaterial } from "@/app/dashboard/actions/index";
 
 const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18" };
 
@@ -24,6 +24,26 @@ export default async function ClassesPage() {
     .order("due_date", { ascending: false })
     .limit(20);
 
+  const classIds = (classes ?? []).map((c: { id: string }) => c.id);
+  const { data: materials } = classIds.length
+    ? await supabase.from("materials").select("*").in("class_id", classIds).order("created_at", { ascending: false })
+    : { data: [] };
+
+  const materialsByClass: Record<string, { id: string; title: string; material_type: string; url: string | null }[]> = {};
+  for (const m of materials ?? []) {
+    const mat = m as { id: string; title: string; material_type: string; url: string | null; class_id: string };
+    if (!materialsByClass[mat.class_id]) materialsByClass[mat.class_id] = [];
+    materialsByClass[mat.class_id]!.push(mat);
+  }
+
+  const TYPE_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
+    pdf:      { bg: "#fef2f2", fg: "#b91c1c", label: "PDF" },
+    link:     { bg: "#eff6ff", fg: "#1d4ed8", label: "Link" },
+    video:    { bg: "#f5f3ff", fg: "#7c3aed", label: "Video" },
+    document: { bg: "#f9fafb", fg: "#374151", label: "Document" },
+    other:    { bg: "#f8fafc", fg: "#475569", label: "Other" },
+  };
+
   return (
     <div style={{ padding:"30px 30px 60px" }}>
       <div style={{ marginBottom:18 }}>
@@ -43,7 +63,51 @@ export default async function ClassesPage() {
             return (
               <div key={cl.id} className="cd-card" style={{ padding:22 }}>
                 <div style={{ marginBottom:12 }}><LevelPill level={lvl ?? "—"} /></div>
-                <h3 style={{ fontSize:16, fontWeight:700, color:C.ink, lineHeight:1.3 }}>{cl.name}</h3>
+                <h3 style={{ fontSize:16, fontWeight:700, color:C.ink, lineHeight:1.3, marginBottom:16 }}>{cl.name}</h3>
+
+                {/* Materials section */}
+                <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:14 }}>
+                  <p style={{ fontSize:11.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, marginBottom:10 }}>Materials</p>
+                  {(materialsByClass[cl.id] ?? []).length === 0 ? (
+                    <p style={{ fontSize:12.5, color:C.muted, marginBottom:10 }}>No materials yet.</p>
+                  ) : (
+                    <div style={{ display:"flex", flexDirection:"column", gap:6, marginBottom:10 }}>
+                      {(materialsByClass[cl.id] ?? []).map(m => {
+                        const s = TYPE_STYLE[m.material_type] ?? TYPE_STYLE.other;
+                        return (
+                          <div key={m.id} style={{ display:"flex", alignItems:"center", gap:8, justifyContent:"space-between" }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:7, minWidth:0 }}>
+                              <span style={{ fontSize:11, fontWeight:700, padding:"2px 8px", borderRadius:6, background:s.bg, color:s.fg, flexShrink:0 }}>{s.label}</span>
+                              <span style={{ fontSize:12.5, fontWeight:600, color:C.ink, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{m.title}</span>
+                            </div>
+                            <div style={{ display:"flex", gap:6, flexShrink:0 }}>
+                              {m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" className="cd-mini-btn" style={{ textDecoration:"none", fontSize:11.5 }}>Open</a>}
+                              <form action={deleteMaterial.bind(null, m.id) as unknown as (fd: FormData) => Promise<void>} style={{ display:"inline" }}>
+                                <button type="submit" style={{ background:"rgba(201,74,58,.1)", border:"none", borderRadius:6, padding:"4px 9px", fontSize:11.5, fontWeight:700, color:"#b3402f", cursor:"pointer" }}>Del</button>
+                              </form>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {/* Quick add */}
+                  <form action={createMaterial as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                    <input type="hidden" name="class_id" value={cl.id} />
+                    <input name="title" type="text" required placeholder="Material title…" className="cd-fld" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }} />
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                      <select name="material_type" defaultValue="link" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }}>
+                        <option value="pdf">PDF</option>
+                        <option value="link">Link</option>
+                        <option value="video">Video</option>
+                        <option value="document">Document</option>
+                        <option value="other">Other</option>
+                      </select>
+                      <input name="url" type="url" placeholder="https://…" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }} />
+                    </div>
+                    <button type="submit" className="cd-mini-btn" style={{ width:"100%", justifyContent:"center" }}>+ Add</button>
+                  </form>
+                </div>
               </div>
             );
           })}

@@ -51,16 +51,16 @@ export function PublicFooter() {
               Cedar <span style={{ color: "var(--green)" }}>Training</span><br />Center
             </span>
           </div>
-          <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, maxWidth: 300 }}>{t.desc}</p>
+          <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.8, maxWidth: 300 }}>{t.desc}</p>
         </div>
         <div>
-          <h4 style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 20 }}>
+          <h4 style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", marginBottom: 20 }}>
             {t.quickLinks}
           </h4>
           <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
             {t.links.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} style={{ fontSize: "0.875rem", fontWeight: 500, color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>
+                <Link href={link.href} style={{ fontSize: "0.875rem", fontWeight: 600, color: "rgba(255,255,255,0.9)", textDecoration: "none" }}>
                   {link.label}
                 </Link>
               </li>
@@ -68,21 +68,21 @@ export function PublicFooter() {
           </ul>
         </div>
         <div>
-          <h4 style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 20 }}>
+          <h4 style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", marginBottom: 20 }}>
             {t.location}
           </h4>
           <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
-            <li><span style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.8 }}>Gbédjromédé, Cotonou, Bénin</span></li>
-            <li><a href="mailto:trainingcentercedar@gmail.com" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>trainingcentercedar@gmail.com</a></li>
-            <li><a href="tel:+22901961964 40" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>+229 01 96 19 64 40</a></li>
+            <li><span style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.8 }}>Gbédjromédé, Cotonou, Bénin</span></li>
+            <li><a href="mailto:trainingcentercedar@gmail.com" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.9)", textDecoration: "none" }}>trainingcentercedar@gmail.com</a></li>
+            <li><a href="tel:+22901961964 40" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.9)", textDecoration: "none" }}>+229 01 96 19 64 40</a></li>
           </ul>
         </div>
       </div>
       <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-3 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.25)" }}>
+        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.55)" }}>
           © {new Date().getFullYear()} <span style={{ color: "var(--green)" }}>Cedar Training Center</span>. {t.rights}
         </p>
-        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.25)" }}>
+        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.55)" }}>
           {t.madeIn} <span style={{ color: "var(--green)" }}>Cotonou, Bénin</span>
         </p>
       </div>

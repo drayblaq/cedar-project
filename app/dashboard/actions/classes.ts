@@ -35,6 +35,46 @@ export async function removeStaffFromClass(profileId: string, classId: string) {
   return { error: null };
 }
 
+export async function createMaterial(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const title = formData.get("title") as string;
+  const description = (formData.get("description") as string) || null;
+  const material_type = formData.get("material_type") as string;
+  const url = (formData.get("url") as string) || null;
+  const class_id = formData.get("class_id") as string;
+
+  if (!title || !material_type || !class_id) {
+    return { error: "Title, type and class are required" };
+  }
+
+  const { error } = await supabase
+    .from("materials")
+    .insert({ title, description, material_type, url, class_id, uploaded_by: user.id });
+
+  if (error) return { error: error.message };
+  revalidatePath("/admin/classes");
+  revalidatePath("/staff");
+  revalidatePath("/staff/materials");
+  revalidatePath("/student");
+  revalidatePath("/student/materials");
+  return { success: true };
+}
+
+export async function deleteMaterial(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("materials").delete().eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/admin/classes");
+  revalidatePath("/staff");
+  revalidatePath("/staff/materials");
+  revalidatePath("/student");
+  revalidatePath("/student/materials");
+  return { success: true };
+}
+
 export async function createAssignment(formData: FormData) {
   const supabase = await createClient();
   const title = formData.get("title") as string;

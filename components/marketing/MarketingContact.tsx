@@ -61,10 +61,10 @@ export default function MarketingContact() {
           <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
             <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />Contact
           </p>
-          <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.8rem,5.5vw,6rem)", fontWeight: 800, lineHeight: 0.92, letterSpacing: "-0.04em", color: "var(--green-deep)" }}>
+          <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.2rem,4vw,3.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.01em", color: "var(--green-deep)" }}>
             Get in touch<br /><em style={{ fontStyle: "normal", color: "var(--green)" }}>with Cedar</em>
           </h1>
-          <p style={{ marginTop: 20, fontSize: "1.05rem", color: "var(--text-muted)", maxWidth: 480, lineHeight: 1.78 }}>
+          <p style={{ marginTop: 20, fontSize: "1rem", color: "#1f2d1e", fontWeight: 500, maxWidth: 480, lineHeight: 1.78 }}>
             Call, email or visit us in Cotonou. We reply within 24 hours.
           </p>
         </div>
@@ -118,7 +118,7 @@ export default function MarketingContact() {
                     {href ? (
                       <a href={href} style={{ fontSize: "0.875rem", color: "var(--green)", textDecoration: "none", fontWeight: 600 }}>{p}</a>
                     ) : (
-                      <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", lineHeight: 1.65 }}>{p}</p>
+                      <p style={{ fontSize: "0.875rem", color: "#1f2d1e", fontWeight: 500, lineHeight: 1.65 }}>{p}</p>
                     )}
                   </div>
                 </div>

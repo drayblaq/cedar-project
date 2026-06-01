@@ -32,12 +32,24 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
+  const isDev = process.env.NODE_ENV === "development";
+
   return (
     <html lang={locale} className="light" style={{ colorScheme: "light" }}>
       <body className={`${inter.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
+        {isDev && (
+          <div className="dev-bar" style={{ position:"fixed", bottom:0, left:0, right:0, background:"#1e293b", padding:"6px 16px", display:"flex", gap:"12px", zIndex:9999, fontSize:"12px", alignItems:"center" }}>
+            <span style={{ color:"#64748b", fontWeight:600 }}>Dev:</span>
+            <a href="/admin">Admin</a>
+            <a href="/student">Student</a>
+            <a href="/staff">Staff</a>
+            <a href="/parent">Parent</a>
+            <a href="/">Public</a>
+          </div>
+        )}
       </body>
     </html>
   );

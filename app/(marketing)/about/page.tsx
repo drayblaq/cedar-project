@@ -37,10 +37,10 @@ export default function AboutPage() {
           <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
             <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />About Us
           </p>
-          <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.8rem,5.5vw,6rem)", fontWeight: 800, lineHeight: 0.92, letterSpacing: "-0.04em", color: "var(--green-deep)", maxWidth: 680 }}>
+          <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.2rem,4vw,3.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.01em", color: "var(--green-deep)", maxWidth: 680 }}>
             A centre <em style={{ fontStyle: "normal", color: "var(--green)" }}>dedicated</em><br />to English learning
           </h1>
-          <p style={{ marginTop: 24, fontSize: "1.1rem", color: "var(--text-muted)", maxWidth: 520, lineHeight: 1.78 }}>
+          <p style={{ marginTop: 24, fontSize: "1.05rem", color: "#1f2d1e", fontWeight: 500, maxWidth: 520, lineHeight: 1.78 }}>
             Cedar Training Center is dedicated to English language teaching. We help learners develop their language skills to succeed in their studies, career and integration in an international environment.
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function AboutPage() {
               {cards.map(({ title, en }) => (
                 <div key={title} className="rounded-[20px] border-[1.5px] border-[rgba(46,168,42,0.2)] bg-[rgba(46,168,42,0.06)] p-6 sm:p-8 lg:p-9">
                   <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1.2rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 10 }}>{title}</h3>
-                  <p style={{ fontSize: "0.9rem", color: "var(--text-muted)", lineHeight: 1.75 }}>{en}</p>
+                  <p style={{ fontSize: "0.9rem", color: "#1f2d1e", fontWeight: 500, lineHeight: 1.75 }}>{en}</p>
                 </div>
               ))}
             </div>
@@ -82,7 +82,7 @@ export default function AboutPage() {
                   <div style={{ width: 28, height: 28, flexShrink: 0, background: "var(--green)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
-                  <p style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text)", lineHeight: 1.6 }}>{en}</p>
+                  <p style={{ fontSize: "0.9rem", fontWeight: 500, color: "#1f2d1e", lineHeight: 1.6 }}>{en}</p>
                 </div>
               ))}
             </div>

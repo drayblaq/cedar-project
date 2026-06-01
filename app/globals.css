@@ -17,7 +17,7 @@
   --white: #ffffff;
   --text: #0f3d0d;
   --text-mid: #246e22;
-  --text-muted: rgba(15, 61, 13, 0.55);
+  --text-muted: rgba(15, 61, 13, 0.75);
 
   /* Legacy dashboard / auth tokens */
   --background: #f8fafc;
@@ -54,6 +54,10 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* dev role-switcher bar */
+.dev-bar a { color: #94a3b8; text-decoration: none; }
+.dev-bar a:hover { color: #fff; }
 
 body {
   font-family: var(--font-inter), system-ui, sans-serif;

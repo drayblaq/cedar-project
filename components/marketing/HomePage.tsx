@@ -145,12 +145,12 @@ export default function HomePage() {
           <p className="animate-slide-up delay-100" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 24 }}>
             <span style={{ display: "block", width: 28, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.eyebrow}
           </p>
-          <h1 className="animate-slide-up delay-200" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(3.2rem, 5.5vw, 6.5rem)", fontWeight: 800, lineHeight: 0.92, letterSpacing: "-0.04em", color: "var(--green-deep)" }}>
-            <span style={{ color: "transparent", WebkitTextStroke: "3px var(--green)" }}>{tr.title1}</span><br />
+          <h1 className="animate-slide-up delay-200" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 3.75rem)", fontWeight: 700, lineHeight: 1.08, letterSpacing: "-0.01em", color: "var(--green-deep)" }}>
+            <span style={{ color: "var(--green-deep)" }}>{tr.title1}</span><br />
             {tr.title2}<br />
             <span style={{ color: "var(--green)" }}>{tr.title3}</span>
           </h1>
-          <p className="animate-slide-up delay-300" style={{ marginTop: 28, fontSize: "1.1rem", lineHeight: 1.7, color: "var(--text)", fontWeight: 600, maxWidth: 420 }}>{tr.sub}</p>
+          <p className="animate-slide-up delay-300" style={{ marginTop: 24, fontSize: "1.1rem", lineHeight: 1.75, color: "#1a3a1a", fontWeight: 500, maxWidth: 440 }}>{tr.sub}</p>
           <div className="animate-slide-up delay-400" style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 44, flexWrap: "wrap" }}>
             <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.apply} →
@@ -200,10 +200,10 @@ export default function HomePage() {
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whoWeAre}
             </p>
-            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)" }}>
+            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--green-deep)" }}>
               {tr.aboutT} <span style={{ color: "var(--green)" }}>{tr.aboutA}</span><br />{tr.aboutT2}
             </h2>
-            <p style={{ fontSize: "1.1rem", lineHeight: 1.78, color: "var(--text)", fontWeight: 600, marginTop: 18, marginBottom: 32 }}>{tr.aboutLead}</p>
+            <p style={{ fontSize: "1rem", lineHeight: 1.78, color: "#1f2d1e", fontWeight: 500, marginTop: 18, marginBottom: 32 }}>{tr.aboutLead}</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {[
                 { icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>, t: tr.v1t, p: tr.v1p },
@@ -214,7 +214,7 @@ export default function HomePage() {
                   <div style={{ width: 44, height: 44, flexShrink: 0, background: "rgba(46,168,42,0.12)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>{icon}</div>
                   <div>
                     <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 4 }}>{vt}</h3>
-                    <p style={{ fontSize: "0.875rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>
+                    <p style={{ fontSize: "0.875rem", color: "#1f2d1e", fontWeight: 500, lineHeight: 1.65 }}>{p}</p>
                   </div>
                 </div>
               ))}
@@ -233,7 +233,7 @@ export default function HomePage() {
             <p style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--mint)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whatWeOffer}
             </p>
-            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "white" }}>
+            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2rem, 3.5vw, 3.2rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.01em", color: "white" }}>
               {tr.progT}<br /><span style={{ color: "var(--green)" }}>{tr.progA}</span>
             </h2>
           </div>
@@ -278,16 +278,16 @@ export default function HomePage() {
             <p className="reveal" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whyCedar}
             </p>
-            <h2 className="reveal td-1" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)" }}>
+            <h2 className="reveal td-1" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--green-deep)" }}>
               {tr.whyT}<br /><span style={{ color: "var(--green)" }}>{tr.whyA}</span>
             </h2>
-            <p className="reveal td-2" style={{ marginTop: 18, fontSize: "1rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.8, maxWidth: 480 }}>{tr.whySub}</p>
+            <p className="reveal td-2" style={{ marginTop: 18, fontSize: "1rem", color: "#1f2d1e", fontWeight: 500, lineHeight: 1.8, maxWidth: 480 }}>{tr.whySub}</p>
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-10">
               {[{ n:"01",t:tr.f1t,p:tr.f1p},{n:"02",t:tr.f2t,p:tr.f2p},{n:"03",t:tr.f3t,p:tr.f3p},{n:"04",t:tr.f4t,p:tr.f4p}].map(({n,t:ft,p},i)=>(
                 <div key={i} className={`why-feature reveal td-${i+1}`} style={{ background: "var(--white)", border: "1.5px solid var(--mint-deep)", borderRadius: 18, padding: 26, boxShadow: "0 4px 20px rgba(46,168,42,0.06)" }}>
                   <div style={{ fontFamily: "var(--font-inter)", fontSize: "2rem", fontWeight: 800, color: "var(--green)", opacity: 0.4, lineHeight: 1, marginBottom: 10 }}>{n}</div>
                   <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 6 }}>{ft}</h3>
-                  <p style={{ fontSize: "0.83rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>
+                  <p style={{ fontSize: "0.875rem", color: "#1f2d1e", fontWeight: 500, lineHeight: 1.65 }}>{p}</p>
                 </div>
               ))}
             </div>
@@ -308,7 +308,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-[var(--green-deep)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
         <div aria-hidden="true" className="cta-bg-word hidden md:block">APPLY</div>
         <div className="relative z-[2] mx-auto grid max-w-6xl grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-14">
-          <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.6rem, 4.5vw, 5rem)", fontWeight: 800, color: "white", lineHeight: 1.0, letterSpacing: "-0.04em" }}>
+          <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2rem, 3.5vw, 3.5rem)", fontWeight: 700, color: "white", lineHeight: 1.1, letterSpacing: "-0.01em" }}>
             {tr.ctaL1}<br /><span style={{ color: "var(--green)" }}>{tr.ctaL2}</span><br /><span style={{ opacity: 0.4 }}>{tr.ctaL3}</span>
           </h2>
           <div className="flex w-full shrink-0 flex-col items-stretch gap-3 sm:items-start lg:w-auto lg:items-start">
@@ -335,7 +335,7 @@ export default function HomePage() {
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.findUs}
             </p>
-            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)", marginBottom: 28 }}>
+            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--green-deep)", marginBottom: 28 }}>
               {tr.locT1} <span style={{ color: "var(--green)" }}>{tr.locA}</span><br />{tr.locT2}
             </h2>
             {contactItems.map(({ Icon, h, p, href }) => (

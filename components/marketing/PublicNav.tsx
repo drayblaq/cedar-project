@@ -61,7 +61,7 @@ export function PublicNav() {
               href={link.href}
               className="text-sm font-semibold px-4 py-2 rounded-lg transition-colors no-underline"
               style={{
-                color: pathname === link.href ? "var(--green)" : "var(--green-dark)",
+                color: pathname === link.href ? "var(--green)" : "#111827",
                 background: pathname === link.href ? "rgba(46,168,42,0.08)" : "transparent",
               }}
             >
@@ -85,7 +85,7 @@ export function PublicNav() {
             <span
               style={{
                 fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.78rem",
-                letterSpacing: "0.08em", color: lang === "en" ? "var(--green)" : "var(--text-muted)",
+                letterSpacing: "0.08em", color: lang === "en" ? "var(--green)" : "#374151",
               }}
             >
               EN
@@ -94,7 +94,7 @@ export function PublicNav() {
             <span
               style={{
                 fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.78rem",
-                letterSpacing: "0.08em", color: lang === "fr" ? "var(--green)" : "var(--text-muted)",
+                letterSpacing: "0.08em", color: lang === "fr" ? "var(--green)" : "#374151",
               }}
             >
               FR
@@ -134,7 +134,7 @@ export function PublicNav() {
               href={link.href}
               onClick={() => setMenuOpen(false)}
               className="py-3 font-semibold text-base no-underline border-b transition-colors"
-              style={{ color: "var(--green-dark)", borderColor: "rgba(46,168,42,0.1)" }}
+              style={{ color: "#111827", borderColor: "rgba(46,168,42,0.1)" }}
             >
               {link.label}
             </Link>
