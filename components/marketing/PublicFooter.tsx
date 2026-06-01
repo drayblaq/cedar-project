@@ -10,7 +10,7 @@ const footerT = {
   en: {
     desc: "English language training in Cotonou, Bénin — practical, learner-centered programs designed for measurable results.",
     quickLinks: "Quick links",
-    location: "Location",
+    location: "Contact",
     links: [
       { href: "/", label: "Home" },
       { href: "/about", label: "About" },
@@ -19,12 +19,12 @@ const footerT = {
       { href: "/register", label: "Apply Now" },
     ],
     rights: "All rights reserved.",
-    madeIn: "Made with ♥ in",
+    madeIn: "Made with care in",
   },
   fr: {
     desc: "Formation en anglais à Cotonou, Bénin — programmes pratiques centrés sur l'apprenant pour des résultats mesurables.",
     quickLinks: "Liens rapides",
-    location: "Localisation",
+    location: "Contact",
     links: [
       { href: "/", label: "Accueil" },
       { href: "/about", label: "À propos" },
@@ -33,7 +33,7 @@ const footerT = {
       { href: "/register", label: "Candidater" },
     ],
     rights: "Tous droits réservés.",
-    madeIn: "Fait avec ♥ à",
+    madeIn: "Fait avec soin à",
   },
 };
 
@@ -47,14 +47,14 @@ export function PublicFooter() {
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
             <Image src="/logo.png" alt="Cedar Training Center" width={52} height={52} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
-            <span style={{ fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "1.05rem", color: "white", lineHeight: 1.2 }}>
+            <span style={{ fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "1.05rem", color: "white", lineHeight: 1.2 }}>
               Cedar <span style={{ color: "var(--green)" }}>Training</span><br />Center
             </span>
           </div>
           <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.8, maxWidth: 300 }}>{t.desc}</p>
         </div>
         <div>
-          <h4 style={{ fontFamily: "var(--font-syne)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 20 }}>
+          <h4 style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 20 }}>
             {t.quickLinks}
           </h4>
           <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
@@ -68,13 +68,13 @@ export function PublicFooter() {
           </ul>
         </div>
         <div>
-          <h4 style={{ fontFamily: "var(--font-syne)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 20 }}>
+          <h4 style={{ fontFamily: "var(--font-inter)", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 20 }}>
             {t.location}
           </h4>
           <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
-            <li><span style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.8 }}>Gbédjromédé, Cotonou<br />Bénin 🇧🇯</span></li>
-            <li><a href="mailto:contact@cedartrainingcenter.com" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>contact@cedartrainingcenter.com</a></li>
-            <li><a href="tel:+22997000000" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>+229 97 00 00 00</a></li>
+            <li><span style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.8 }}>Gbédjromédé, Cotonou, Bénin</span></li>
+            <li><a href="mailto:trainingcentercedar@gmail.com" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>trainingcentercedar@gmail.com</a></li>
+            <li><a href="tel:+22901961964 40" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.55)", textDecoration: "none" }}>+229 01 96 19 64 40</a></li>
           </ul>
         </div>
       </div>

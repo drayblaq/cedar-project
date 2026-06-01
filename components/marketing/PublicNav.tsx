@@ -151,7 +151,7 @@ export function PublicNav() {
             className="flex items-center gap-2 py-3 font-bold text-sm cursor-pointer disabled:opacity-60"
             style={{ color: "var(--green)", background: "none", border: "none" }}
           >
-            {lang === "en" ? "🇫🇷 Passer en Français" : "🇬🇧 Switch to English"}
+            {lang === "en" ? "Passer en Français" : "Switch to English"}
           </button>
           <Link
             href="/register"

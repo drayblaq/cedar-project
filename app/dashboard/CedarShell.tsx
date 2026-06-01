@@ -1,22 +1,17 @@
-import { Sidebar } from "./Sidebar";
+import { TopNav } from "./TopNav";
 
 /**
- * The unified dashboard chrome: dark Cedar sidebar + main content area.
- * Wraps everything in `.cedar-dash` so the Cedar design-system CSS applies.
- * Used by every portal layout (admin, staff, student, parent, and /dashboard).
+ * Dashboard chrome: Cedar top-nav + centered content area.
+ * Wraps all portal pages (admin, staff, student, parent).
+ * The .cedar-dash scope activates all cd-* design-system classes.
  */
 export function CedarShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="cedar-dash" style={{ minHeight: "100vh" }}>
-      <Sidebar />
-      <div className="cedar-dash-main" style={{ marginLeft: 250, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div className="cedar-dash" style={{ minHeight: "100vh", background: "#f4f7f2" }}>
+      <TopNav />
+      <div className="cedar-page-content">
         {children}
       </div>
-      <style>{`
-        @media (max-width: 900px) {
-          .cedar-dash-main { margin-left: 0 !important; padding-top: 60px; }
-        }
-      `}</style>
     </div>
   );
 }

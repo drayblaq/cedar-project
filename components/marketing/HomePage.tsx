@@ -9,72 +9,80 @@ type Lang = "en" | "fr";
 
 const t = {
   en: {
-    eyebrow: "English Training · Cotonou, Bénin 🇧🇯",
+    eyebrow: "English Training · Cotonou, Bénin",
     title1: "Learn", title2: "English", title3: "with Cedar",
-    sub: "We support every learner in acquiring English for studies, career and international success. Based in Cotonou — serving all of Bénin.",
+    sub: "Supporting every learner in acquiring English to succeed in their studies, career and international environment.",
     apply: "Apply Now", explore: "Explore Programs",
     whoWeAre: "Who We Are",
-    aboutT: "A center", aboutA: "dedicated", aboutT2: "to your success",
-    aboutLead: "Cedar Training Center helps learners develop English language skills for studies, career growth and integration in international contexts. Based in Gbédjromédé, Cotonou.",
-    v1t: "Mission-driven", v1p: "High-quality English training that helps learners communicate with confidence and efficiency.",
-    v2t: "International focus", v2p: "Become a reference center recognized for excellence, innovation and impact across West Africa.",
-    v3t: "Real-world methodology", v3p: "Dynamic courses, real-life scenarios, intensive speaking practice and individual support.",
+    aboutT: "A centre", aboutA: "dedicated", aboutT2: "to your success",
+    aboutLead: "Cedar Training Center is dedicated to English language teaching. We help learners develop their language skills to succeed in their studies, career and integration in an international environment.",
+    v1t: "Mission", v1p: "Offer quality English training that allows learners to communicate with confidence and effectiveness in professional and academic environments.",
+    v2t: "Vision", v2p: "Become a reference centre in language training, recognized for excellence, innovation and impact.",
+    v3t: "Our methodology", v3p: "Dynamic courses, real-life scenarios, intensive speaking practice and individual support to guarantee measurable progress at every level.",
     ourStory: "Our story",
     whatWeOffer: "What We Offer",
     progT: "Programs built for", progA: "real results",
     p1t: "General English", p1p: "Build core skills across reading, writing, speaking and listening — from Beginner to Advanced.", p1tag: "A1 → C2", p1lv: "All levels",
     p2t: "Business English", p2p: "Master professional communication for meetings, emails, presentations and negotiations.", p2tag: "Intermediate → Advanced", p2lv: "Professional",
-    p3t: "International Test Preparation (TOEIC, TOEFL, IELTS, etc.)", p3p: "Targeted preparation with proven strategies, practice tests and expert feedback.", p3tag: "All certifications", p3lv: "Exam Prep",
-    p4t: "Communication and Conversation Workshops", p4p: "Interactive sessions focused on improving speaking fluency and active listening.", p4tag: "Speaking", p4lv: "Workshops",
-    p5t: "Personalized Courses and Intensive Programs", p5p: "Fast-track programs built around your goals, timeline and schedule.", p5tag: "Custom track", p5lv: "Intensive",
+    p3t: "International test preparation: TOEIC, TOEFL, IELTS", p3p: "Targeted preparation with proven strategies, practice tests and expert feedback.", p3tag: "All certifications", p3lv: "Exam Prep",
+    p4t: "Communication and conversation workshops", p4p: "Interactive sessions focused on improving speaking fluency and active listening.", p4tag: "Speaking", p4lv: "Workshops",
+    p5t: "Personalised courses and intensive programs", p5p: "Fast-track programs built around your goals, timeline and schedule.", p5tag: "Custom track", p5lv: "Intensive",
     ctaCardT: "Pricing & Registration", ctaCardP: "Take our placement test and start at the exact right level for you.", ctaCardBtn: "Apply Now →",
     priceMonthly: "50,000 CFA", priceMonthlySub: "per month",
     priceSemi: "250,000 CFA", priceSemiSub: "for 6 months",
-
-    whyCedar: "Why Cedar?", whyT: "The training center", whyA: "built different",
-    whySub: "We don't just teach English — we engineer confidence. Every element of our program is designed to get you speaking, writing and thinking in English faster than you thought possible.",
-    f1t: "Small groups", f1p: "Max 15 students per class for personalized attention and real speaking time.",
-    f2t: "Expert teachers", f2p: "Qualified instructors with international experience and local context.",
-    f3t: "Placement testing", f3p: "Start at the exact right level with our free placement assessment.",
-    f4t: "Flexible schedules", f4p: "Morning, afternoon and evening classes to fit work and school.",
+    whyCedar: "Why Cedar?", whyT: "The training centre", whyA: "built for you",
+    whySub: "Every element of our program is designed to help you speak, write and think in English with confidence.",
+    f1t: "Qualified and experienced trainers", f1p: "Our instructors bring international expertise and in-depth knowledge of learner needs.",
+    f2t: "Interactive, learner-centred method", f2p: "Lessons built around real communication — not just theory.",
+    f3t: "Flexible schedules adapted to your needs", f3p: "Morning, afternoon and evening classes to fit work and school.",
+    f4t: "Personalised support and modern resources", f4p: "Individual coaching, practice materials and ongoing feedback to track your progress.",
     ctaL1: "Start your journey", ctaL2: "in English.", ctaL3: "Today.",
     ctaApply: "Apply Now →", ctaContact: "Have questions? Contact us →",
-    findUs: "Find Us", locT1: "We're in", locA: "Cotonou,", locT2: "Bénin 🇧🇯",
+    findUs: "Find Us", locT1: "We are in", locA: "Cotonou,", locT2: "Bénin",
     contactUs: "Contact us",
+    address: "Gbédjromédé, Rue avant l'école Nagueze en venant du carrefour 16 ampoules, Immeubles Ola Fitness, Entrée Auto tours.",
+    phone: "+229 01 96 19 64 40",
+    email: "trainingcentercedar@gmail.com",
+    hours: "Monday – Saturday · 8:00 am – 7:00 pm",
+    addressLabel: "Address", phoneLabel: "Phone & WhatsApp", emailLabel: "Email", hoursLabel: "Hours",
   },
   fr: {
-    eyebrow: "Formation en anglais · Cotonou, Bénin 🇧🇯",
+    eyebrow: "Formation en anglais · Cotonou, Bénin",
     title1: "Apprendre", title2: "l'Anglais", title3: "avec Cedar",
-    sub: "Nous accompagnons chaque apprenant dans l'acquisition de l'anglais pour ses études, sa carrière et son succès international.",
+    sub: "Accompagner chaque apprenant dans l'acquisition de l'anglais afin de favoriser son intégration et sa réussite dans un environnement international.",
     apply: "Candidater", explore: "Voir les programmes",
     whoWeAre: "Qui sommes-nous",
     aboutT: "Un centre", aboutA: "dédié", aboutT2: "à votre réussite",
-    aboutLead: "Cedar Training Center aide les apprenants à développer leurs compétences en anglais pour les études, la carrière et l'intégration dans des contextes internationaux. Situé à Gbédjromédé, Cotonou.",
-    v1t: "Mission claire", v1p: "Former à l'anglais de qualité pour que chaque apprenant communique avec confiance.",
-    v2t: "Vision internationale", v2p: "Devenir un centre de référence en Afrique de l'Ouest reconnu pour l'excellence.",
-    v3t: "Méthodologie concrète", v3p: "Cours dynamiques, situations réelles, pratique orale intensive et suivi individuel.",
+    aboutLead: "Le Centre de Formation est dédié à l'enseignement de l'anglais. Nous accompagnons les apprenants à développer leurs compétences linguistiques pour réussir leurs études, leur carrière et leur intégration dans un environnement international.",
+    v1t: "Mission", v1p: "Offrir une formation en anglais de qualité qui permet aux apprenants de communiquer avec confiance et efficacité.",
+    v2t: "Vision", v2p: "Devenir un centre de référence en formation linguistique, reconnu pour son excellence, son innovation et son impact.",
+    v3t: "Notre méthodologie", v3p: "Cours dynamiques, mises en situation réelles, pratique orale intensive et accompagnement individuel pour garantir des progrès mesurables.",
     ourStory: "Notre histoire",
     whatWeOffer: "Nos offres",
     progT: "Des programmes pour", progA: "des résultats concrets",
     p1t: "Anglais général", p1p: "Développez les 4 compétences : lecture, écriture, expression et compréhension orale.", p1tag: "A1 → C2", p1lv: "Tous niveaux",
     p2t: "Anglais professionnel (Business English)", p2p: "Maîtrisez la communication professionnelle pour réunions, e-mails et présentations.", p2tag: "Intermédiaire → Avancé", p2lv: "Professionnel",
-    p3t: "Préparation aux tests internationaux (TOEIC, TOEFL, IELTS, etc.)", p3p: "Préparation ciblée avec stratégies éprouvées et tests blancs.", p3tag: "Toutes certifications", p3lv: "Certification",
-    p4t: "Ateliers de communication et de conversation", p4p: "Sessions interactives pour améliorer la fluidité et la compréhension orale en situation réelle.", p4tag: "Oral", p4lv: "Ateliers",
+    p3t: "Préparation aux tests internationaux : TOEIC, TOEFL, IELTS", p3p: "Préparation ciblée avec stratégies éprouvées et tests blancs.", p3tag: "Toutes certifications", p3lv: "Certification",
+    p4t: "Ateliers de communication et de conversation", p4p: "Sessions interactives pour améliorer la fluidité et la compréhension orale.", p4tag: "Oral", p4lv: "Ateliers",
     p5t: "Cours personnalisés et programmes intensifs", p5p: "Programme sur mesure selon vos objectifs, votre rythme et vos disponibilités.", p5tag: "Parcours personnalisé", p5lv: "Intensif",
     ctaCardT: "Tarifs & Inscription", ctaCardP: "Passez notre test de niveau et rejoignez le programme idéal pour vous.", ctaCardBtn: "Candidater →",
     priceMonthly: "50 000 CFA", priceMonthlySub: "par mois",
     priceSemi: "250 000 CFA", priceSemiSub: "pour 6 mois",
-
-    whyCedar: "Pourquoi Cedar ?", whyT: "Le centre de formation", whyA: "qui fait la différence",
-    whySub: "Nous ne faisons pas qu'enseigner l'anglais — nous construisons la confiance. Chaque élément de notre programme est conçu pour vous faire progresser plus vite.",
-    f1t: "Petits groupes", f1p: "Maximum 15 étudiants par classe pour un suivi personnalisé et du temps de parole réel.",
-    f2t: "Enseignants experts", f2p: "Formateurs qualifiés avec expérience internationale et contexte local.",
-    f3t: "Test de niveau", f3p: "Commencez exactement au bon niveau avec notre test de placement gratuit.",
-    f4t: "Horaires flexibles", f4p: "Cours matin, après-midi et soir pour s'adapter à votre emploi du temps.",
+    whyCedar: "Pourquoi Cedar ?", whyT: "Le centre de formation", whyA: "fait pour vous",
+    whySub: "Chaque élément de notre programme est conçu pour vous aider à parler, écrire et penser en anglais avec confiance.",
+    f1t: "Formateurs qualifiés et expérimentés", f1p: "Nos formateurs apportent une expertise internationale et une connaissance approfondie des besoins des apprenants.",
+    f2t: "Méthode interactive et centrée sur l'apprenant", f2p: "Des cours axés sur la communication réelle — pas seulement la théorie.",
+    f3t: "Horaires flexibles et adaptés aux besoins", f3p: "Cours matin, après-midi et soir pour s'adapter à votre emploi du temps.",
+    f4t: "Suivi personnalisé et ressources modernes", f4p: "Coaching individuel, supports pédagogiques et retours réguliers pour suivre vos progrès.",
     ctaL1: "Commencez votre parcours", ctaL2: "en anglais.", ctaL3: "Aujourd'hui.",
     ctaApply: "Candidater →", ctaContact: "Des questions ? Contactez-nous →",
-    findUs: "Nous trouver", locT1: "Nous sommes à", locA: "Cotonou,", locT2: "Bénin 🇧🇯",
+    findUs: "Nous trouver", locT1: "Nous sommes à", locA: "Cotonou,", locT2: "Bénin",
     contactUs: "Nous contacter",
+    address: "Gbédjromédé, Rue avant l'école Nagueze, Immeubles Ola Fitness, Entrée Auto tours, Cotonou, Bénin.",
+    phone: "+229 01 96 19 64 40",
+    email: "trainingcentercedar@gmail.com",
+    hours: "Lundi – Samedi · 8h00 – 19h00",
+    addressLabel: "Adresse", phoneLabel: "Téléphone & WhatsApp", emailLabel: "Email", hoursLabel: "Horaires",
   },
 };
 
@@ -91,6 +99,11 @@ function useReveal(locale: string) {
   }, [locale]);
 }
 
+function PinIcon() { return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx={12} cy={10} r={3}/></svg>; }
+function PhoneIcon() { return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>; }
+function MailIcon() { return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>; }
+function ClockIcon() { return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx={12} cy={12} r={10}/><path d="M12 6v6l4 2"/></svg>; }
+
 export default function HomePage() {
   const locale = useLocale();
   const lang: Lang = locale === "fr" ? "fr" : "en";
@@ -105,34 +118,41 @@ export default function HomePage() {
     "TOEIC Prep",
     lang === "en" ? "Intensive Programs" : "Programmes intensifs",
     lang === "en" ? "Placement Testing" : "Test de niveau",
-    "Cotonou, Bénin 🇧🇯",
+    "Cotonou, Bénin",
   ];
 
   const programs = [
-    { img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=600&q=85&fit=crop&crop=faces", lv: tr.p1lv, t: tr.p1t, p: tr.p1p, tag: tr.p1tag },
-    { img: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&q=85&fit=crop", lv: tr.p2lv, t: tr.p2t, p: tr.p2p, tag: tr.p2tag },
-    { img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=85&fit=crop&crop=faces", lv: tr.p3lv, t: tr.p3t, p: tr.p3p, tag: tr.p3tag },
-    { img: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=600&q=85&fit=crop", lv: tr.p4lv, t: tr.p4t, p: tr.p4p, tag: tr.p4tag },
-    { img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=85&fit=crop&crop=faces", lv: tr.p5lv, t: tr.p5t, p: tr.p5p, tag: tr.p5tag },
+    { img: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?w=600&q=85&fit=crop", lv: tr.p1lv, t: tr.p1t, p: tr.p1p, tag: tr.p1tag },
+    { img: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=85&fit=crop", lv: tr.p2lv, t: tr.p2t, p: tr.p2p, tag: tr.p2tag },
+    { img: "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=600&q=85&fit=crop", lv: tr.p3lv, t: tr.p3t, p: tr.p3p, tag: tr.p3tag },
+    { img: "https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=85&fit=crop", lv: tr.p4lv, t: tr.p4t, p: tr.p4p, tag: tr.p4tag },
+    { img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=85&fit=crop", lv: tr.p5lv, t: tr.p5t, p: tr.p5p, tag: tr.p5tag },
+  ];
+
+  const contactItems = [
+    { Icon: PinIcon,   h: tr.addressLabel, p: tr.address },
+    { Icon: PhoneIcon, h: tr.phoneLabel,   p: tr.phone,  href: "tel:+22901961964 40" },
+    { Icon: MailIcon,  h: tr.emailLabel,   p: tr.email,  href: `mailto:${tr.email}` },
+    { Icon: ClockIcon, h: tr.hoursLabel,   p: tr.hours },
   ];
 
   return (
     <div>
       {/* ── HERO ── */}
       <section className="relative grid min-h-0 grid-cols-1 overflow-hidden bg-[var(--mint)] pt-[72px] sm:pt-[76px] lg:min-h-screen lg:grid-cols-2">
-        <div aria-hidden="true" className="hero-bg-word hidden sm:block">APPRENDRE<br />L'ANGLAIS</div>
+        <div aria-hidden="true" className="hero-bg-word hidden sm:block">CEDAR</div>
         <div className="relative z-[2] flex flex-col justify-center px-4 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-20 xl:pl-20">
           <p className="animate-slide-up delay-100" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 24 }}>
             <span style={{ display: "block", width: 28, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.eyebrow}
           </p>
-          <h1 className="animate-slide-up delay-200" style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(3.2rem, 5.5vw, 6.5rem)", fontWeight: 800, lineHeight: 0.92, letterSpacing: "-0.04em", color: "var(--green-deep)" }}>
+          <h1 className="animate-slide-up delay-200" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(3.2rem, 5.5vw, 6.5rem)", fontWeight: 800, lineHeight: 0.92, letterSpacing: "-0.04em", color: "var(--green-deep)" }}>
             <span style={{ color: "transparent", WebkitTextStroke: "3px var(--green)" }}>{tr.title1}</span><br />
             {tr.title2}<br />
             <span style={{ color: "var(--green)" }}>{tr.title3}</span>
           </h1>
           <p className="animate-slide-up delay-300" style={{ marginTop: 28, fontSize: "1.1rem", lineHeight: 1.7, color: "var(--text)", fontWeight: 600, maxWidth: 420 }}>{tr.sub}</p>
           <div className="animate-slide-up delay-400" style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 44, flexWrap: "wrap" }}>
-            <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
+            <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.apply} →
             </Link>
             <Link href="/courses" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--green-dark)", fontWeight: 600, fontSize: "0.95rem", textDecoration: "none", padding: "16px 24px", borderRadius: 12, border: "2px solid rgba(46,168,42,0.3)" }}>
@@ -142,12 +162,12 @@ export default function HomePage() {
         </div>
         {/* Hero right photo */}
         <div className="animate-slide-right delay-300r relative order-first min-h-[44vh] w-full overflow-hidden lg:order-none lg:min-h-0 lg:h-full">
-          <Image src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=900&q=85&fit=crop&crop=faces" alt="Students learning English" fill style={{ objectFit: "cover" }} priority />
+          <Image src="https://images.unsplash.com/photo-1531545514256-b1400bc00f31?w=1200&q=80" alt="Students learning English at Cedar Training Center" fill style={{ objectFit: "cover" }} priority />
           <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(to right, var(--mint) 0%, transparent 20%, transparent 80%, var(--mint) 100%)" }} />
-          <div className="animate-float-pill absolute right-4 top-4 z-[5] rounded-full px-3 py-2 text-[0.65rem] font-extrabold uppercase tracking-wide text-white sm:right-8 sm:top-8 sm:px-[18px] sm:py-2.5 sm:text-[0.78rem]" style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 24px rgba(46,168,42,0.4)" }}>
+          <div className="animate-float-pill absolute right-4 top-4 z-[5] rounded-full px-3 py-2 text-[0.65rem] font-extrabold uppercase tracking-wide text-white sm:right-8 sm:top-8 sm:px-[18px] sm:py-2.5 sm:text-[0.78rem]" style={{ background: "var(--green)", fontFamily: "var(--font-inter)", boxShadow: "0 8px 24px rgba(46,168,42,0.4)" }}>
             IELTS · TOEFL · TOEIC
           </div>
-          <div className="animate-float-pill-2 absolute bottom-6 right-4 z-[5] flex items-center gap-2 rounded-xl border-2 border-[var(--mint-deep)] bg-white px-3 py-2.5 text-[0.7rem] font-extrabold sm:bottom-10 sm:right-10 sm:gap-2.5 sm:px-5 sm:py-3 sm:text-[0.78rem]" style={{ color: "var(--green-dark)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 32px rgba(46,168,42,0.15)" }}>
+          <div className="animate-float-pill-2 absolute bottom-6 right-4 z-[5] flex items-center gap-2 rounded-xl border-2 border-[var(--mint-deep)] bg-white px-3 py-2.5 text-[0.7rem] font-extrabold sm:bottom-10 sm:right-10 sm:gap-2.5 sm:px-5 sm:py-3 sm:text-[0.78rem]" style={{ color: "var(--green-dark)", fontFamily: "var(--font-inter)", boxShadow: "0 8px 32px rgba(46,168,42,0.15)" }}>
             <span style={{ fontSize: "1.6rem", color: "var(--green)" }}>98%</span>
             <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--green-dark)", lineHeight: 1.3 }}>Student<br />Satisfaction</div>
           </div>
@@ -158,7 +178,7 @@ export default function HomePage() {
       <div style={{ background: "var(--green-deep)", overflow: "hidden", padding: "15px 0" }}>
         <div className="animate-marquee" style={{ display: "flex", whiteSpace: "nowrap" }}>
           {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 16, fontFamily: "var(--font-syne)", fontSize: "0.82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--mint)", padding: "0 40px" }}>
+            <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 16, fontFamily: "var(--font-inter)", fontSize: "0.82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--mint)", padding: "0 40px" }}>
               {item}<span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--green)", flexShrink: 0 }} />
             </span>
           ))}
@@ -170,17 +190,17 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div className="reveal-left relative mx-auto h-[340px] w-full max-w-lg sm:h-[440px] lg:mx-0 lg:h-[580px] lg:max-w-none">
             <div style={{ position: "absolute", top: 0, left: 0, width: "65%", height: "76%", borderRadius: 24, overflow: "hidden", boxShadow: "0 32px 80px rgba(46,168,42,0.15)" }}>
-              <Image src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=700&q=85&fit=crop&crop=faces" alt="Students learning" fill style={{ objectFit: "cover" }} />
+              <Image src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80" alt="Students learning at Cedar" fill style={{ objectFit: "cover" }} />
             </div>
             <div style={{ position: "absolute", bottom: 0, right: 0, width: "54%", height: "56%", borderRadius: 24, overflow: "hidden", border: "5px solid var(--white)", boxShadow: "0 20px 60px rgba(46,168,42,0.18)" }}>
-              <Image src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=500&q=85&fit=crop" alt="Student studying" fill style={{ objectFit: "cover" }} />
+              <Image src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=500&q=85&fit=crop" alt="Classroom at Cedar Training Center" fill style={{ objectFit: "cover" }} />
             </div>
           </div>
           <div className="reveal-right">
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whoWeAre}
             </p>
-            <h2 style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)" }}>
+            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)" }}>
               {tr.aboutT} <span style={{ color: "var(--green)" }}>{tr.aboutA}</span><br />{tr.aboutT2}
             </h2>
             <p style={{ fontSize: "1.1rem", lineHeight: 1.78, color: "var(--text)", fontWeight: 600, marginTop: 18, marginBottom: 32 }}>{tr.aboutLead}</p>
@@ -193,13 +213,13 @@ export default function HomePage() {
                 <div key={vt} className="value-card" style={{ display: "flex", gap: 18, alignItems: "flex-start", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 16, padding: "18px 22px" }}>
                   <div style={{ width: 44, height: 44, flexShrink: 0, background: "rgba(46,168,42,0.12)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>{icon}</div>
                   <div>
-                    <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 4 }}>{vt}</h3>
+                    <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 4 }}>{vt}</h3>
                     <p style={{ fontSize: "0.875rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <Link href="/about" style={{ marginTop: 36, display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
+            <Link href="/about" style={{ marginTop: 36, display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.ourStory} →
             </Link>
           </div>
@@ -213,7 +233,7 @@ export default function HomePage() {
             <p style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--mint)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whatWeOffer}
             </p>
-            <h2 style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "white" }}>
+            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "white" }}>
               {tr.progT}<br /><span style={{ color: "var(--green)" }}>{tr.progA}</span>
             </h2>
           </div>
@@ -223,30 +243,27 @@ export default function HomePage() {
                 <div className="relative h-48 overflow-hidden sm:h-52 md:h-[220px]">
                   <Image src={prog.img} alt={prog.t} fill style={{ objectFit: "cover" }} />
                   <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 40%, rgba(15,74,13,0.7) 100%)" }} />
-                  <span style={{ position: "absolute", top: 14, right: 14, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.7rem", padding: "5px 12px", borderRadius: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>{prog.lv}</span>
+                  <span style={{ position: "absolute", top: 14, right: 14, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.7rem", padding: "5px 12px", borderRadius: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>{prog.lv}</span>
                 </div>
                 <div style={{ padding: 26 }}>
-                  <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1.2rem", fontWeight: 800, color: "white", marginBottom: 10, lineHeight: 1.2 }}>{prog.t}</h3>
-                  <p style={{ fontSize: "0.875rem", color: "white", fontWeight: 600, lineHeight: 1.65, marginBottom: 18 }}>{prog.p}</p>
+                  <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1.2rem", fontWeight: 800, color: "white", marginBottom: 10, lineHeight: 1.2 }}>{prog.t}</h3>
+                  <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.8)", fontWeight: 500, lineHeight: 1.65, marginBottom: 18 }}>{prog.p}</p>
                   <span style={{ display: "inline-block", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.06em", padding: "5px 12px", borderRadius: 8, textTransform: "uppercase", background: "rgba(46,168,42,0.2)", color: "var(--mint-deep)" }}>{prog.tag}</span>
                 </div>
               </div>
             ))}
             {/* Pricing / CTA card */}
             <div className="program-card col-span-1 flex flex-col items-start justify-center rounded-[20px] border-none bg-[var(--green)] p-8 sm:col-span-2 xl:col-span-1">
-              <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1.5rem", fontWeight: 800, color: "white", marginBottom: 14, lineHeight: 1.1 }}>{tr.ctaCardT}</h3>
-              
+              <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1.5rem", fontWeight: 800, color: "white", marginBottom: 14, lineHeight: 1.1 }}>{tr.ctaCardT}</h3>
               <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "16px", width: "100%", marginBottom: "16px" }}>
-                <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "white", fontFamily: "var(--font-syne)" }}>{tr.priceMonthly}</div>
+                <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "white", fontFamily: "var(--font-inter)" }}>{tr.priceMonthly}</div>
                 <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "rgba(255,255,255,0.9)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{tr.priceMonthlySub}</div>
               </div>
-
               <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "16px", width: "100%", marginBottom: "24px" }}>
-                <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "white", fontFamily: "var(--font-syne)" }}>{tr.priceSemi}</div>
+                <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "white", fontFamily: "var(--font-inter)" }}>{tr.priceSemi}</div>
                 <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "rgba(255,255,255,0.9)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{tr.priceSemiSub}</div>
               </div>
-
-              <Link href="/register" style={{ display: "inline-flex", width: "100%", justifyContent: "center", alignItems: "center", gap: 10, background: "white", color: "var(--green-dark)", fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "0.9rem", padding: "14px 26px", borderRadius: 10, textDecoration: "none" }}>
+              <Link href="/register" style={{ display: "inline-flex", width: "100%", justifyContent: "center", alignItems: "center", gap: 10, background: "white", color: "var(--green-dark)", fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "0.9rem", padding: "14px 26px", borderRadius: 10, textDecoration: "none" }}>
                 {tr.ctaCardBtn}
               </Link>
             </div>
@@ -258,18 +275,18 @@ export default function HomePage() {
       <section className="bg-[var(--mint)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div>
-            <p className="eyebrow-label reveal" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
+            <p className="reveal" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whyCedar}
             </p>
-            <h2 className="reveal td-1" style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)" }}>
+            <h2 className="reveal td-1" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)" }}>
               {tr.whyT}<br /><span style={{ color: "var(--green)" }}>{tr.whyA}</span>
             </h2>
             <p className="reveal td-2" style={{ marginTop: 18, fontSize: "1rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.8, maxWidth: 480 }}>{tr.whySub}</p>
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-10">
               {[{ n:"01",t:tr.f1t,p:tr.f1p},{n:"02",t:tr.f2t,p:tr.f2p},{n:"03",t:tr.f3t,p:tr.f3p},{n:"04",t:tr.f4t,p:tr.f4p}].map(({n,t:ft,p},i)=>(
                 <div key={i} className={`why-feature reveal td-${i+1}`} style={{ background: "var(--white)", border: "1.5px solid var(--mint-deep)", borderRadius: 18, padding: 26, boxShadow: "0 4px 20px rgba(46,168,42,0.06)" }}>
-                  <div style={{ fontFamily: "var(--font-syne)", fontSize: "2rem", fontWeight: 800, color: "var(--green)", opacity: 0.4, lineHeight: 1, marginBottom: 10 }}>{n}</div>
-                  <h3 style={{ fontFamily: "var(--font-syne)", fontSize: "1rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 6 }}>{ft}</h3>
+                  <div style={{ fontFamily: "var(--font-inter)", fontSize: "2rem", fontWeight: 800, color: "var(--green)", opacity: 0.4, lineHeight: 1, marginBottom: 10 }}>{n}</div>
+                  <h3 style={{ fontFamily: "var(--font-inter)", fontSize: "1rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 6 }}>{ft}</h3>
                   <p style={{ fontSize: "0.83rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>
                 </div>
               ))}
@@ -277,9 +294,9 @@ export default function HomePage() {
           </div>
           <div className="reveal-right relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
             <div className="relative aspect-[3/4] overflow-hidden rounded-3xl">
-              <Image src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=700&q=85&fit=crop&crop=faces" alt="Students at Cedar" fill style={{ objectFit: "cover" }} />
+              <Image src="https://images.unsplash.com/photo-1529390079861-591de354faf5?w=700&q=85&fit=crop" alt="Professional at Cedar Training Center" fill style={{ objectFit: "cover" }} />
             </div>
-            <div className="absolute -bottom-3 -left-1 rounded-2xl border-4 border-white px-5 py-4 text-white sm:-bottom-6 sm:-left-4 sm:px-7 sm:py-5" style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 16px 48px rgba(46,168,42,0.4)" }}>
+            <div className="absolute -bottom-3 -left-1 rounded-2xl border-4 border-white px-5 py-4 text-white sm:-bottom-6 sm:-left-4 sm:px-7 sm:py-5" style={{ background: "var(--green)", fontFamily: "var(--font-inter)", boxShadow: "0 16px 48px rgba(46,168,42,0.4)" }}>
               <div style={{ fontSize: "2.6rem", fontWeight: 800, lineHeight: 1 }}>98%</div>
               <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 4, opacity: 0.85 }}>Student satisfaction</div>
             </div>
@@ -291,11 +308,11 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-[var(--green-deep)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
         <div aria-hidden="true" className="cta-bg-word hidden md:block">APPLY</div>
         <div className="relative z-[2] mx-auto grid max-w-6xl grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-14">
-          <h2 style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(2.6rem, 4.5vw, 5rem)", fontWeight: 800, color: "white", lineHeight: 1.0, letterSpacing: "-0.04em" }}>
+          <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.6rem, 4.5vw, 5rem)", fontWeight: 800, color: "white", lineHeight: 1.0, letterSpacing: "-0.04em" }}>
             {tr.ctaL1}<br /><span style={{ color: "var(--green)" }}>{tr.ctaL2}</span><br /><span style={{ opacity: 0.4 }}>{tr.ctaL3}</span>
           </h2>
           <div className="flex w-full shrink-0 flex-col items-stretch gap-3 sm:items-start lg:w-auto lg:items-start">
-            <Link href="/register" className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-8 py-4 text-center text-base font-bold text-white no-underline sm:w-auto sm:whitespace-nowrap" style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
+            <Link href="/register" className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-8 py-4 text-center text-base font-bold text-white no-underline sm:w-auto sm:whitespace-nowrap" style={{ background: "var(--green)", fontFamily: "var(--font-inter)", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.ctaApply}
             </Link>
             <Link href="/contact" style={{ color: "var(--mint)", fontWeight: 600, fontSize: "0.9rem", textDecoration: "none", opacity: 0.65 }}>
@@ -318,25 +335,21 @@ export default function HomePage() {
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
               <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.findUs}
             </p>
-            <h2 style={{ fontFamily: "var(--font-syne)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)", marginBottom: 28 }}>
+            <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 800, lineHeight: 1.0, letterSpacing: "-0.035em", color: "var(--green-deep)", marginBottom: 28 }}>
               {tr.locT1} <span style={{ color: "var(--green)" }}>{tr.locA}</span><br />{tr.locT2}
             </h2>
-            {[
-              { icon: "📍", h: "Address", p: "Gbédjromédé, street before Nagueze school, coming from Carrefour 16 ampoules, Ola Fitness buildings, Auto tours entrance." },
-              { icon: "📞", h: "Phone & WhatsApp", p: "+229 97 00 00 00", href: "tel:+22997000000" },
-              { icon: "✉️", h: "Email", p: "contact@cedartrainingcenter.com", href: "mailto:contact@cedartrainingcenter.com" },
-              { icon: "🕐", h: "Hours", p: "Monday – Saturday · 8:00 am – 7:00 pm" },
-            ].map(({ icon, h, p, href }) => (
+            {contactItems.map(({ Icon, h, p, href }) => (
               <div key={h} style={{ display: "flex", gap: 16, padding: "20px 0", borderBottom: "1.5px solid var(--mint-deep)" }}>
-                <div style={{ width: 42, height: 42, flexShrink: 0, background: "rgba(46,168,42,0.1)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem" }}>{icon}</div>
+                <div style={{ width: 42, height: 42, flexShrink: 0, background: "rgba(46,168,42,0.1)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--green)" }}><Icon /></div>
                 <div>
-                  <h4 style={{ fontFamily: "var(--font-syne)", fontSize: "0.85rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 4 }}>{h}</h4>
-                  {href ? <a href={href} style={{ fontSize: "0.875rem", color: "var(--green)", textDecoration: "none", fontWeight: 600 }}>{p}</a>
-                        : <p style={{ fontSize: "0.875rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>}
+                  <h4 style={{ fontFamily: "var(--font-inter)", fontSize: "0.85rem", fontWeight: 800, color: "var(--green-dark)", marginBottom: 4 }}>{h}</h4>
+                  {href
+                    ? <a href={href} style={{ fontSize: "0.875rem", color: "var(--green)", textDecoration: "none", fontWeight: 600 }}>{p}</a>
+                    : <p style={{ fontSize: "0.875rem", color: "var(--text)", fontWeight: 600, lineHeight: 1.65 }}>{p}</p>}
                 </div>
               </div>
             ))}
-            <Link href="/contact" style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-syne)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
+            <Link href="/contact" style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.contactUs} →
             </Link>
           </div>
