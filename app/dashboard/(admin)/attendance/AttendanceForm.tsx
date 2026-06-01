@@ -6,178 +6,140 @@ import { useState, useTransition } from "react";
 type Student = { id: string; full_name: string; levels: { name: string } | null };
 type SaveAction = (formData: FormData) => Promise<{ error: string | null }>;
 
+const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18" };
+const AVATAR = ["#2ea82a","#1a6b18","#d4a843","#3f7d8c","#8c6a3f","#6a8c3f"];
+function aColor(n:string){let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))>>>0;return AVATAR[h%AVATAR.length];}
+function ini(n:string){return n.split(" ").map(p=>p[0]).slice(0,2).join("").toUpperCase();}
+
+const TONE: Record<string,{bg:string;fg:string;t:string}> = {
+  present: { bg:"rgba(46,168,42,.14)", fg:"#1a8a2a", t:"Present" },
+  absent:  { bg:"rgba(201,74,58,.12)", fg:"#b3402f", t:"Absent" },
+  late:    { bg:"rgba(212,168,67,.18)", fg:"#9a7822", t:"Late" },
+};
+const CYCLE: Record<string,string> = { present:"absent", absent:"late", late:"present" };
+
 export default function AttendanceForm({
-  date,
-  students,
-  initialStatus,
-  saveAction,
-  basePath = "/dashboard/attendance",
+  date, students, initialStatus, saveAction, basePath = "/dashboard/attendance",
 }: {
-  date: string;
-  students: Student[];
-  initialStatus: Record<string, string>;
-  saveAction: SaveAction;
-  basePath?: string;
+  date: string; students: Student[]; initialStatus: Record<string, string>;
+  saveAction: SaveAction; basePath?: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [statuses, setStatuses] = useState<Record<string, string>>(() => {
+  const [marks, setMarks] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
     for (const s of students) init[s.id] = initialStatus[s.id] ?? "present";
     return init;
   });
-  const [saveMsg, setSaveMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [msg, setMsg] = useState<{ type:"ok"|"err"; text:string } | null>(null);
 
-  const hasExistingRecords = Object.keys(initialStatus).length > 0;
+  const hadExisting = Object.keys(initialStatus).length > 0;
+  const present = Object.values(marks).filter(m => m === "present").length;
+  const pct = students.length ? Math.round((present / students.length) * 100) : 0;
 
-  function handleDateChange(newDate: string) {
-    setSaveMsg(null);
+  function changeDate(d: string) {
+    setMsg(null);
     const p = new URLSearchParams(searchParams.toString());
-    p.set("date", newDate);
+    p.set("date", d);
     router.push(`${basePath}?${p.toString()}`);
   }
-
-  function markAllPresent() {
-    const next: Record<string, string> = {};
-    for (const s of students) next[s.id] = "present";
-    setStatuses(next);
+  function markAll() {
+    const n: Record<string,string> = {};
+    for (const s of students) n[s.id] = "present";
+    setMarks(n);
   }
-
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    for (const [sid, val] of Object.entries(statuses)) {
-      fd.set(`status_${sid}`, val);
-    }
+    const fd = new FormData();
+    fd.set("date", date);
+    for (const [sid, v] of Object.entries(marks)) fd.set(`status_${sid}`, v);
     startTransition(async () => {
-      setSaveMsg(null);
-      const result = await saveAction(fd);
-      if (result?.error) {
-        setSaveMsg({ type: "error", text: result.error });
-        return;
-      }
-      const presentCount = Object.values(statuses).filter(v => v === "present").length;
-      const absentCount = Object.values(statuses).filter(v => v === "absent").length;
-      const lateCount = Object.values(statuses).filter(v => v === "late").length;
-      const dateLabel = new Date(date + "T12:00:00").toLocaleDateString(undefined, {
-        weekday: "long", day: "numeric", month: "long",
-      });
-      setSaveMsg({
-        type: "success",
-        text: `✓ Attendance saved for ${dateLabel} — ${presentCount} present, ${absentCount} absent, ${lateCount} late`,
-      });
+      setMsg(null);
+      const r = await saveAction(fd);
+      if (r?.error) { setMsg({ type:"err", text:r.error }); return; }
+      const ab = Object.values(marks).filter(m=>m==="absent").length;
+      const lt = Object.values(marks).filter(m=>m==="late").length;
+      const dl = new Date(date+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+      setMsg({ type:"ok", text:`Saved for ${dl} — ${present} present, ${ab} absent, ${lt} late` });
       router.refresh();
     });
   }
 
+  // Ring mini
+  const r = 18, circ = 2 * Math.PI * r, off = circ * (1 - pct/100);
+
   return (
-    <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-      {/* Date picker */}
-      <div className="flex flex-wrap items-center gap-4">
-        <label className="block text-sm font-semibold text-slate-700">Date</label>
-        <input
-          type="date"
-          name="date"
-          value={date}
-          onChange={(e) => handleDateChange(e.target.value)}
-          className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100"
-        />
+    <form onSubmit={handleSubmit}>
+      {/* Controls */}
+      <div style={{ display:"flex", gap:12, marginBottom:16, flexWrap:"wrap", alignItems:"center" }}>
+        <div className="cd-select-field">
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h18v18H3z"/><path d="M3 9h18"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
+          <input type="date" value={date} onChange={e=>changeDate(e.target.value)} />
+        </div>
+        <button type="button" onClick={markAll} className="cd-btn-ghost">Mark all present</button>
+        <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:10, fontSize:13, fontWeight:700, color:C.ink }}>
+          <svg width={42} height={42} style={{ transform:"rotate(-90deg)" }}>
+            <circle cx={21} cy={21} r={r} fill="none" stroke={C.greenWash} strokeWidth={5} />
+            <circle cx={21} cy={21} r={r} fill="none" stroke={C.green} strokeWidth={5} strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round" />
+          </svg>
+          {present}/{students.length} present
+        </div>
       </div>
 
-      {/* Already-recorded warning */}
-      {hasExistingRecords && !saveMsg && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-          <span className="text-amber-500 text-lg shrink-0">⚠️</span>
-          <p className="text-sm text-amber-800">
-            <strong>Attendance already recorded for this date.</strong> Saving will overwrite existing records.
-          </p>
+      {hadExisting && !msg && (
+        <div style={{ display:"flex", gap:11, alignItems:"flex-start", padding:"12px 16px", marginBottom:14, background:"rgba(212,168,67,.12)", border:"1px solid rgba(212,168,67,.3)", borderRadius:12 }}>
+          <span style={{ fontSize:16 }}>⚠️</span>
+          <span style={{ fontSize:12.5, color:"#9a7822", lineHeight:1.5 }}><strong>Attendance already recorded for this date.</strong> Saving will overwrite existing records.</span>
         </div>
       )}
 
       {!students.length ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-white py-12 text-center">
-          <span className="text-4xl">👥</span>
-          <p className="mt-3 text-slate-500">No students yet. Add students first.</p>
+        <div className="cd-card" style={{ padding:40, textAlign:"center" }}>
+          <p style={{ color:C.muted }}>No students yet. Add students first.</p>
         </div>
       ) : (
-        <>
-          {/* Counter + bulk action */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm font-medium text-slate-600">
-              <span className="font-bold text-slate-900">{students.length}</span> students
-            </p>
-            <button
-              type="button"
-              onClick={markAllPresent}
-              className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition"
-            >
-              ✓ Mark all present
-            </button>
-          </div>
-
-          {/* Student rows */}
-          <div className="space-y-2">
-            {students.map((s) => {
-              const current = statuses[s.id] ?? "present";
-              return (
-                <div
-                  key={s.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between hover:border-slate-300 transition"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
-                      {s.full_name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-900">{s.full_name}</p>
-                      <p className="text-xs text-slate-400">{(s.levels as { name: string } | null)?.name ?? "—"}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {(["present", "absent", "late"] as const).map((val) => (
-                      <button
-                        key={val}
-                        type="button"
-                        onClick={() => setStatuses((prev) => ({ ...prev, [s.id]: val }))}
-                        className={`flex-1 sm:flex-none rounded-xl px-4 py-2.5 text-sm font-bold capitalize transition ${
-                          current === val
-                            ? val === "present" ? "bg-emerald-500 text-white shadow-md"
-                              : val === "absent" ? "bg-red-500 text-white shadow-md"
-                              : "bg-amber-500 text-white shadow-md"
-                            : "bg-slate-100 text-slate-400 hover:bg-slate-200"
-                        }`}
-                      >
-                        {val}
-                      </button>
-                    ))}
-                    <input type="hidden" name={`status_${s.id}`} value={current} />
-                  </div>
+        <div className="cd-card" style={{ padding:0 }}>
+          {students.map((s, i) => {
+            const m = marks[s.id], tn = TONE[m];
+            return (
+              <div key={s.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 20px", borderBottom: i<students.length-1?`1px solid ${C.border}`:"none" }}>
+                <div style={{ width:34, height:34, borderRadius:"50%", flexShrink:0, background:aColor(s.full_name), color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, fontSize:12.3 }}>{ini(s.full_name)}</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:600, fontSize:13.5, color:C.ink }}>{s.full_name}</div>
+                  <div style={{ fontSize:11.5, color:C.muted }}>{(s.levels as {name:string}|null)?.name ?? "—"}</div>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Save result messages */}
-          {saveMsg && (
-            <div className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium ${
-              saveMsg.type === "success"
-                ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
-                : "border border-red-200 bg-red-50 text-red-800"
-            }`}>
-              {saveMsg.text}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isPending}
-            className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 font-semibold text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 disabled:opacity-70 transition"
-          >
-            {isPending ? "Saving…" : "Save attendance"}
-          </button>
-        </>
+                <button type="button" onClick={() => setMarks({ ...marks, [s.id]: CYCLE[m] })}
+                  style={{ border:"none", cursor:"pointer", background:tn.bg, color:tn.fg, fontWeight:700, fontSize:12.5, padding:"7px 16px", borderRadius:8, minWidth:92 }}>
+                  {tn.t}
+                </button>
+              </div>
+            );
+          })}
+        </div>
       )}
+
+      {msg && (
+        <div style={{ marginTop:16, padding:"12px 16px", borderRadius:12, fontSize:13, fontWeight:600,
+          background: msg.type==="ok" ? "rgba(46,168,42,.1)" : "rgba(201,74,58,.1)",
+          color: msg.type==="ok" ? C.greenDark : "#b3402f",
+          border: `1px solid ${msg.type==="ok" ? "rgba(46,168,42,.25)" : "rgba(201,74,58,.25)"}` }}>
+          {msg.type==="ok" ? "✓ " : ""}{msg.text}
+        </div>
+      )}
+
+      {!!students.length && (
+        <div style={{ marginTop:18 }}>
+          <button type="submit" disabled={isPending} className="cd-btn-primary">
+            {isPending ? "Saving…" : "Save register"}
+          </button>
+        </div>
+      )}
+
+      <div style={{ display:"flex", gap:11, alignItems:"flex-start", padding:"14px 16px", marginTop:16, background:C.greenWash, border:`1px solid ${C.greenWash}`, borderRadius:12 }}>
+        <span style={{ fontSize:15 }}>✨</span>
+        <span style={{ fontSize:12.5, color:C.ink, lineHeight:1.6 }}>Tap any status to cycle Present → Absent → Late. This register feeds each student&apos;s attendance %.</span>
+      </div>
     </form>
   );
 }

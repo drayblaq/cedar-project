@@ -1,6 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { createGrade, deleteGrade } from "@/app/dashboard/actions/index";
-import { input, label, card, btnPrimary, btnDanger } from "../../ui";
+
+const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18" };
+
+function scoreColor(s: number | null) {
+  if (s == null) return C.muted;
+  if (s >= 85) return "#1a8a2a";
+  if (s >= 70) return "#9a7822";
+  return "#b3402f";
+}
 
 export default async function GradesPage() {
   const supabase = await createClient();
@@ -8,115 +16,45 @@ export default async function GradesPage() {
   const { data: terms } = await supabase.from("academic_terms").select("id, name").order("start_date", { ascending: false });
   const { data: grades } = await supabase
     .from("grades")
-    .select("id, student_id, academic_term_id, subject_or_type, score, remarks, students(full_name), academic_terms(name)")
+    .select("id, subject_or_type, score, remarks, students(full_name), academic_terms(name)")
     .order("created_at", { ascending: false })
     .limit(100);
 
-  function scoreColor(score: number | null) {
-    if (score == null) return "bg-slate-100 text-slate-600";
-    if (score >= 75) return "bg-green-100 text-green-700";
-    if (score >= 50) return "bg-amber-100 text-amber-700";
-    return "bg-red-100 text-red-700";
-  }
-
   return (
-    <div className="p-6 sm:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Grades</h1>
-        <p className="mt-1 text-sm text-slate-500">Record and review student grades by subject and term.</p>
+    <div style={{ padding:"30px 30px 60px" }}>
+      <div style={{ marginBottom:18 }}>
+        <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>Grades &amp; remarks</h1>
+        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>Record scores and feedback by skill and term.</p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
-        {/* Add grade form */}
-        <div className={`${card} p-6 h-fit`}>
-          <h2 className="mb-5 text-sm font-semibold text-slate-900">Add grade</h2>
-          <form action={createGrade as unknown as (fd: FormData) => Promise<void>} className="space-y-4">
-            <div>
-              <label htmlFor="student_id" className={label}>Student *</label>
-              <select id="student_id" name="student_id" required className={input}>
-                <option value="">— Select —</option>
-                {(students ?? []).map((s) => <option key={s.id} value={s.id}>{s.full_name}</option>)}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="academic_term_id" className={label}>Term</label>
-              <select id="academic_term_id" name="academic_term_id" className={input}>
-                <option value="">— None —</option>
-                {(terms ?? []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="subject_or_type" className={label}>Subject / type</label>
-              <input id="subject_or_type" name="subject_or_type" type="text" defaultValue="general" className={input} />
-            </div>
-            <div>
-              <label htmlFor="score" className={label}>Score (0–100)</label>
-              <input id="score" name="score" type="number" min="0" max="100" step="0.01" className={input} placeholder="e.g. 78" />
-            </div>
-            <div>
-              <label htmlFor="remarks" className={label}>Remarks</label>
-              <textarea id="remarks" name="remarks" rows={2} className={input} placeholder="Optional remarks…" />
-            </div>
-            <button type="submit" className={`${btnPrimary} w-full justify-center py-3`}>
-              Add grade
-            </button>
-          </form>
-        </div>
-
-        {/* Grades list */}
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Recent grades</h2>
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-              {grades?.length ?? 0} records
-            </span>
-          </div>
-
+      <div className="cd-grid-2-1">
+        {/* Recent grades */}
+        <div className="cd-card" style={{ padding:0 }}>
+          <div style={{ padding:"18px 22px 6px" }}><h3 style={{ fontSize:15, fontWeight:700, color:C.ink }}>Recent grades</h3></div>
           {!grades?.length ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-16 text-center">
-              <span className="text-4xl">📊</span>
-              <p className="mt-3 font-semibold text-slate-600">No grades yet</p>
-              <p className="mt-1 text-sm text-slate-400">Add a grade using the form.</p>
-            </div>
+            <p style={{ padding:"40px 22px", textAlign:"center", color:C.muted, fontSize:13.5 }}>No grades yet. Add one with the form.</p>
           ) : (
-            <div className={`${card} overflow-hidden`}>
-              <table className="w-full text-sm">
-                <thead className="border-b border-slate-200 bg-slate-50">
-                  <tr>
-                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Student</th>
-                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Subject</th>
-                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">Term</th>
-                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Score</th>
-                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 hidden lg:table-cell">Remarks</th>
-                    <th className="px-5 py-3.5" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {grades.map((g: { id: string; subject_or_type: string; score: number | null; remarks: string | null; students: { full_name: string } | { full_name: string }[] | null; academic_terms: { name: string } | { name: string }[] | null }) => {
-                    const student = Array.isArray(g.students) ? g.students[0] : g.students;
-                    const term = Array.isArray(g.academic_terms) ? g.academic_terms[0] : g.academic_terms;
+            <div style={{ overflowX:"auto" }}>
+              <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
+                <thead><tr>
+                  {["Student","Skill","Term","Score","Remark",""].map((h,i)=>(
+                    <th key={h} style={{ textAlign:i===3?"center":"left", padding:"11px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, borderBottom:`1px solid ${C.border}`, whiteSpace:"nowrap" }}>{h}</th>
+                  ))}
+                </tr></thead>
+                <tbody>
+                  {grades.map((g: { id:string; subject_or_type:string; score:number|null; remarks:string|null; students:{full_name:string}|{full_name:string}[]|null; academic_terms:{name:string}|{name:string}[]|null }) => {
+                    const st = Array.isArray(g.students)?g.students[0]:g.students;
+                    const tm = Array.isArray(g.academic_terms)?g.academic_terms[0]:g.academic_terms;
                     return (
-                      <tr key={g.id} className="hover:bg-slate-50 transition">
-                        <td className="px-5 py-3.5 font-medium text-slate-900">
-                          {(student as { full_name?: string })?.full_name ?? "—"}
-                        </td>
-                        <td className="px-5 py-3.5 text-slate-600 capitalize">{g.subject_or_type}</td>
-                        <td className="px-5 py-3.5 text-slate-500 hidden md:table-cell">
-                          {(term as { name?: string })?.name ?? "—"}
-                        </td>
-                        <td className="px-5 py-3.5">
-                          {g.score != null ? (
-                            <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${scoreColor(Number(g.score))}`}>
-                              {g.score}
-                            </span>
-                          ) : <span className="text-slate-300">—</span>}
-                        </td>
-                        <td className="px-5 py-3.5 text-slate-400 text-xs hidden lg:table-cell">
-                          {g.remarks ?? "—"}
-                        </td>
-                        <td className="px-5 py-3.5 text-right">
-                          <form action={deleteGrade.bind(null, g.id) as unknown as (fd: FormData) => Promise<void>} className="inline">
-                            <button type="submit" className={btnDanger}>Delete</button>
+                      <tr key={g.id} className="cd-trow">
+                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, fontWeight:600, color:C.ink }}>{(st as {full_name?:string})?.full_name ?? "—"}</td>
+                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, color:C.muted, textTransform:"capitalize" }}>{g.subject_or_type}</td>
+                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, color:C.muted }}>{(tm as {name?:string})?.name ?? "—"}</td>
+                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"center", fontWeight:800, color:scoreColor(g.score!=null?Number(g.score):null) }}>{g.score ?? "—"}</td>
+                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, color:C.muted, fontSize:12.5 }}>{g.remarks ?? "—"}</td>
+                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"right" }}>
+                          <form action={deleteGrade.bind(null, g.id) as unknown as (fd: FormData) => Promise<void>} style={{ display:"inline" }}>
+                            <button type="submit" style={{ background:"rgba(201,74,58,.1)", border:"none", borderRadius:8, padding:"5px 11px", fontSize:12, fontWeight:700, color:"#b3402f", cursor:"pointer" }}>Delete</button>
                           </form>
                         </td>
                       </tr>
@@ -126,6 +64,25 @@ export default async function GradesPage() {
               </table>
             </div>
           )}
+        </div>
+
+        {/* Add grade */}
+        <div className="cd-card" style={{ padding:22, height:"fit-content" }}>
+          <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>Add a grade</h3>
+          <form action={createGrade as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            <label className="cd-fld"><span>Student</span>
+              <select name="student_id" required defaultValue=""><option value="" disabled>Select student…</option>{(students ?? []).map(s=><option key={s.id} value={s.id}>{s.full_name}</option>)}</select>
+            </label>
+            <label className="cd-fld"><span>Term</span>
+              <select name="academic_term_id" defaultValue=""><option value="">— None —</option>{(terms ?? []).map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select>
+            </label>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+              <label className="cd-fld"><span>Skill / type</span><input name="subject_or_type" type="text" defaultValue="general" /></label>
+              <label className="cd-fld"><span>Score / 100</span><input name="score" type="number" min="0" max="100" step="0.01" placeholder="84" /></label>
+            </div>
+            <label className="cd-fld"><span>Remark</span><textarea name="remarks" rows={3} placeholder="Confident speaker, expand academic vocabulary…" /></label>
+            <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Save grade</button>
+          </form>
         </div>
       </div>
     </div>

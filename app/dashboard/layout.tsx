@@ -6,14 +6,21 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="cedar-dash" style={{ minHeight: "100vh" }}>
+      {/* Fixed sidebar — 250px, desktop only */}
       <Sidebar />
-      {/* Offset for fixed sidebar on desktop, top bar on mobile */}
-      <div className="md:pl-60 pt-14 md:pt-0">
-        <main className="min-h-screen">
-          {children}
-        </main>
+      {/* Main column offset by sidebar width */}
+      <div style={{ marginLeft: 250, minHeight: "100vh", display: "flex", flexDirection: "column" }}
+           className="cedar-dash-main">
+        {children}
       </div>
+
+      {/* Mobile: no offset — sidebar is a drawer */}
+      <style>{`
+        @media (max-width: 900px) {
+          .cedar-dash-main { margin-left: 0 !important; padding-top: 60px; }
+        }
+      `}</style>
     </div>
   );
 }

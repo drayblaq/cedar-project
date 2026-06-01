@@ -1,51 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
-// ── Icons (all rendering stays client-side) ─────────────────────────────────
-function Icon({ d }: { d: string }) {
+// ── Inline SVG icon (same paths as the prototype) ────────────────────────────
+const PATHS: Record<string, string> = {
+  grid:        "M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z",
+  users:       "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75",
+  wallet:      "M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2 M3 7h18v10H3z M16 12h.01",
+  check:       "M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11",
+  award:       "M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12z M8.5 13.5L7 22l5-3 5 3-1.5-8.5",
+  megaphone:   "M3 11l15-6v14L3 13v-2z M3 11v2a3 3 0 0 0 3 3h1 M11 19l-1.5 2",
+  calendar:    "M3 4h18v18H3zM3 9h18 M8 2v4 M16 2v4",
+  layers:      "M12 2L2 7l10 5 10-5-10-5z M2 17l10 5 10-5 M2 12l10 5 10-5",
+  link:        "M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244",
+  trend:       "M23 6l-9.5 9.5-5-5L1 18 M17 6h6v6",
+  doc:         "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M9 13h6 M9 17h6",
+  heart:       "M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 22l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z",
+  user:        "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
+  logout:      "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
+  menu:        "M3 6h18 M3 12h18 M3 18h18",
+  x:           "M18 6L6 18 M6 6l12 12",
+};
+
+function NavIcon({ name, size = 19 }: { name: string; size?: number }) {
+  const d = PATHS[name];
+  if (!d) return null;
+  const paths = d.split(" M").map((seg, i) => (i === 0 ? seg : "M" + seg));
   return (
-    <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24"
-      stroke="currentColor" strokeWidth={1.75}>
-      <path strokeLinecap="round" strokeLinejoin="round" d={d} />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+      style={{ flexShrink: 0 }}>
+      {paths.map((pd, i) => <path key={i} d={pd} />)}
     </svg>
   );
 }
 
-const ICON_PATHS: Record<string, string> = {
-  overview:
-    "M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z",
-  students:
-    "M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z",
-  payments:
-    "M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z",
-  attendance:
-    "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-  grades:
-    "M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5",
-  announcements:
-    "M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46",
-  calendar:
-    "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5",
-  classes:
-    "M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z",
-  parentLinks:
-    "M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244",
-  myClasses:
-    "M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z",
-  myChildren:
-    "M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z",
-  progress:
-    "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z",
-  signout:
-    "M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75",
-};
-
-// ── Types ────────────────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 export type NavItem = { href: string; label: string; iconKey: string };
 
 interface Props {
@@ -54,7 +48,18 @@ interface Props {
   userRole: string;
 }
 
-// ── Component ────────────────────────────────────────────────────────────────
+// ── Avatar ─────────────────────────────────────────────────────────────────────
+function initials(name: string) {
+  return name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+}
+const AVATAR_COLORS = ["#2ea82a", "#1a6b18", "#d4a843", "#3f7d8c", "#8c6a3f", "#6a8c3f"];
+function avatarColor(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 export function SidebarClient({ items, userName, userRole }: Props) {
   const pathname = usePathname();
   const router = useRouter();
@@ -73,102 +78,119 @@ export function SidebarClient({ items, userName, userRole }: Props) {
     return pathname.startsWith(href);
   }
 
-  function NavContent() {
-    return (
-      <div className="flex h-full flex-col">
-        {/* Logo */}
-        <div className="flex items-center gap-3 border-b border-slate-800 px-5 py-5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-600 text-sm font-black text-white shadow-lg">
-            C
-          </div>
-          <div>
-            <p className="text-sm font-bold leading-tight text-white">Cedar Training</p>
-            <p className="text-[10px] font-medium uppercase leading-tight tracking-wider text-slate-500">Center</p>
-          </div>
-        </div>
-
-        {/* User */}
-        <div className="flex items-center gap-3 border-b border-slate-800 px-5 py-4">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-600 text-xs font-bold text-white">
-            {userName.charAt(0).toUpperCase()}
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-white">{userName}</p>
-            <p className="text-xs capitalize text-slate-500">{userRole}</p>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
-          {items.map(({ href, label, iconKey }) => {
-            const active = isActive(href);
-            const d = ICON_PATHS[iconKey] ?? ICON_PATHS.overview;
-            return (
-              <Link key={href} href={href} onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-green-600 text-white shadow-sm"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-white"
-                }`}>
-                <Icon d={d} />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Sign out */}
-        <div className="border-t border-slate-800 px-3 py-4">
-          <button type="button" onClick={handleSignOut}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-800 hover:text-red-400">
-            <Icon d={ICON_PATHS.signout} />
-            Sign out
-          </button>
+  const SidebarContent = () => (
+    <>
+      {/* Logo */}
+      <div style={{ padding: "6px 8px 20px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+          <Image src="/logo.png" alt="Cedar" width={34} height={34} style={{ objectFit: "contain", filter: "drop-shadow(0 1px 2px rgba(0,0,0,.25))" }} />
+          <span style={{ fontWeight: 800, fontSize: 15.5, lineHeight: 1.05, letterSpacing: "-0.01em", color: "#fff" }}>
+            Cedar <span style={{ color: "#6fdc6a" }}>Training</span><br />Center
+          </span>
         </div>
       </div>
-    );
-  }
+
+      {/* User */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 16px", borderBottom: "1px solid rgba(255,255,255,.1)", marginBottom: 8 }}>
+        <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+          background: avatarColor(userName), color: "#fff", display: "flex",
+          alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13 }}>
+          {initials(userName)}
+        </div>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{userName}</div>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,.55)", textTransform: "capitalize" }}>{userRole}</div>
+        </div>
+      </div>
+
+      {/* Label */}
+      <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,.4)", padding: "4px 12px 6px" }}>
+        Menu
+      </div>
+
+      {/* Nav links */}
+      <nav style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1 }}>
+        {items.map(({ href, label, iconKey }) => {
+          const active = isActive(href);
+          return (
+            <Link key={href} href={href} onClick={() => setMobileOpen(false)}
+              className={`cd-snav-item${active ? " cd-snav-on" : ""}`}>
+              <NavIcon name={iconKey} size={19} />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Footer */}
+      <div style={{ marginTop: "auto", paddingTop: 14, borderTop: "1px solid rgba(255,255,255,.1)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,.6)", padding: "6px 12px 10px" }}>
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#6fdc6a", boxShadow: "0 0 0 3px rgba(111,220,106,.2)", flexShrink: 0 }} />
+          {userRole}
+        </div>
+        <button className="cd-snav-item" onClick={handleSignOut}
+          style={{ color: "rgba(255,255,255,.55)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "#ff7f7f")}
+          onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,.55)")}>
+          <NavIcon name="logout" size={19} />
+          Sign out
+        </button>
+      </div>
+    </>
+  );
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-60 bg-slate-900 md:flex md:flex-col">
-        <NavContent />
+      {/* Desktop fixed sidebar */}
+      <aside className="cd-sidebar" style={{ display: "flex", flexDirection: "column" }}>
+        <SidebarContent />
       </aside>
 
-      {/* Mobile top bar */}
-      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 md:hidden">
-        <button type="button" onClick={() => setMobileOpen(true)}
-          className="rounded-lg p-2 text-slate-600 hover:bg-slate-100">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
+      {/* Mobile: top bar */}
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 40,
+        height: 60, background: "#0e3b0c", borderBottom: "1px solid rgba(255,255,255,.1)",
+        display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px"
+      }} className="cedar-dash md-topbar">
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Image src="/logo.png" alt="Cedar" width={28} height={28} style={{ objectFit: "contain" }} />
+          <span style={{ fontWeight: 800, fontSize: 14, color: "#fff" }}>Cedar Training</span>
+        </div>
+        <button onClick={() => setMobileOpen(true)}
+          style={{ background: "rgba(255,255,255,.08)", border: "none", borderRadius: 8,
+            padding: 8, cursor: "pointer", color: "#fff", display: "flex" }}>
+          <NavIcon name="menu" size={20} />
         </button>
-        <span className="text-sm font-bold text-slate-900">Cedar Admin</span>
-        <div className="w-9" />
       </div>
 
       {/* Mobile drawer */}
       {mobileOpen && (
         <>
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
-            onClick={() => setMobileOpen(false)} />
-          <aside className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-slate-900 shadow-2xl md:hidden">
-            <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
-              <span className="font-bold text-white">Menu</span>
-              <button type="button" onClick={() => setMobileOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+          <div onClick={() => setMobileOpen(false)}
+            style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(14,59,12,.5)", backdropFilter: "blur(3px)" }} />
+          <aside style={{
+            position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 51, width: 260,
+            background: "#0e3b0c", display: "flex", flexDirection: "column",
+            padding: "22px 16px", gap: 4, boxShadow: "4px 0 40px rgba(0,0,0,.4)",
+            animation: "cd-slideIn .22s cubic-bezier(.16,1,.3,1)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+              <button onClick={() => setMobileOpen(false)}
+                style={{ background: "rgba(255,255,255,.08)", border: "none", borderRadius: 8,
+                  padding: 8, cursor: "pointer", color: "#fff", display: "flex" }}>
+                <NavIcon name="x" size={18} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto">
-              <NavContent />
-            </div>
+            <SidebarContent />
           </aside>
+          <style>{`@keyframes cd-slideIn { from { transform: translateX(-100%); } to { transform: none; } }`}</style>
         </>
       )}
+
+      <style>{`
+        @media (min-width: 901px) { .md-topbar { display: none !important; } .cd-sidebar { display: flex !important; } }
+        @media (max-width: 900px)  { .cd-sidebar { display: none !important; } }
+      `}</style>
     </>
   );
 }

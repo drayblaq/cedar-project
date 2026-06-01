@@ -6,171 +6,169 @@ import { ResendInviteButton } from "./ResendInviteButton";
 import { AdmissionActions } from "./AdmissionActions";
 
 type Student = {
-  id: string;
-  full_name: string;
-  first_name: string | null;
-  last_name: string | null;
-  email: string;
-  phone: string | null;
-  user_id: string | null;
-  status: string | null;
-  application_status: string | null;
+  id: string; full_name: string; first_name: string | null; last_name: string | null;
+  email: string; phone: string | null; user_id: string | null;
+  status: string | null; application_status: string | null;
   last_invite_sent_at: string | null;
   levels: { name?: string } | { name?: string }[] | null;
 };
 
-const STATUS_BADGE: Record<string, string> = {
-  active:   "bg-green-100 text-green-700",
-  pending:  "bg-amber-100 text-amber-700",
-  inactive: "bg-slate-100 text-slate-500",
+const C = {
+  ink: "#16241a", muted: "#687a6c", border: "#e6ece4",
+  green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18", greenSoft: "#d3ead0",
+  surface: "#ffffff", bg: "#f4f7f2",
 };
+const AVATAR_PALETTE = ["#2ea82a","#1a6b18","#d4a843","#3f7d8c","#8c6a3f","#6a8c3f"];
+function avatarColor(name: string) {
+  let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_PALETTE[h % AVATAR_PALETTE.length];
+}
+function initials(name: string) { return name.split(" ").map(p=>p[0]).slice(0,2).join("").toUpperCase(); }
 
-const APP_BADGE: Record<string, string> = {
-  approved:         "bg-green-100 text-green-700",
-  rejected:         "bg-red-100 text-red-700",
-  awaiting_payment: "bg-orange-100 text-orange-700",
-  under_review:     "bg-blue-100 text-blue-700",
-  submitted:        "bg-slate-100 text-slate-600",
+const BADGE: Record<string, {bg:string;fg:string}> = {
+  neutral: { bg:"#eef2ec", fg:"#4a5a4d" },
+  green:   { bg:"rgba(46,168,42,.12)", fg:"#1a6b18" },
+  gold:    { bg:"rgba(212,168,67,.16)", fg:"#9a7822" },
+  red:     { bg:"rgba(201,74,58,.12)", fg:"#b3402f" },
+  blue:    { bg:"rgba(63,125,140,.14)", fg:"#2f5f6b" },
 };
+const APP_TONE: Record<string,string> = {
+  approved:"green", rejected:"red", awaiting_payment:"gold", under_review:"blue", submitted:"neutral",
+};
+const STATUS_TONE: Record<string,string> = { active:"green", pending:"gold", inactive:"neutral", paused:"red" };
 
-const STATUS_FILTERS = ["All", "Pending", "Active", "Inactive"] as const;
+function Badge({ children, tone="neutral" }: { children: React.ReactNode; tone?: string }) {
+  const t = BADGE[tone] ?? BADGE.neutral;
+  return <span style={{ display:"inline-flex", alignItems:"center", background:t.bg, color:t.fg, fontSize:11.5, fontWeight:700, padding:"3px 10px", borderRadius:7, whiteSpace:"nowrap", textTransform:"capitalize" }}>{children}</span>;
+}
 
-export function StudentsTableClient({
-  students,
-  bestTestPct,
-  paidStudentIds,
-}: {
-  students: Student[];
-  bestTestPct: Record<string, number>;
-  paidStudentIds: string[];
+const LEVELS = ["All","A1","A2","B1","B2","C1","C2"];
+
+export function StudentsTableClient({ students, bestTestPct, paidStudentIds }: {
+  students: Student[]; bestTestPct: Record<string,number>; paidStudentIds: string[];
 }) {
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("All");
+  const [q, setQ] = useState("");
+  const [lvl, setLvl] = useState("All");
   const paid = useMemo(() => new Set(paidStudentIds), [paidStudentIds]);
-
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    return students.filter((s) => {
-      const matchesQuery = !q || s.full_name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
-      const matchesStatus = statusFilter === "All" || (s.status ?? "pending").toLowerCase() === statusFilter.toLowerCase();
-      return matchesQuery && matchesStatus;
-    });
-  }, [students, query, statusFilter]);
 
   function levelName(l: Student["levels"]) {
     if (!l) return "—";
-    return Array.isArray(l) ? (l[0] as { name?: string })?.name ?? "—" : (l as { name?: string })?.name ?? "—";
+    return Array.isArray(l) ? (l[0] as {name?:string})?.name ?? "—" : (l as {name?:string})?.name ?? "—";
   }
 
+  const filtered = useMemo(() => {
+    const qq = q.toLowerCase().trim();
+    return students.filter(s => {
+      const lv = levelName(s.levels);
+      const matchLvl = lvl === "All" || lv === lvl;
+      const matchQ = !qq || s.full_name.toLowerCase().includes(qq) || s.email.toLowerCase().includes(qq);
+      return matchLvl && matchQ;
+    });
+  }, [students, q, lvl]);
+
   return (
-    <div className="space-y-4">
-      {/* Search + filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1 max-w-sm">
-          <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search name or email…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-9 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100"
-          />
+    <div className="cd-card" style={{ padding: 0 }}>
+      {/* Toolbar */}
+      <div className="cd-table-toolbar">
+        <div className="cd-search" style={{ maxWidth: 300, flex: 1 }}>
+          <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M21 21l-4.3-4.3"/></svg>
+          <input placeholder="Search students…" value={q} onChange={e => setQ(e.target.value)} />
         </div>
-        <div className="flex gap-2 flex-wrap">
-          {STATUS_FILTERS.map((f) => (
-            <button key={f} type="button" onClick={() => setStatusFilter(f)}
-              className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                statusFilter === f ? "bg-green-600 text-white shadow-sm" : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-              }`}>
-              {f}
+        <div style={{ display:"flex", gap:7, flexWrap:"wrap" }}>
+          {LEVELS.map(l => (
+            <button key={l} onClick={() => setLvl(l)} className={"cd-chip" + (lvl===l?" cd-chip-on":"")}>
+              {l}
             </button>
           ))}
         </div>
-        <span className="text-xs text-slate-400 whitespace-nowrap">{filtered.length} of {students.length}</span>
       </div>
 
+      {/* Empty */}
       {!filtered.length ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-16 text-center">
-          <span className="text-4xl">🔍</span>
-          <p className="mt-3 font-semibold text-slate-600">No students match</p>
-          <button type="button" onClick={() => { setQuery(""); setStatusFilter("All"); }}
-            className="mt-3 text-sm font-medium text-green-600 hover:underline">
+        <div style={{ padding:"48px 22px", textAlign:"center" }}>
+          <p style={{ fontSize:14, color:C.muted }}>No students match your search.</p>
+          <button onClick={() => { setQ(""); setLvl("All"); }}
+            style={{ marginTop:12, background:C.greenWash, border:"none", borderRadius:8, padding:"7px 16px", fontSize:12.5, fontWeight:700, color:C.greenDark, cursor:"pointer" }}>
             Clear filters
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50">
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
+            <thead>
               <tr>
-                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Student</th>
-                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 hidden md:table-cell">Level</th>
-                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Admission</th>
-                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 hidden lg:table-cell">Test</th>
-                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
-                <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Login</th>
-                <th className="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Actions</th>
+                {["Student","Level","Program","Attend.","Avg","Balance","Portal"].map((h, i) => (
+                  <th key={h} style={{ textAlign: i >= 3 ? "center" : "left", padding:"11px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, borderBottom:`1px solid ${C.border}`, whiteSpace:"nowrap" }}>
+                    {h}
+                  </th>
+                ))}
+                <th style={{ padding:"11px 14px", borderBottom:`1px solid ${C.border}` }} />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filtered.map((s) => {
-                const hasPayment = paid.has(s.id);
-                const hasLogin = !!s.user_id;
-                const canInvite = hasPayment && !hasLogin && s.status === "active";
+            <tbody>
+              {filtered.map(s => {
                 const displayName = s.first_name && s.last_name ? `${s.first_name} ${s.last_name}` : s.full_name;
                 const app = s.application_status ?? "submitted";
-                const enrollStatus = s.status ?? "pending";
+                const hasLogin = !!s.user_id;
+                const canInvite = paid.has(s.id) && !hasLogin && s.status === "active";
+                const lv = levelName(s.levels);
+                const score = bestTestPct[s.id];
+                const hasBal = false; // no balance field in current schema
                 return (
-                  <tr key={s.id} className="hover:bg-slate-50 transition">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
-                          {displayName.charAt(0).toUpperCase()}
+                  <tr key={s.id} className="cd-trow">
+                    {/* Student */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:11 }}>
+                        <div style={{ width:34, height:34, borderRadius:"50%", flexShrink:0, background:avatarColor(displayName), color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, fontSize:12.3 }}>
+                          {initials(displayName)}
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-900">{displayName}</p>
-                          <p className="text-xs text-slate-400">{s.email}</p>
+                          <div style={{ fontWeight:600, color:C.ink }}>{displayName}</div>
+                          <div style={{ fontSize:11.5, color:C.muted }}>{s.email}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-sm text-slate-600 hidden md:table-cell">{levelName(s.levels)}</td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize whitespace-nowrap ${APP_BADGE[app] ?? "bg-slate-100 text-slate-600"}`}>
-                        {app.replace(/_/g, " ")}
-                      </span>
+                    {/* Level */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle" }}>
+                      <LevelPillInline level={lv} />
                     </td>
-                    <td className="px-5 py-4 text-sm text-slate-500 hidden lg:table-cell">
-                      {bestTestPct[s.id] != null ? `${bestTestPct[s.id]}%` : "—"}
+                    {/* App status */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle" }}>
+                      <Badge tone={APP_TONE[app] ?? "neutral"}>{app.replace(/_/g," ")}</Badge>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS_BADGE[enrollStatus] ?? "bg-slate-100 text-slate-600"}`}>
-                        {enrollStatus}
-                      </span>
+                    {/* Attendance */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
+                      <span style={{ fontWeight:700, color:C.muted }}>—</span>
                     </td>
-                    <td className="px-5 py-4">
-                      {hasLogin ? (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-400">
-                          ✓ Active
-                        </span>
-                      ) : canInvite ? (
-                        <ResendInviteButton studentId={s.id} lastInviteSentAt={s.last_invite_sent_at ?? null} />
-                      ) : (
-                        <span className="text-xs text-slate-300">—</span>
-                      )}
+                    {/* Score */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
+                      <span style={{ fontWeight:700 }}>{score != null ? score + "%" : "—"}</span>
                     </td>
-                    <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    {/* Balance */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
+                      <Badge tone={STATUS_TONE[s.status ?? "pending"] ?? "neutral"}>{s.status ?? "pending"}</Badge>
+                    </td>
+                    {/* Portal */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
+                      {hasLogin
+                        ? <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        : canInvite
+                          ? <ResendInviteButton studentId={s.id} lastInviteSentAt={s.last_invite_sent_at ?? null} />
+                          : <button className="cd-mini-btn">Invite</button>
+                      }
+                    </td>
+                    {/* Actions */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"right" }}>
+                      <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", gap:8 }}>
                         <Link href={`/admin/students/${s.id}/application`}
-                          className="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition">
+                          style={{ background:C.greenWash, border:"none", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, color:C.greenDark, textDecoration:"none", display:"inline-block" }}>
                           View
                         </Link>
                         <Link href={`/admin/students/${s.id}/edit`}
-                          className="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition">
+                          style={{ background:C.bg, border:`1px solid ${C.border}`, borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, color:C.ink, textDecoration:"none", display:"inline-block" }}>
                           Edit
                         </Link>
-                        {enrollStatus === "pending" && app !== "rejected" && (
+                        {s.status === "pending" && app !== "rejected" && (
                           <AdmissionActions studentId={s.id} applicationStatus={app} />
                         )}
                       </div>
@@ -183,5 +181,16 @@ export function StudentsTableClient({
         </div>
       )}
     </div>
+  );
+}
+
+function LevelPillInline({ level }: { level: string }) {
+  const order: Record<string,number> = { A1:0, A2:1, B1:2, B2:3, C1:4, C2:5 };
+  const hue = 95 + (order[level] ?? 0) * 6;
+  return (
+    <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", minWidth:30, height:22, padding:"0 7px", borderRadius:6, fontSize:11.5, fontWeight:800,
+      background:`oklch(0.93 0.06 ${hue})`, color:`oklch(0.40 0.10 ${hue})` }}>
+      {level}
+    </span>
   );
 }

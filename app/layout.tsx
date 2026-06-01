@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Syne, DM_Sans, Geist_Mono } from "next/font/google";
+import { Syne, DM_Sans, Geist_Mono, Hanken_Grotesk } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
@@ -21,6 +21,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "Cedar Training Center | English in Cotonou, Benin",
   description: "English language training from beginner to advanced. Cedar Training Center, Cotonou, Benin.",
@@ -40,7 +46,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="light" style={{ colorScheme: "light" }}>
-      <body className={`${syne.variable} ${dmSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${syne.variable} ${dmSans.variable} ${geistMono.variable} ${hankenGrotesk.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>

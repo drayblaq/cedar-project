@@ -1,15 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
 import { createClass, assignStaffToClass, createAssignment } from "@/app/dashboard/actions/index";
-import { input, label, card, btnPrimary } from "../../ui";
+
+const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18" };
+
+function fmtDate(iso: string) { return new Date(iso).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" }); }
+
+function LevelPill({ level }: { level: string }) {
+  const order: Record<string,number> = { A1:0,A2:1,B1:2,B2:3,C1:4,C2:5,Beginner:0,Elementary:1,"Pre-Intermediate":2,Intermediate:3,"Upper-Intermediate":4,Advanced:5 };
+  const hue = 95 + (order[level] ?? 0) * 6;
+  return <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", minWidth:30, height:22, padding:"0 8px", borderRadius:6, fontSize:11.5, fontWeight:800, background:`oklch(0.93 0.06 ${hue})`, color:`oklch(0.40 0.10 ${hue})` }}>{level}</span>;
+}
 
 export default async function ClassesPage() {
   const supabase = await createClient();
   const { data: levels } = await supabase.from("levels").select("id, name").order("sort_order");
   const { data: classes } = await supabase.from("classes").select("id, name, level_id, levels(name)").order("name");
   const { data: staffRole } = await supabase.from("roles").select("id").eq("name", "staff").single();
-  const { data: staffList } = staffRole
-    ? await supabase.from("profiles").select("id, full_name").eq("role_id", staffRole.id)
-    : { data: [] };
+  const { data: staffList } = staffRole ? await supabase.from("profiles").select("id, full_name").eq("role_id", staffRole.id) : { data: [] };
   const staff = staffList ?? [];
   const { data: assignments } = await supabase
     .from("assignments")
@@ -18,146 +25,95 @@ export default async function ClassesPage() {
     .limit(20);
 
   return (
-    <div className="p-6 sm:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Classes & Staff</h1>
-        <p className="mt-1 text-sm text-slate-500">Organize classes by level, assign staff, and create assignments.</p>
+    <div style={{ padding:"30px 30px 60px" }}>
+      <div style={{ marginBottom:18 }}>
+        <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>Classes</h1>
+        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>Groups, schedules and staff assignments.</p>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-3">
-        {/* Forms column */}
-        <div className="space-y-6">
-          <div className={`${card} p-6`}>
-            <h2 className="mb-5 text-sm font-semibold text-slate-900">Create class</h2>
-            <form action={createClass as unknown as (fd: FormData) => Promise<void>} className="space-y-4">
-              <div>
-                <label htmlFor="name" className={label}>Class name *</label>
-                <input id="name" name="name" type="text" required placeholder="e.g. Beginner A" className={input} />
+      {/* Class cards */}
+      {!classes?.length ? (
+        <div className="cd-card" style={{ padding:48, textAlign:"center", marginBottom:24 }}>
+          <p style={{ color:C.muted, fontSize:14 }}>No classes yet. Create your first class below.</p>
+        </div>
+      ) : (
+        <div className="cd-grid-cards" style={{ marginBottom:24 }}>
+          {classes.map((cl: {id:string; name:string; level_id:string; levels:{name:string}|{name:string}[]|null}) => {
+            const lvl = Array.isArray(cl.levels)?cl.levels[0]?.name:(cl.levels as {name?:string})?.name;
+            return (
+              <div key={cl.id} className="cd-card" style={{ padding:22 }}>
+                <div style={{ marginBottom:12 }}><LevelPill level={lvl ?? "—"} /></div>
+                <h3 style={{ fontSize:16, fontWeight:700, color:C.ink, lineHeight:1.3 }}>{cl.name}</h3>
               </div>
-              <div>
-                <label htmlFor="level_id" className={label}>Level *</label>
-                <select id="level_id" name="level_id" required className={input}>
-                  <option value="">— Select —</option>
-                  {(levels ?? []).map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-                </select>
-              </div>
-              <button type="submit" className={`${btnPrimary} w-full justify-center py-3`}>Create class</button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Forms */}
+      <div className="cd-grid-2-1">
+        <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
+          <div className="cd-card" style={{ padding:22 }}>
+            <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>Create class</h3>
+            <form action={createClass as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              <label className="cd-fld"><span>Class name</span><input name="name" type="text" required placeholder="e.g. General English — B1 Morning" /></label>
+              <label className="cd-fld"><span>Level</span>
+                <select name="level_id" required defaultValue=""><option value="" disabled>Select…</option>{(levels ?? []).map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select>
+              </label>
+              <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Create class</button>
             </form>
           </div>
 
-          <div className={`${card} p-6`}>
-            <h2 className="mb-5 text-sm font-semibold text-slate-900">Assign staff</h2>
-            <form action={assignStaffToClass as unknown as (fd: FormData) => Promise<void>} className="space-y-4">
-              <div>
-                <label htmlFor="profile_id" className={label}>Staff member</label>
-                <select id="profile_id" name="profile_id" required className={input}>
-                  <option value="">— Select staff —</option>
-                  {staff.map((s: { id: string; full_name: string | null }) => (
-                    <option key={s.id} value={s.id}>{s.full_name || s.id.slice(0, 8)}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="class_id" className={label}>Class</label>
-                <select id="class_id" name="class_id" required className={input}>
-                  <option value="">— Select class —</option>
-                  {(classes ?? []).map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({(c.levels as { name?: string })?.name ?? "—"})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button type="submit" className={`${btnPrimary} w-full justify-center py-3`}>Assign</button>
+          <div className="cd-card" style={{ padding:22 }}>
+            <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>Assign staff to class</h3>
+            <form action={assignStaffToClass as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              <label className="cd-fld"><span>Staff</span>
+                <select name="profile_id" required defaultValue=""><option value="" disabled>Select staff…</option>{staff.map((s:{id:string;full_name:string|null})=><option key={s.id} value={s.id}>{s.full_name || s.id.slice(0,8)}</option>)}</select>
+              </label>
+              <label className="cd-fld"><span>Class</span>
+                <select name="class_id" required defaultValue=""><option value="" disabled>Select class…</option>{(classes ?? []).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select>
+              </label>
+              <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Assign</button>
             </form>
           </div>
 
-          <div className={`${card} p-6`}>
-            <h2 className="mb-5 text-sm font-semibold text-slate-900">Add assignment</h2>
-            <form action={createAssignment as unknown as (fd: FormData) => Promise<void>} className="space-y-4">
-              <div>
-                <label htmlFor="title" className={label}>Title *</label>
-                <input id="title" name="title" type="text" required className={input} placeholder="Assignment title…" />
+          <div className="cd-card" style={{ padding:22 }}>
+            <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>Add assignment</h3>
+            <form action={createAssignment as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              <label className="cd-fld"><span>Title</span><input name="title" type="text" required /></label>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                <label className="cd-fld"><span>Due date</span><input name="due_date" type="date" /></label>
+                <label className="cd-fld"><span>Level</span>
+                  <select name="level_id" defaultValue=""><option value="">Any</option>{(levels ?? []).map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select>
+                </label>
               </div>
-              <div>
-                <label htmlFor="due_date" className={label}>Due date</label>
-                <input id="due_date" name="due_date" type="date" className={input} />
-              </div>
-              <div>
-                <label htmlFor="description" className={label}>Description</label>
-                <textarea id="description" name="description" rows={2} className={input} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="assign_level_id" className={label}>Level</label>
-                  <select id="assign_level_id" name="level_id" className={input}>
-                    <option value="">Any</option>
-                    {(levels ?? []).map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="assign_class_id" className={label}>Class</label>
-                  <select id="assign_class_id" name="class_id" className={input}>
-                    <option value="">Any</option>
-                    {(classes ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-              </div>
-              <button type="submit" className={`${btnPrimary} w-full justify-center py-3`}>Add assignment</button>
+              <label className="cd-fld"><span>Description</span><textarea name="description" rows={2} /></label>
+              <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Add assignment</button>
             </form>
           </div>
         </div>
 
-        {/* Classes list */}
-        <div>
-          <h2 className="mb-4 text-sm font-semibold text-slate-900">Classes ({classes?.length ?? 0})</h2>
-          {!classes?.length ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-14 text-center">
-              <span className="text-4xl">🏫</span>
-              <p className="mt-3 font-semibold text-slate-600">No classes yet</p>
-              <p className="mt-1 text-sm text-slate-400">Create your first class using the form.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {classes.map((c: { id: string; name: string; levels: { name: string } | { name: string }[] | null }) => {
-                const levelName = Array.isArray(c.levels) ? c.levels[0]?.name : (c.levels as { name?: string })?.name;
-                return (
-                  <div key={c.id} className={`${card} flex items-center gap-3 px-5 py-4`}>
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-100 text-sm font-bold text-green-700">
-                      {c.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-900">{c.name}</p>
-                      <p className="text-xs text-slate-400">{levelName ?? "—"}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Assignments list */}
-        <div>
-          <h2 className="mb-4 text-sm font-semibold text-slate-900">Recent assignments</h2>
-          {!assignments?.length ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-14 text-center">
-              <span className="text-4xl">📝</span>
-              <p className="mt-3 font-semibold text-slate-600">No assignments yet</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
+        {/* Recent assignments */}
+        <div className="cd-card" style={{ padding:22, height:"fit-content" }}>
+          <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:14 }}>Recent assignments</h3>
+          {!assignments?.length ? <p style={{ color:C.muted, fontSize:13 }}>No assignments yet.</p> : (
+            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
               {assignments.map((a) => {
-                const lvl = Array.isArray(a.levels) ? a.levels[0] : a.levels;
-                const cls = Array.isArray(a.classes) ? a.classes[0] : a.classes;
+                const lvl = Array.isArray(a.levels)?a.levels[0]:a.levels;
+                const cls = Array.isArray(a.classes)?a.classes[0]:a.classes;
                 return (
-                  <div key={a.id} className={`${card} px-5 py-4`}>
-                    <p className="font-medium text-slate-900">{a.title}</p>
-                    <p className="mt-1 text-xs text-slate-400">
-                      {a.due_date ? new Date(a.due_date).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "No due date"}
-                      {(lvl as { name?: string })?.name ? ` · ${(lvl as { name: string }).name}` : ""}
-                      {(cls as { name?: string })?.name ? ` · ${(cls as { name: string }).name}` : ""}
-                    </p>
+                  <div key={a.id} style={{ paddingBottom:12, borderBottom:`1px solid ${C.border}`, display:"flex", gap:12, alignItems:"center" }}>
+                    <div style={{ width:38, height:38, borderRadius:10, background:C.greenWash, color:C.green, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                      <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                    </div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ fontSize:13.5, fontWeight:700, color:C.ink }}>{a.title}</div>
+                      <div style={{ fontSize:11.5, color:C.muted, marginTop:2 }}>
+                        {a.due_date ? "Due " + fmtDate(a.due_date) : "No due date"}
+                        {(lvl as {name?:string})?.name ? ` · ${(lvl as {name:string}).name}` : ""}
+                        {(cls as {name?:string})?.name ? ` · ${(cls as {name:string}).name}` : ""}
+                      </div>
+                    </div>
                   </div>
                 );
               })}

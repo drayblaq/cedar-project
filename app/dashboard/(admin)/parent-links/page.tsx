@@ -1,6 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { linkParentToStudent, unlinkParentFromStudent } from "@/app/dashboard/actions/index";
-import { input, label, card, btnPrimary, btnDanger } from "../../ui";
+
+const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec" };
+const AVATAR = ["#2ea82a","#1a6b18","#d4a843","#3f7d8c","#8c6a3f","#6a8c3f"];
+function aColor(n:string){let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))>>>0;return AVATAR[h%AVATAR.length];}
+function ini(n:string){return n.split(" ").map(p=>p[0]).slice(0,2).join("").toUpperCase();}
 
 export default async function ParentLinksPage() {
   const supabase = await createClient();
@@ -9,84 +13,59 @@ export default async function ParentLinksPage() {
   const { data: students } = await supabase.from("students").select("id, full_name").order("full_name");
   const { data: links } = await supabase.from("parent_students").select("id, parent_id, student_id").order("id");
 
-  const parentIds = [...new Set((links ?? []).map((l) => l.parent_id))];
-  const studentIds = [...new Set((links ?? []).map((l) => l.student_id))];
-  const { data: parentProfiles } = await supabase.from("profiles").select("id, full_name").in("id", parentIds);
-  const { data: studentRows } = await supabase.from("students").select("id, full_name").in("id", studentIds);
-  const parentNames: Record<string, string> = {};
-  (parentProfiles ?? []).forEach((p) => { parentNames[p.id] = p.full_name ?? p.id.slice(0, 8); });
-  const studentNames: Record<string, string> = {};
-  (studentRows ?? []).forEach((s) => { studentNames[s.id] = s.full_name; });
+  const parentIds = [...new Set((links ?? []).map(l => l.parent_id))];
+  const studentIds = [...new Set((links ?? []).map(l => l.student_id))];
+  const { data: parentProfiles } = await supabase.from("profiles").select("id, full_name").in("id", parentIds.length?parentIds:["_"]);
+  const { data: studentRows } = await supabase.from("students").select("id, full_name").in("id", studentIds.length?studentIds:["_"]);
+  const pNames: Record<string,string> = {}; (parentProfiles ?? []).forEach(p => { pNames[p.id] = p.full_name ?? p.id.slice(0,8); });
+  const sNames: Record<string,string> = {}; (studentRows ?? []).forEach(s => { sNames[s.id] = s.full_name; });
 
   return (
-    <div className="p-6 sm:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Parent Links</h1>
-        <p className="mt-1 text-sm text-slate-500">Connect parent accounts to their children for portal access.</p>
+    <div style={{ padding:"30px 30px 60px" }}>
+      <div style={{ marginBottom:18 }}>
+        <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>Parent links</h1>
+        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>Connect parent accounts to their children for portal access.</p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
-        {/* Form */}
-        <div className={`${card} p-6 h-fit`}>
-          <h2 className="mb-5 text-sm font-semibold text-slate-900">Link parent to student</h2>
-          <form action={linkParentToStudent as unknown as (fd: FormData) => Promise<void>} className="space-y-4">
-            <div>
-              <label htmlFor="parent_id" className={label}>Parent *</label>
-              <select id="parent_id" name="parent_id" required className={input}>
-                <option value="">— Select parent —</option>
-                {(parents ?? []).map((p) => <option key={p.id} value={p.id}>{p.full_name ?? p.id.slice(0, 8)}</option>)}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="student_id" className={label}>Student *</label>
-              <select id="student_id" name="student_id" required className={input}>
-                <option value="">— Select student —</option>
-                {(students ?? []).map((s) => <option key={s.id} value={s.id}>{s.full_name}</option>)}
-              </select>
-            </div>
-            <button type="submit" className={`${btnPrimary} w-full justify-center py-3`}>Add link</button>
-          </form>
-        </div>
-
-        {/* Links list */}
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Current links</h2>
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-              {links?.length ?? 0}
-            </span>
-          </div>
-
+      <div className="cd-grid-2-1">
+        {/* Current links */}
+        <div className="cd-card" style={{ padding:0 }}>
+          <div style={{ padding:"18px 22px 6px" }}><h3 style={{ fontSize:15, fontWeight:700, color:C.ink }}>Current links</h3></div>
           {!links?.length ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-16 text-center">
-              <span className="text-4xl">🔗</span>
-              <p className="mt-3 font-semibold text-slate-600">No parent–student links yet</p>
-              <p className="mt-1 text-sm text-slate-400">Add one using the form.</p>
-            </div>
+            <p style={{ padding:"40px 22px", textAlign:"center", color:C.muted, fontSize:13.5 }}>No parent–student links yet. Add one with the form.</p>
           ) : (
-            <div className="space-y-2">
-              {links.map((l) => (
-                <div key={l.id} className={`${card} flex items-center justify-between px-5 py-4`}>
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-                      {(parentNames[l.parent_id] ?? "?").charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">
-                        <span className="text-blue-700">{parentNames[l.parent_id] ?? "—"}</span>
-                        <span className="mx-2 text-slate-300">→</span>
-                        {studentNames[l.student_id] ?? "—"}
-                      </p>
-                      <p className="text-xs text-slate-400">Parent → Student</p>
+            <div style={{ display:"flex", flexDirection:"column" }}>
+              {links.map((l, i) => (
+                <div key={l.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 22px", borderBottom: i<links.length-1?`1px solid ${C.border}`:"none" }}>
+                  <div style={{ width:32, height:32, borderRadius:"50%", flexShrink:0, background:aColor(pNames[l.parent_id]??"?"), color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, fontSize:11.5 }}>{ini(pNames[l.parent_id]??"?")}</div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:13.5, color:C.ink }}>
+                      <strong>{pNames[l.parent_id] ?? "—"}</strong>
+                      <span style={{ color:C.muted, margin:"0 8px" }}>→</span>
+                      {sNames[l.student_id] ?? "—"}
                     </div>
                   </div>
                   <form action={unlinkParentFromStudent.bind(null, l.id) as unknown as (fd: FormData) => Promise<void>}>
-                    <button type="submit" className={btnDanger}>Remove</button>
+                    <button type="submit" style={{ background:"rgba(201,74,58,.1)", border:"none", borderRadius:8, padding:"5px 11px", fontSize:12, fontWeight:700, color:"#b3402f", cursor:"pointer" }}>Remove</button>
                   </form>
                 </div>
               ))}
             </div>
           )}
+        </div>
+
+        {/* Link form */}
+        <div className="cd-card" style={{ padding:22, height:"fit-content" }}>
+          <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>Link parent to student</h3>
+          <form action={linkParentToStudent as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            <label className="cd-fld"><span>Parent</span>
+              <select name="parent_id" required defaultValue=""><option value="" disabled>Select parent…</option>{(parents ?? []).map(p=><option key={p.id} value={p.id}>{p.full_name ?? p.id.slice(0,8)}</option>)}</select>
+            </label>
+            <label className="cd-fld"><span>Student</span>
+              <select name="student_id" required defaultValue=""><option value="" disabled>Select student…</option>{(students ?? []).map(s=><option key={s.id} value={s.id}>{s.full_name}</option>)}</select>
+            </label>
+            <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Add link</button>
+          </form>
         </div>
       </div>
     </div>

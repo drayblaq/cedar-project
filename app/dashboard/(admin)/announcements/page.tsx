@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAnnouncement, deleteAnnouncement } from "@/app/dashboard/actions/index";
-import { input, label, card, btnPrimary, btnDanger } from "../../ui";
+
+const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec" };
+
+function fmtDate(iso: string) { return new Date(iso).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" }); }
 
 export default async function AnnouncementsPage() {
   const supabase = await createClient();
@@ -11,67 +14,49 @@ export default async function AnnouncementsPage() {
     .limit(50);
 
   return (
-    <div className="p-6 sm:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Announcements</h1>
-        <p className="mt-1 text-sm text-slate-500">Publish center-wide updates visible to all students and parents.</p>
+    <div style={{ padding:"30px 30px 60px" }}>
+      <div style={{ marginBottom:18 }}>
+        <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>Announcements</h1>
+        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>Broadcast to students, parents and staff.</p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
-        {/* Create form */}
-        <div className={`${card} p-6 h-fit`}>
-          <h2 className="mb-5 text-sm font-semibold text-slate-900">New announcement</h2>
-          <form action={createAnnouncement as unknown as (fd: FormData) => Promise<void>} className="space-y-4">
-            <div>
-              <label htmlFor="title" className={label}>Title *</label>
-              <input id="title" name="title" type="text" required className={input} placeholder="Announcement title…" />
+      <div className="cd-grid-2-1">
+        {/* List */}
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          {!announcements?.length ? (
+            <div className="cd-card" style={{ padding:40, textAlign:"center" }}>
+              <p style={{ color:C.muted, fontSize:13.5 }}>No announcements yet.</p>
             </div>
-            <div>
-              <label htmlFor="body" className={label}>Body</label>
-              <textarea id="body" name="body" rows={5} className={input} placeholder="Full announcement text…" />
+          ) : announcements.map(a => (
+            <div key={a.id} className="cd-card" style={{ padding:22, display:"flex", gap:16, alignItems:"flex-start" }}>
+              <div style={{ width:42, height:42, borderRadius:11, background:C.greenWash, color:C.green, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l15-6v14L3 13v-2z"/><path d="M3 11v2a3 3 0 0 0 3 3h1"/><path d="M11 19l-1.5 2"/></svg>
+              </div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", gap:10, marginBottom:5, alignItems:"flex-start" }}>
+                  <h3 style={{ fontSize:15, fontWeight:700, color:C.ink }}>{a.title}</h3>
+                  <form action={deleteAnnouncement.bind(null, a.id) as unknown as (fd: FormData) => Promise<void>} style={{ flexShrink:0 }}>
+                    <button type="submit" style={{ background:"rgba(201,74,58,.1)", border:"none", borderRadius:8, padding:"5px 11px", fontSize:12, fontWeight:700, color:"#b3402f", cursor:"pointer" }}>Delete</button>
+                  </form>
+                </div>
+                {a.body && <p style={{ fontSize:13, color:C.muted, lineHeight:1.65 }}>{a.body}</p>}
+                <div style={{ fontSize:11.5, color:C.muted, marginTop:8, opacity:.8 }}>{fmtDate(a.published_at)}</div>
+              </div>
             </div>
-            <button type="submit" className={`${btnPrimary} w-full justify-center py-3`}>
-              📢 Publish
-            </button>
-          </form>
+          ))}
         </div>
 
-        {/* List */}
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Published announcements</h2>
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-              {announcements?.length ?? 0}
-            </span>
-          </div>
-
-          {!announcements?.length ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-white py-16 text-center">
-              <span className="text-4xl">📢</span>
-              <p className="mt-3 font-semibold text-slate-600">No announcements yet</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {announcements.map((a) => (
-                <div key={a.id} className={`${card} p-5`}>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-slate-900">{a.title}</p>
-                      <p className="mt-1 text-xs text-slate-400">
-                        {new Date(a.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-                      </p>
-                      {a.body && (
-                        <p className="mt-2 text-sm text-slate-600 line-clamp-2 leading-relaxed">{a.body}</p>
-                      )}
-                    </div>
-                    <form action={deleteAnnouncement.bind(null, a.id) as unknown as (fd: FormData) => Promise<void>} className="shrink-0">
-                      <button type="submit" className={btnDanger}>Delete</button>
-                    </form>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        {/* New */}
+        <div className="cd-card" style={{ padding:22, height:"fit-content" }}>
+          <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>New announcement</h3>
+          <form action={createAnnouncement as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            <label className="cd-fld"><span>Title</span><input name="title" type="text" required placeholder="e.g. Term 3 placement tests" /></label>
+            <label className="cd-fld"><span>Message</span><textarea name="body" rows={5} placeholder="Write your announcement…" /></label>
+            <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l15-6v14L3 13v-2z"/></svg>
+              Publish
+            </button>
+          </form>
         </div>
       </div>
     </div>

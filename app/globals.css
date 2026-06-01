@@ -424,3 +424,209 @@ body {
 .animate-delay-500 {
   animation-delay: 500ms;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CEDAR DASHBOARD DESIGN SYSTEM
+   Tokens and utility classes from the cedar-dashboards prototype.
+   Applied only inside .cedar-dash scope to avoid conflicts.
+   ═══════════════════════════════════════════════════════════════ */
+
+.cedar-dash {
+  --cd-green:        #2ea82a;
+  --cd-green-bright: #6fdc6a;
+  --cd-green-deep:   #0e3b0c;
+  --cd-green-dark:   #1a6b18;
+  --cd-green-wash:   #eef6ec;
+  --cd-green-soft:   #d3ead0;
+  --cd-ink:          #16241a;
+  --cd-muted:        #687a6c;
+  --cd-border:       #e6ece4;
+  --cd-surface:      #ffffff;
+  --cd-bg:           #f4f7f2;
+  font-family: var(--font-hanken, 'DM Sans', system-ui, sans-serif);
+  background: var(--cd-bg);
+  color: var(--cd-ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* ── Card ── */
+.cedar-dash .cd-card {
+  background: var(--cd-surface);
+  border: 1px solid var(--cd-border);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(20,40,26,.03);
+}
+
+/* ── Buttons ── */
+.cedar-dash .cd-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cd-green); color: #fff; border: none; cursor: pointer;
+  font-size: 13.5px; font-weight: 700; padding: 10px 18px; border-radius: 11px;
+  box-shadow: 0 6px 18px rgba(46,168,42,.28);
+  transition: transform .16s, box-shadow .16s, background .16s;
+  font-family: inherit;
+}
+.cedar-dash .cd-btn-primary:hover { background: var(--cd-green-dark); transform: translateY(-1px); box-shadow: 0 10px 26px rgba(46,168,42,.36); }
+.cedar-dash .cd-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.cedar-dash .cd-btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cd-surface); color: var(--cd-ink);
+  border: 1.5px solid var(--cd-border); cursor: pointer;
+  font-size: 13.5px; font-weight: 700; padding: 10px 16px; border-radius: 11px;
+  transition: border-color .16s, color .16s; font-family: inherit;
+}
+.cedar-dash .cd-btn-ghost:hover { border-color: var(--cd-green); color: var(--cd-green); }
+
+.cedar-dash .cd-mini-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--cd-green-wash); color: var(--cd-green-dark);
+  border: none; cursor: pointer; font-size: 12px; font-weight: 700;
+  padding: 6px 12px; border-radius: 8px; transition: background .15s; font-family: inherit;
+}
+.cedar-dash .cd-mini-btn:hover { background: var(--cd-green-soft); }
+
+/* ── Grids ── */
+.cedar-dash .cd-grid-stats  { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.cedar-dash .cd-grid-stats-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.cedar-dash .cd-grid-2-1    { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; }
+.cedar-dash .cd-grid-cards  { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 16px; }
+
+/* ── Table ── */
+.cedar-dash .cd-trow:hover td { background: var(--cd-green-wash); }
+.cedar-dash .cd-trow td { transition: background .12s; }
+.cedar-dash .cd-table-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 16px 18px; border-bottom: 1px solid var(--cd-border); flex-wrap: wrap;
+}
+.cedar-dash .cd-search {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--cd-bg); border: 1.5px solid var(--cd-border);
+  border-radius: 10px; padding: 9px 13px; color: var(--cd-muted); min-width: 200px;
+  transition: border-color .15s;
+}
+.cedar-dash .cd-search:focus-within { border-color: var(--cd-green); }
+.cedar-dash .cd-search input { border: none; background: transparent; outline: none; font-size: 13.5px; color: var(--cd-ink); width: 100%; }
+
+.cedar-dash .cd-chip {
+  background: var(--cd-bg); border: 1.5px solid var(--cd-border); color: var(--cd-muted);
+  font-size: 12.5px; font-weight: 700; padding: 6px 13px; border-radius: 9px; cursor: pointer;
+  transition: all .15s; font-family: inherit;
+}
+.cedar-dash .cd-chip:hover { border-color: var(--cd-green-soft); color: var(--cd-green-dark); }
+.cedar-dash .cd-chip-on { background: var(--cd-green); border-color: var(--cd-green); color: #fff; }
+
+/* ── Form fields ── */
+.cedar-dash .cd-fld { display: flex; flex-direction: column; gap: 6px; }
+.cedar-dash .cd-fld > span {
+  font-size: 11.5px; font-weight: 700; color: var(--cd-muted);
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.cedar-dash .cd-fld input,
+.cedar-dash .cd-fld select,
+.cedar-dash .cd-fld textarea {
+  background: var(--cd-bg); border: 1.5px solid var(--cd-border); border-radius: 10px;
+  padding: 11px 13px; font-size: 13.5px; color: var(--cd-ink); outline: none;
+  transition: border-color .15s, box-shadow .15s; font-family: inherit;
+}
+.cedar-dash .cd-fld input:focus,
+.cedar-dash .cd-fld select:focus,
+.cedar-dash .cd-fld textarea:focus {
+  border-color: var(--cd-green); box-shadow: 0 0 0 3px rgba(46,168,42,.12);
+}
+.cedar-dash .cd-fld textarea { resize: vertical; }
+.cedar-dash .cd-select-field {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--cd-surface); border: 1.5px solid var(--cd-border);
+  border-radius: 11px; padding: 9px 14px; color: var(--cd-muted);
+}
+.cedar-dash .cd-select-field select,
+.cedar-dash .cd-select-field input {
+  border: none; background: transparent; outline: none;
+  font-size: 13.5px; font-weight: 600; color: var(--cd-ink); cursor: pointer; font-family: inherit;
+}
+
+/* ── Modal ── */
+.cedar-dash .cd-modal-backdrop {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(14,59,12,.32); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.cedar-dash .cd-modal-card {
+  background: var(--cd-surface); border-radius: 18px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(14,59,12,.3);
+  animation: cd-pop .2s cubic-bezier(.16,1,.3,1);
+}
+.cedar-dash .cd-modal-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 22px 24px 16px; border-bottom: 1px solid var(--cd-border);
+  position: sticky; top: 0; background: var(--cd-surface);
+  border-radius: 18px 18px 0 0;
+}
+.cedar-dash .cd-modal-body { padding: 22px 24px; }
+.cedar-dash .cd-modal-foot {
+  display: flex; gap: 10px; justify-content: flex-end; padding: 16px 24px 22px;
+}
+@keyframes cd-pop {
+  from { transform: translateY(12px) scale(.98); }
+  to   { transform: none; }
+}
+
+/* ── Toast ── */
+.cedar-dash .cd-toast {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 300;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--cd-green-deep); color: #fff;
+  font-size: 13.5px; font-weight: 600; padding: 12px 20px; border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(14,59,12,.4);
+  animation: cd-toastIn .26s cubic-bezier(.16,1,.3,1);
+}
+@keyframes cd-toastIn {
+  from { transform: translate(-50%,16px); }
+  to   { transform: translate(-50%,0); }
+}
+
+/* ── Sidebar ── */
+.cedar-dash .cd-sidebar {
+  background: var(--cd-green-deep); width: 250px; position: fixed;
+  top: 0; left: 0; bottom: 0; z-index: 50;
+  display: flex; flex-direction: column; padding: 22px 16px; gap: 4px;
+}
+.cedar-dash .cd-snav-item {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  background: transparent; border: none; cursor: pointer; color: rgba(255,255,255,.74);
+  font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 10px;
+  transition: background .15s, color .15s; font-family: inherit;
+}
+.cedar-dash .cd-snav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+.cedar-dash .cd-snav-on {
+  background: var(--cd-green) !important; color: #fff !important;
+  box-shadow: 0 6px 18px rgba(46,168,42,.35);
+}
+
+/* ── Topbar ── */
+.cedar-dash .cd-topbar {
+  height: 68px; background: rgba(255,255,255,.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--cd-border);
+  display: flex; align-items: center; gap: 16px; padding: 0 28px;
+  position: sticky; top: 0; z-index: 40;
+}
+.cedar-dash .cd-icon-btn {
+  position: relative; width: 38px; height: 38px; border-radius: 10px;
+  border: 1px solid var(--cd-border); background: var(--cd-surface); color: var(--cd-muted);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: border-color .15s, color .15s;
+}
+.cedar-dash .cd-icon-btn:hover { border-color: var(--cd-green); color: var(--cd-green); }
+
+/* ── Responsive ── */
+@media (max-width: 1080px) {
+  .cedar-dash .cd-grid-2-1   { grid-template-columns: 1fr; }
+  .cedar-dash .cd-grid-stats { grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 680px) {
+  .cedar-dash .cd-grid-stats,
+  .cedar-dash .cd-grid-stats-3 { grid-template-columns: 1fr; }
+}
