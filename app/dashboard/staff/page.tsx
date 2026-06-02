@@ -61,6 +61,23 @@ export default async function StaffDashboardPage() {
   }
 
   const { data: assignments } = await supabase.from("assignments").select("id, title, due_date, level_id, class_id").order("due_date",{ascending:false}).limit(10);
+
+  const classIdList = classList.map(c => c.id);
+  const { data: timetableRows } = classIdList.length
+    ? await supabase.from("timetable").select("id, class_id, day_of_week, start_time, end_time, room")
+        .in("class_id", classIdList).order("day_of_week").order("start_time")
+    : { data: [] };
+
+  type TTRow = { id: string; class_id: string; day_of_week: number; start_time: string; end_time: string; room: string | null };
+  const timetableByClass: Record<string, TTRow[]> = {};
+  for (const s of timetableRows ?? []) {
+    const slot = s as TTRow;
+    if (!timetableByClass[slot.class_id]) timetableByClass[slot.class_id] = [];
+    timetableByClass[slot.class_id]!.push(slot);
+  }
+
+  const DAY_NAMES = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function fmtTime(t: string) { return t.slice(0, 5); }
   const myIds = new Set<string>();
   const taughtLevels = new Set(classList.map(c=>c.levelId));
   const taughtClasses = new Set(classList.map(c=>c.id));
@@ -102,6 +119,16 @@ export default async function StaffDashboardPage() {
                   <p style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.05em", color: marked?C.green:"#9a7822" }}>{todayFormatted}</p>
                   <p style={{ fontSize:15.5, fontWeight:700, color:C.ink, marginTop:4 }}>{c.name}</p>
                   <p style={{ fontSize:12.5, color:C.muted, marginTop:2 }}>{c.levelName} · {studentCounts[c.id] ?? 0} students</p>
+                  {/* Timetable pills */}
+                  {(timetableByClass[c.id] ?? []).length > 0 && (
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:10 }}>
+                      {(timetableByClass[c.id] ?? []).map(slot => (
+                        <span key={slot.id} style={{ fontSize:11.5, fontWeight:600, color:"#166534", background:"#f0fdf4", border:"1px solid #bbf7d0", borderRadius:8, padding:"4px 10px", whiteSpace:"nowrap" }}>
+                          {DAY_NAMES[slot.day_of_week]} · {fmtTime(slot.start_time)}–{fmtTime(slot.end_time)}{slot.room ? ` · ${slot.room}` : ""}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <p style={{ fontSize:13, fontWeight:700, marginTop:10, color: marked?C.greenDark:"#9a7822" }}>{marked ? t("attendanceMarked") : t("attendanceNotMarked")}</p>
                   {!marked && (
                     <Link href={`/staff/attendance?class=${c.id}&date=${today}`} className="cd-btn-primary" style={{ marginTop:14, width:"100%", justifyContent:"center", textDecoration:"none" }}>{t("markNow")}</Link>

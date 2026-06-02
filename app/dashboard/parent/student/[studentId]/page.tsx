@@ -47,6 +47,18 @@ export default async function ParentStudentDetailPage({ params }: { params: Prom
     supabase.from("announcements").select("id, title, body, published_at").order("published_at",{ascending:false}).limit(5),
   ]);
 
+  // Timetable for the student's level
+  const studentLevelId = resolveNested(student.levels as {name?:string}|{name?:string}[]|null) ? null : null; // placeholder
+  const { data: studentClasses } = await supabase.from("classes").select("id").eq("level_id", (student as {level_id?:string}).level_id ?? "");
+  const studentClassIds = (studentClasses ?? []).map((c:{id:string}) => c.id);
+  type TTRow = { id: string; class_id: string; day_of_week: number; start_time: string; end_time: string; room: string | null; classes: { name: string } | null };
+  const { data: timetableSlots } = studentClassIds.length
+    ? await supabase.from("timetable").select("*, classes(name)").in("class_id", studentClassIds).order("day_of_week").order("start_time")
+    : { data: [] };
+  const slots = (timetableSlots ?? []) as TTRow[];
+  const DAY_NAMES = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function fmtTime(t: string) { return t.slice(0, 5); }
+
   const attRows = attRes.data ?? [];
   const presentCount = attRows.filter(r=>r.status==="present").length;
   const lateCount = attRows.filter(r=>r.status==="late").length;
@@ -157,6 +169,23 @@ export default async function ParentStudentDetailPage({ params }: { params: Prom
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+      </div>
+
+      {/* Timetable */}
+      <div className="cd-card" style={{ padding:22, marginBottom:18 }}>
+        <h2 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:14 }}>Weekly Schedule</h2>
+        {!slots.length ? (
+          <p style={{ color:C.muted, fontSize:13 }}>No schedule set yet.</p>
+        ) : (
+          <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+            {slots.map(slot => (
+              <span key={slot.id} style={{ fontSize:12.5, fontWeight:600, color:"#166534", background:"#f0fdf4", border:"1px solid #bbf7d0", borderRadius:9, padding:"7px 13px", whiteSpace:"nowrap" }}>
+                {DAY_NAMES[slot.day_of_week]} · {fmtTime(slot.start_time)}–{fmtTime(slot.end_time)}{slot.room ? ` · ${slot.room}` : ""}
+                {slot.classes && <span style={{ color:"#1a6b18", marginLeft:6, fontWeight:500 }}>({slot.classes.name})</span>}
+              </span>
+            ))}
           </div>
         )}
       </div>

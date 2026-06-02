@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { createClass, assignStaffToClass, createAssignment, createMaterial, deleteMaterial } from "@/app/dashboard/actions/index";
+import { createClass, assignStaffToClass, createAssignment, createMaterial, deleteMaterial, createTimetableSlot, deleteTimetableSlot } from "@/app/dashboard/actions/index";
 
 const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18" };
 
@@ -28,6 +28,21 @@ export default async function ClassesPage() {
   const { data: materials } = classIds.length
     ? await supabase.from("materials").select("*").in("class_id", classIds).order("created_at", { ascending: false })
     : { data: [] };
+
+  const { data: timetableRows } = classIds.length
+    ? await supabase.from("timetable").select("*").in("class_id", classIds).order("day_of_week").order("start_time")
+    : { data: [] };
+
+  type TimetableRow = { id: string; class_id: string; day_of_week: number; start_time: string; end_time: string; room: string | null };
+  const timetableByClass: Record<string, TimetableRow[]> = {};
+  for (const s of timetableRows ?? []) {
+    const slot = s as TimetableRow;
+    if (!timetableByClass[slot.class_id]) timetableByClass[slot.class_id] = [];
+    timetableByClass[slot.class_id]!.push(slot);
+  }
+
+  const DAY_NAMES = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function fmtTime(t: string) { return t.slice(0, 5); }
 
   const materialsByClass: Record<string, { id: string; title: string; material_type: string; url: string | null }[]> = {};
   for (const m of materials ?? []) {
@@ -106,6 +121,45 @@ export default async function ClassesPage() {
                       <input name="url" type="url" placeholder="https://…" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }} />
                     </div>
                     <button type="submit" className="cd-mini-btn" style={{ width:"100%", justifyContent:"center" }}>+ Add</button>
+                  </form>
+                </div>
+
+                {/* Timetable section */}
+                <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:14, marginTop:4 }}>
+                  <p style={{ fontSize:11.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, marginBottom:10 }}>Schedule</p>
+                  {(timetableByClass[cl.id] ?? []).length === 0 ? (
+                    <p style={{ fontSize:12.5, color:C.muted, marginBottom:10 }}>No sessions added yet.</p>
+                  ) : (
+                    <div style={{ display:"flex", flexDirection:"column", gap:6, marginBottom:10 }}>
+                      {(timetableByClass[cl.id] ?? []).map(slot => (
+                        <div key={slot.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
+                          <span style={{ fontSize:12.5, fontWeight:600, color:"#166534", background:"#f0fdf4", border:"1px solid #bbf7d0", borderRadius:8, padding:"4px 10px", flex:1 }}>
+                            {DAY_NAMES[slot.day_of_week]} · {fmtTime(slot.start_time)}–{fmtTime(slot.end_time)}{slot.room ? ` · ${slot.room}` : ""}
+                          </span>
+                          <form action={deleteTimetableSlot.bind(null, slot.id) as unknown as (fd: FormData) => Promise<void>} style={{ display:"inline" }}>
+                            <button type="submit" style={{ background:"rgba(201,74,58,.1)", border:"none", borderRadius:6, padding:"4px 9px", fontSize:11.5, fontWeight:700, color:"#b3402f", cursor:"pointer" }}>Del</button>
+                          </form>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Add slot form */}
+                  <form action={createTimetableSlot as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                    <input type="hidden" name="class_id" value={cl.id} />
+                    <select name="day_of_week" defaultValue="1" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }}>
+                      <option value="1">Monday</option>
+                      <option value="2">Tuesday</option>
+                      <option value="3">Wednesday</option>
+                      <option value="4">Thursday</option>
+                      <option value="5">Friday</option>
+                      <option value="6">Saturday</option>
+                    </select>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                      <input name="start_time" type="time" required style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }} />
+                      <input name="end_time" type="time" required style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }} />
+                    </div>
+                    <input name="room" type="text" placeholder="Room (optional)" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }} />
+                    <button type="submit" className="cd-mini-btn" style={{ width:"100%", justifyContent:"center" }}>+ Add session</button>
                   </form>
                 </div>
               </div>

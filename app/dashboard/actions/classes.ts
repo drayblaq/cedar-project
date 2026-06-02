@@ -75,6 +75,41 @@ export async function deleteMaterial(id: string) {
   return { success: true };
 }
 
+export async function createTimetableSlot(formData: FormData) {
+  const supabase = await createClient();
+  const class_id = formData.get("class_id") as string;
+  const day_of_week = parseInt(formData.get("day_of_week") as string);
+  const start_time = formData.get("start_time") as string;
+  const end_time = formData.get("end_time") as string;
+  const room = (formData.get("room") as string) || null;
+
+  if (!class_id || !day_of_week || !start_time || !end_time) {
+    return { error: "All fields are required" };
+  }
+
+  const { error } = await supabase
+    .from("timetable")
+    .insert({ class_id, day_of_week, start_time, end_time, room });
+
+  if (error) return { error: error.message };
+  revalidatePath("/admin/classes");
+  revalidatePath("/staff");
+  revalidatePath("/student");
+  revalidatePath("/parent");
+  return { success: true };
+}
+
+export async function deleteTimetableSlot(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("timetable").delete().eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/admin/classes");
+  revalidatePath("/staff");
+  revalidatePath("/student");
+  revalidatePath("/parent");
+  return { success: true };
+}
+
 export async function createAssignment(formData: FormData) {
   const supabase = await createClient();
   const title = formData.get("title") as string;
