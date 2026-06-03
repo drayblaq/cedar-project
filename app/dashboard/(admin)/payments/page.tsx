@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createPayment } from "@/app/dashboard/actions/index";
 import { getTuitionAmount, getSetting } from "@/lib/settings";
+import { EditPaymentButton } from "./EditPaymentButton";
 
 const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18", bg:"#f4f7f2" };
 
@@ -94,9 +95,12 @@ export default async function PaymentsPage() {
                         <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, color:C.muted }}>{fmtDate(p.paid_at)}</td>
                         <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"right", fontWeight:700, color:C.ink }}>{fmtXOF(Number(p.amount))}</td>
                         <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"right" }}>
-                          <a href={`/admin/payments/${p.id}/receipt`} target="_blank" rel="noopener noreferrer" className="cd-mini-btn" style={{ textDecoration:"none" }}>
-                            Receipt
-                          </a>
+                          <div style={{ display:"inline-flex", alignItems:"center", gap:8, justifyContent:"flex-end" }}>
+                            <EditPaymentButton id={p.id} amount={Number(p.amount)} notes={(p as {notes?:string|null}).notes ?? null} />
+                            <a href={`/admin/payments/${p.id}/receipt`} target="_blank" rel="noopener noreferrer" className="cd-mini-btn" style={{ textDecoration:"none" }}>
+                              Receipt
+                            </a>
+                          </div>
                         </td>
                       </tr>
                     );

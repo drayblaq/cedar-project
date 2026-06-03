@@ -6,6 +6,17 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+export async function updatePayment(id: string, amount: number, notes: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("payments")
+    .update({ amount, notes: notes || null })
+    .eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/admin/payments");
+  return { success: true };
+}
+
 export async function createPayment(formData: FormData) {
   const supabase = await createClient();
   const student_id = formData.get("student_id") as string;

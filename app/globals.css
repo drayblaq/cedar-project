@@ -453,10 +453,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* top-nav bar */
 .cedar-topnav {
-  background: rgba(255,255,255,.9);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e6ece4;
-  position: sticky; top: 0; z-index: 40;
+  background: #ffffff;
+  border-bottom: 1px solid #eef2ec;
+  box-shadow: 0 1px 3px rgba(20,40,26,.06);
+  position: sticky; top: 0; z-index: 50;
 }
 .cedar-topnav-inner {
   max-width: 1180px; margin: 0 auto; height: 70px;
