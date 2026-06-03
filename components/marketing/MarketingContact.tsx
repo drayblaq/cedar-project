@@ -23,13 +23,6 @@ function MailIcon() {
     </svg>
   );
 }
-function ClockIcon() {
-  return (
-    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx={12} cy={12} r={10}/><path d="M12 6v6l4 2"/>
-    </svg>
-  );
-}
 function CheckIcon() {
   return (
     <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--green)" }}>
@@ -42,7 +35,6 @@ const details = [
   { Icon: PinIcon,   h: "Address",          p: "Gbédjromédé, Rue avant l'école Nagueze en venant du carrefour 16 ampoules, Immeubles Ola Fitness, Entrée Auto tours, Cotonou, Bénin" },
   { Icon: PhoneIcon, h: "Phone / WhatsApp",  p: "+229 01 96 19 64 40",            href: "tel:+22901961964 40" },
   { Icon: MailIcon,  h: "Email",             p: "trainingcentercedar@gmail.com",  href: "mailto:trainingcentercedar@gmail.com" },
-  { Icon: ClockIcon, h: "Hours",             p: "Monday – Saturday · 8:00 am – 7:00 pm" },
 ];
 
 export default function MarketingContact() {
@@ -59,7 +51,7 @@ export default function MarketingContact() {
         <div aria-hidden="true" style={{ position: "absolute", right: "-2%", bottom: "-15%", fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "clamp(6rem,12vw,16rem)", color: "transparent", WebkitTextStroke: "2px rgba(46,168,42,0.1)", lineHeight: 0.85, letterSpacing: "-0.04em", userSelect: "none", pointerEvents: "none" }}>CONTACT</div>
         <div className="relative z-[2] mx-auto max-w-6xl">
           <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
-            <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />Contact
+            Contact
           </p>
           <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.2rem,4vw,3.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.01em", color: "var(--green-deep)" }}>
             Get in touch<br /><em style={{ fontStyle: "normal", color: "var(--green)" }}>with Cedar</em>

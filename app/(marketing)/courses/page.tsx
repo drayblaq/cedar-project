@@ -96,7 +96,7 @@ export default async function CoursesPage() {
         <div aria-hidden="true" style={{ position: "absolute", right: "-2%", bottom: "-15%", fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "clamp(6rem,12vw,16rem)", color: "transparent", WebkitTextStroke: "2px rgba(46,168,42,0.1)", lineHeight: 0.85, letterSpacing: "-0.04em", userSelect: "none", pointerEvents: "none" }}>PROGRAMS</div>
         <div className="relative z-[2] mx-auto max-w-6xl">
           <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
-            <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />Programs
+            Programs
           </p>
           <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.2rem,4vw,3.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.01em", color: "var(--green-deep)", maxWidth: 700 }}>
             Training tracks<br /><em style={{ fontStyle: "normal", color: "var(--green)" }}>built for results</em>
@@ -147,7 +147,7 @@ export default async function CoursesPage() {
           {/* Levels */}
           <div className="mt-4 rounded-[28px] bg-[var(--green-deep)] px-5 py-10 sm:px-8 sm:py-12 lg:p-12">
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--mint)", marginBottom: 18 }}>
-              <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />English Levels
+              English Levels
             </p>
             <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "2rem", fontWeight: 700, color: "white", letterSpacing: "-0.01em", marginBottom: 36 }}>
               Start at <span style={{ color: "var(--green)" }}>your level</span>

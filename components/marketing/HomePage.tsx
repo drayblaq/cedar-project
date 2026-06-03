@@ -43,8 +43,7 @@ const t = {
     address: "Gbédjromédé, Rue avant l'école Nagueze en venant du carrefour 16 ampoules, Immeubles Ola Fitness, Entrée Auto tours.",
     phone: "+229 01 96 19 64 40",
     email: "trainingcentercedar@gmail.com",
-    hours: "Monday – Saturday · 8:00 am – 7:00 pm",
-    addressLabel: "Address", phoneLabel: "Phone & WhatsApp", emailLabel: "Email", hoursLabel: "Hours",
+    addressLabel: "Address", phoneLabel: "Phone & WhatsApp", emailLabel: "Email",
   },
   fr: {
     eyebrow: "Formation en anglais · Cotonou, Bénin",
@@ -81,8 +80,7 @@ const t = {
     address: "Gbédjromédé, Rue avant l'école Nagueze, Immeubles Ola Fitness, Entrée Auto tours, Cotonou, Bénin.",
     phone: "+229 01 96 19 64 40",
     email: "trainingcentercedar@gmail.com",
-    hours: "Lundi – Samedi · 8h00 – 19h00",
-    addressLabel: "Adresse", phoneLabel: "Téléphone & WhatsApp", emailLabel: "Email", hoursLabel: "Horaires",
+    addressLabel: "Adresse", phoneLabel: "Téléphone & WhatsApp", emailLabel: "Email",
   },
 };
 
@@ -102,7 +100,6 @@ function useReveal(locale: string) {
 function PinIcon() { return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx={12} cy={10} r={3}/></svg>; }
 function PhoneIcon() { return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>; }
 function MailIcon() { return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>; }
-function ClockIcon() { return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx={12} cy={12} r={10}/><path d="M12 6v6l4 2"/></svg>; }
 
 export default function HomePage() {
   const locale = useLocale();
@@ -133,7 +130,6 @@ export default function HomePage() {
     { Icon: PinIcon,   h: tr.addressLabel, p: tr.address },
     { Icon: PhoneIcon, h: tr.phoneLabel,   p: tr.phone,  href: "tel:+22901961964 40" },
     { Icon: MailIcon,  h: tr.emailLabel,   p: tr.email,  href: `mailto:${tr.email}` },
-    { Icon: ClockIcon, h: tr.hoursLabel,   p: tr.hours },
   ];
 
   return (
@@ -143,7 +139,7 @@ export default function HomePage() {
         <div aria-hidden="true" className="hero-bg-word hidden sm:block">CEDAR</div>
         <div className="relative z-[2] flex flex-col justify-center px-4 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-20 xl:pl-20">
           <p className="animate-slide-up delay-100" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 24 }}>
-            <span style={{ display: "block", width: 28, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.eyebrow}
+            {tr.eyebrow}
           </p>
           <h1 className="animate-slide-up delay-200" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 3.75rem)", fontWeight: 700, lineHeight: 1.08, letterSpacing: "-0.01em", color: "var(--green-deep)" }}>
             <span style={{ color: "var(--green-deep)" }}>{tr.title1}</span><br />
@@ -194,7 +190,7 @@ export default function HomePage() {
           </div>
           <div className="reveal-right">
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
-              <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whoWeAre}
+              {tr.whoWeAre}
             </p>
             <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--green-deep)" }}>
               {tr.aboutT} <span style={{ color: "var(--green)" }}>{tr.aboutA}</span><br />{tr.aboutT2}
@@ -227,7 +223,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center sm:mb-16">
             <p style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--mint)", marginBottom: 18 }}>
-              <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whatWeOffer}
+              {tr.whatWeOffer}
             </p>
             <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2rem, 3.5vw, 3.2rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.01em", color: "white" }}>
               {tr.progT}<br /><span style={{ color: "var(--green)" }}>{tr.progA}</span>
@@ -272,7 +268,7 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div>
             <p className="reveal" style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
-              <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.whyCedar}
+              {tr.whyCedar}
             </p>
             <h2 className="reveal td-1" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--green-deep)" }}>
               {tr.whyT}<br /><span style={{ color: "var(--green)" }}>{tr.whyA}</span>
@@ -325,7 +321,7 @@ export default function HomePage() {
           </div>
           <div className="reveal-right">
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
-              <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />{tr.findUs}
+              {tr.findUs}
             </p>
             <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 4.2rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--green-deep)", marginBottom: 28 }}>
               {tr.locT1} <span style={{ color: "var(--green)" }}>{tr.locA}</span><br />{tr.locT2}

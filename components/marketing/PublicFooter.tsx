@@ -8,7 +8,7 @@ type Lang = "en" | "fr";
 
 const footerT = {
   en: {
-    desc: "English language training in Cotonou, Bénin — practical, learner-centered programs designed for measurable results.",
+    desc: "English language training in Cotonou, Bénin. Practical, learner-centered programs designed for measurable results.",
     quickLinks: "Quick links",
     location: "Contact",
     links: [
@@ -19,10 +19,9 @@ const footerT = {
       { href: "/register", label: "Apply Now" },
     ],
     rights: "All rights reserved.",
-    madeIn: "Made with care in",
   },
   fr: {
-    desc: "Formation en anglais à Cotonou, Bénin — programmes pratiques centrés sur l'apprenant pour des résultats mesurables.",
+    desc: "Formation en anglais à Cotonou, Bénin. Programmes pratiques centrés sur l'apprenant pour des résultats mesurables.",
     quickLinks: "Liens rapides",
     location: "Contact",
     links: [
@@ -33,7 +32,6 @@ const footerT = {
       { href: "/register", label: "Candidater" },
     ],
     rights: "Tous droits réservés.",
-    madeIn: "Fait avec soin à",
   },
 };
 
@@ -78,12 +76,9 @@ export function PublicFooter() {
           </ul>
         </div>
       </div>
-      <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-3 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.55)" }}>
-          © {new Date().getFullYear()} <span style={{ color: "var(--green)" }}>Cedar Training Center</span>. {t.rights}
-        </p>
-        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.55)" }}>
-          {t.madeIn} <span style={{ color: "var(--green)" }}>Cotonou, Bénin</span>
+      <div className="mx-auto mt-10 flex max-w-6xl justify-center border-t border-white/10 pt-8">
+        <p style={{ fontSize: "0.9rem", fontWeight: 600, letterSpacing: "0.01em", color: "rgba(255,255,255,0.9)", textAlign: "center" }}>
+          © {new Date().getFullYear()} <span style={{ color: "var(--green)", fontWeight: 700 }}>Cedar Training Center</span>. {t.rights}
         </p>
       </div>
     </footer>

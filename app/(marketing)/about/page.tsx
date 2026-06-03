@@ -35,7 +35,7 @@ export default function AboutPage() {
         <div aria-hidden="true" style={{ position: "absolute", right: "-2%", bottom: "-15%", fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "clamp(6rem,12vw,16rem)", color: "transparent", WebkitTextStroke: "2px rgba(46,168,42,0.1)", lineHeight: 0.85, letterSpacing: "-0.04em", userSelect: "none", pointerEvents: "none" }}>ABOUT</div>
         <div className="relative z-[2] mx-auto max-w-6xl">
           <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 18 }}>
-            <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />About Us
+            About Us
           </p>
           <h1 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.2rem,4vw,3.5rem)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.01em", color: "var(--green-deep)", maxWidth: 680 }}>
             A centre <em style={{ fontStyle: "normal", color: "var(--green)" }}>dedicated</em><br />to English learning
@@ -71,7 +71,7 @@ export default function AboutPage() {
           {/* Why Cedar */}
           <div className="mb-12 sm:mb-16">
             <p style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: 16 }}>
-              <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />Why Cedar
+              Why Cedar
             </p>
             <h2 style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(1.8rem,3vw,2.6rem)", fontWeight: 800, letterSpacing: "-0.03em", color: "var(--green-deep)", marginBottom: 24 }}>
               What sets us apart

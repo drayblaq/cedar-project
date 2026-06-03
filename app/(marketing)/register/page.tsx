@@ -57,7 +57,7 @@ export default async function RegisterPage({
               marginBottom: 18,
             }}
           >
-            <span style={{ width: 24, height: 2.5, background: "var(--green)", borderRadius: 2 }} />
+            
             Apply
           </p>
           <h1

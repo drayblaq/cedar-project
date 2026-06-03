@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { RevenueTrendChart, LevelBarChart } from "./OverviewCharts";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function fmtXOF(n: number) { return new Intl.NumberFormat("fr-FR").format(n) + " FCFA"; }
@@ -119,16 +118,14 @@ export default async function DashboardPage() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
   const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
 
-  const [totalRes, activeRes, revenueRes, allPayRes, recentPayRes, recentStudRes, attRes, levelsRes] =
+  const [totalRes, activeRes, revenueRes, recentPayRes, recentStudRes, attRes] =
     await Promise.all([
       supabase.from("students").select("id", { count: "exact", head: true }),
       supabase.from("students").select("id", { count: "exact", head: true }).eq("status", "active"),
       supabase.from("payments").select("amount").gte("paid_at", monthStart).lte("paid_at", monthEnd + "T23:59:59"),
-      supabase.from("payments").select("amount, paid_at").order("paid_at", { ascending: true }),
       supabase.from("payments").select("id, amount, paid_at, payment_method, students(full_name)").order("paid_at", { ascending: false }).limit(5),
       supabase.from("students").select("id, full_name, email, application_status, created_at").order("created_at", { ascending: false }).limit(5),
       supabase.from("attendance").select("status"),
-      supabase.from("students").select("levels(name)"),
     ]);
 
   const totalStudents  = totalRes.count ?? 0;
@@ -140,24 +137,6 @@ export default async function DashboardPage() {
   const attRows = attRes.data ?? [];
   const presentOrLate = attRows.filter(r => r.status === "present" || r.status === "late").length;
   const attendancePct = attRows.length > 0 ? Math.round((presentOrLate / attRows.length) * 100) : 0;
-
-  // Revenue trend (last 6 months)
-  const byMonth: Record<string, number> = {};
-  for (const p of allPayRes.data ?? []) {
-    const d = new Date(p.paid_at);
-    const key = d.toLocaleDateString("en-GB", { month: "short" });
-    byMonth[key] = (byMonth[key] ?? 0) + Number(p.amount);
-  }
-  const chartData = Object.entries(byMonth).slice(-6).map(([month, total]) => ({ month, total }));
-
-  // Students by level
-  const levelCounts: Record<string, number> = {};
-  for (const s of levelsRes.data ?? []) {
-    const lvl = Array.isArray(s.levels) ? (s.levels[0] as {name?:string})?.name : (s.levels as {name?:string}|null)?.name;
-    if (lvl) levelCounts[lvl] = (levelCounts[lvl] ?? 0) + 1;
-  }
-  const LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"];
-  const levelData = LEVEL_ORDER.map(l => ({ level: l, count: levelCounts[l] ?? 0 }));
 
   return (
     <div>
@@ -185,25 +164,6 @@ export default async function DashboardPage() {
         <StatCard icon="clock"  label="Outstanding fees" value={fmtXOF(outstanding)}  sub="across enrolled" tone="dark" />
       </div>
 
-      {/* ── Charts row: revenue trend + students by level ── */}
-      <div className="cd-grid-2-1" style={{ marginTop:18 }}>
-        <div className="cd-card" style={{ padding:22 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
-            <div>
-              <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, letterSpacing:"-0.01em" }}>Revenue trend</h3>
-              <p style={{ fontSize:12.5, color:C.muted, marginTop:2 }}>Last 6 months · in thousands CFA</p>
-            </div>
-            <Badge tone="green">+12% vs last month</Badge>
-          </div>
-          <RevenueTrendChart data={chartData} />
-        </div>
-
-        <div className="cd-card" style={{ padding:22 }}>
-          <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:2 }}>Students by level</h3>
-          <p style={{ fontSize:12.5, color:C.muted, marginBottom:4 }}>CEFR distribution</p>
-          <LevelBarChart data={levelData} />
-        </div>
-      </div>
 
       {/* ── Recent payments + Announcements ── */}
       <div className="cd-grid-2-1" style={{ marginTop:18 }}>
