@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getTuitionAmount } from "@/lib/settings";
 import { StudentsTableClient } from "./StudentsTableClient";
 
 const C = { ink: "#16241a", muted: "#687a6c" };
@@ -11,10 +12,23 @@ export default async function StudentsPage() {
     .select("id, full_name, first_name, last_name, email, phone, user_id, enrollment_date, status, application_status, last_invite_sent_at, levels(name)")
     .order("full_name");
 
-  const { data: paidRows } = await supabase.from("payments").select("student_id");
-  const paidStudentIds = (paidRows ?? []).map((p: { student_id: string }) => p.student_id);
-
   const studentIds = (students ?? []).map((s) => s.id);
+
+  // Payment totals per student
+  const paymentTotals: Record<string, number> = {};
+  if (studentIds.length) {
+    const { data: payments } = await supabase
+      .from("payments")
+      .select("student_id, amount")
+      .in("student_id", studentIds);
+    for (const p of payments ?? []) {
+      paymentTotals[(p as { student_id: string; amount: number }).student_id] =
+        (paymentTotals[(p as { student_id: string; amount: number }).student_id] ?? 0) +
+        Number((p as { student_id: string; amount: number }).amount);
+    }
+  }
+
+  // Best placement test score
   const bestTestPct: Record<string, number> = {};
   if (studentIds.length) {
     const { data: attempts } = await supabase
@@ -27,6 +41,8 @@ export default async function StudentsPage() {
       bestTestPct[a.student_id] = Math.round((Number(a.score) / (Number(a.max_score) || 1)) * 100);
     }
   }
+
+  const tuitionAmount = await getTuitionAmount();
 
   const total = students?.length ?? 0;
   const withLogin = (students ?? []).filter((s) => s.user_id).length;
@@ -49,7 +65,8 @@ export default async function StudentsPage() {
       <StudentsTableClient
         students={(students ?? []) as Parameters<typeof StudentsTableClient>[0]["students"]}
         bestTestPct={bestTestPct}
-        paidStudentIds={paidStudentIds}
+        paymentTotals={paymentTotals}
+        tuitionAmount={tuitionAmount}
       />
     </div>
   );

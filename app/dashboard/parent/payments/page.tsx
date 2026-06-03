@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18" };
 
-function fmtXOF(n: number) { return new Intl.NumberFormat("fr-FR").format(n) + " CFA"; }
+function fmtXOF(n: number) { return new Intl.NumberFormat("fr-FR").format(n) + " FCFA"; }
 function fmtDate(iso: string) { return new Date(iso).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" }); }
 
 const METHOD_TONE: Record<string,{bg:string;fg:string}> = {

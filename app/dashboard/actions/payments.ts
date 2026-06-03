@@ -10,7 +10,7 @@ export async function createPayment(formData: FormData) {
   const supabase = await createClient();
   const student_id = formData.get("student_id") as string;
   const amount = Number(formData.get("amount"));
-  const currency = (formData.get("currency") as string) || "XOF";
+  const currency = (formData.get("currency") as string) || "FCFA";
   const paid_at = (formData.get("paid_at") as string) || new Date().toISOString();
   const notes = (formData.get("notes") as string) || null;
   const momo_reference = (formData.get("momo_reference") as string) || null;

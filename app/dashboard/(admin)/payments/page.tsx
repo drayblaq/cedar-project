@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { createPayment } from "@/app/dashboard/actions/index";
+import { getTuitionAmount, getSetting } from "@/lib/settings";
 
 const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18", bg:"#f4f7f2" };
 
-function fmtXOF(n: number) { return new Intl.NumberFormat("fr-FR").format(n) + " CFA"; }
+function fmtXOF(n: number) { return new Intl.NumberFormat("fr-FR").format(n) + " FCFA"; }
 function fmtDate(iso: string) { return new Date(iso).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" }); }
 
 const AVATAR = ["#2ea82a","#1a6b18","#d4a843","#3f7d8c","#8c6a3f","#6a8c3f"];
@@ -12,6 +13,8 @@ function ini(n:string){return n.split(" ").map(p=>p[0]).slice(0,2).join("").toUp
 
 export default async function PaymentsPage() {
   const supabase = await createClient();
+  const tuitionAmount = await getTuitionAmount();
+  const defaultCurrency = (await getSetting("currency")) ?? "FCFA";
   const { data: students } = await supabase.from("students").select("id, full_name").order("full_name");
   const { data: payments } = await supabase
     .from("payments")
@@ -115,9 +118,9 @@ export default async function PaymentsPage() {
               </select>
             </label>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-              <label className="cd-fld"><span>Amount (CFA)</span><input name="amount" type="number" step="0.01" min="0" required placeholder="90000" /></label>
+              <label className="cd-fld"><span>Amount (CFA)</span><input name="amount" type="number" step="0.01" min="0" required defaultValue={tuitionAmount} placeholder={String(tuitionAmount)} /></label>
               <label className="cd-fld"><span>Currency</span>
-                <select name="currency" defaultValue="XOF"><option value="XOF">XOF</option><option value="USD">USD</option><option value="EUR">EUR</option></select>
+                <select name="currency" defaultValue={defaultCurrency}><option value="FCFA">FCFA</option><option value="USD">USD</option><option value="EUR">EUR</option></select>
               </label>
             </div>
             <label className="cd-fld"><span>Method</span>

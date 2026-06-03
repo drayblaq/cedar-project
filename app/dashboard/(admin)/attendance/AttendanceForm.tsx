@@ -135,11 +135,6 @@ export default function AttendanceForm({
           </button>
         </div>
       )}
-
-      <div style={{ display:"flex", gap:11, alignItems:"flex-start", padding:"14px 16px", marginTop:16, background:C.greenWash, border:`1px solid ${C.greenWash}`, borderRadius:12 }}>
-        <span style={{ fontSize:15 }}>✨</span>
-        <span style={{ fontSize:12.5, color:C.ink, lineHeight:1.6 }}>Tap any status to cycle Present → Absent → Late. This register feeds each student&apos;s attendance %.</span>
-      </div>
     </form>
   );
 }

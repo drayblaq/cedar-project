@@ -32,7 +32,7 @@ export default async function GradesPage() {
         <div className="cd-card" style={{ padding:0 }}>
           <div style={{ padding:"18px 22px 6px" }}><h3 style={{ fontSize:15, fontWeight:700, color:C.ink }}>Recent grades</h3></div>
           {!grades?.length ? (
-            <p style={{ padding:"40px 22px", textAlign:"center", color:C.muted, fontSize:13.5 }}>No grades yet. Add one with the form.</p>
+            <p style={{ padding:"40px 22px", textAlign:"center", color:C.muted, fontSize:13.5 }}>No grades recorded yet. Use this page to add assessment scores for students.</p>
           ) : (
             <div style={{ overflowX:"auto" }}>
               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>

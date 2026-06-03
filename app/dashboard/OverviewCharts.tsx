@@ -32,7 +32,7 @@ export function RevenueTrendChart({ data }: { data: { month: string; total: numb
         <XAxis dataKey="month" tick={{ fontSize: 11, fontWeight: 600, fill: "#687a6c" }} axisLine={false} tickLine={false} />
         <YAxis tickFormatter={fmtK} tick={{ fontSize: 11, fontWeight: 600, fill: "#687a6c" }} axisLine={false} tickLine={false} width={32} />
         <Tooltip
-          formatter={(v: unknown) => [fmtK(v as number) + " CFA", "Revenue"]}
+          formatter={(v: unknown) => [fmtK(v as number) + " FCFA", "Revenue"]}
           contentStyle={{ fontSize: 12, fontWeight: 700, borderRadius: 10, border: "1px solid #e6ece4", color: "#16241a" }}
           cursor={{ stroke: "#2ea82a", strokeWidth: 1, strokeDasharray: "4 4" }}
         />

@@ -3,7 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { markNotificationsRead } from "@/app/dashboard/actions/index";
+
+type Notification = { id: string; title: string; body: string | null; link: string | null; is_read: boolean; created_at: string };
 
 export type NavItem = { href: string; label: string; iconKey: string };
 
@@ -34,6 +38,7 @@ const PATHS: Record<string, string> = {
   payments:  "M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2 M3 7h18v10H3z M16 12h.01",
   classes:   "M12 2L2 7l10 5 10-5-10-5z M2 17l10 5 10-5 M2 12l10 5 10-5",
   doc:       "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M9 13h6 M9 17h6",
+  settings:  "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z",
 };
 
 function NavIcon({ name, size = 17 }: { name: string; size?: number }) {
@@ -57,11 +62,101 @@ function avatarBg(name: string) {
 }
 function initials(name: string) { return name.split(" ").map(p => p[0]).slice(0, 2).join("").toUpperCase(); }
 
+// ── Bell icon ─────────────────────────────────────────────────────────────────
+function BellIcon() {
+  return (
+    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" />
+    </svg>
+  );
+}
+
+function timeAgo(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+function NotificationBell({ notifications, unreadCount }: { notifications: Notification[]; unreadCount: number }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  async function toggle() {
+    const next = !open;
+    setOpen(next);
+    if (next && unreadCount > 0) {
+      await markNotificationsRead();
+      router.refresh();
+    }
+  }
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button onClick={toggle} className="cedar-icon-btn" title="Notifications" style={{ position: "relative" }}>
+        <BellIcon />
+        {unreadCount > 0 && (
+          <span style={{ position: "absolute", top: -5, right: -5, minWidth: 17, height: 17, padding: "0 4px",
+            borderRadius: 9, background: "#e0533f", color: "#fff", fontSize: 10, fontWeight: 800,
+            display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+      </button>
+      {open && (
+        <div style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 60, width: 320,
+          background: "#fff", border: "1px solid #e6ece4", borderRadius: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.12)", overflow: "hidden" }}>
+          <div style={{ padding: "12px 16px", borderBottom: "1px solid #e6ece4", fontSize: 13, fontWeight: 800, color: "#16241a" }}>
+            Notifications
+          </div>
+          {!notifications.length ? (
+            <p style={{ padding: "24px 16px", textAlign: "center", fontSize: 13, color: "#687a6c" }}>No notifications yet.</p>
+          ) : (
+            <div style={{ maxHeight: 360, overflowY: "auto" }}>
+              {notifications.map((n) => {
+                const content = (
+                  <div style={{ padding: "11px 16px", borderBottom: "1px solid #f0f3ee", background: n.is_read ? "#fff" : "#f3fbf2", display: "flex", gap: 10 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", marginTop: 6, flexShrink: 0, background: n.is_read ? "transparent" : "#2ea82a" }} />
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 700, color: "#16241a", lineHeight: 1.35 }}>{n.title}</div>
+                      {n.body && <div style={{ fontSize: 11.5, color: "#687a6c", marginTop: 2, lineHeight: 1.4 }}>{n.body}</div>}
+                      <div style={{ fontSize: 10.5, color: "#9aa89c", marginTop: 3 }}>{timeAgo(n.created_at)}</div>
+                    </div>
+                  </div>
+                );
+                return n.link ? (
+                  <Link key={n.id} href={n.link} onClick={() => setOpen(false)} style={{ textDecoration: "none" }}>{content}</Link>
+                ) : (
+                  <div key={n.id}>{content}</div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
-export function TopNavClient({ items, userName, userRole }: {
+export function TopNavClient({ items, userName, userRole, notifications = [], unreadCount = 0 }: {
   items: NavItem[];
   userName: string;
   userRole: string;
+  notifications?: Notification[];
+  unreadCount?: number;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -107,6 +202,9 @@ export function TopNavClient({ items, userName, userRole }: {
 
         {/* User + sign-out */}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          {userRole === "admin" && (
+            <NotificationBell notifications={notifications} unreadCount={unreadCount} />
+          )}
           <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
             <div style={{ width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
               background: avatarBg(userName), color: "#fff", display: "flex",

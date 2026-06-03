@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ResendInviteButton } from "./ResendInviteButton";
-import { AdmissionActions } from "./AdmissionActions";
+import { setStudentApplicationStatus } from "@/app/dashboard/actions/index";
 
 type Student = {
   id: string; full_name: string; first_name: string | null; last_name: string | null;
@@ -18,6 +18,8 @@ const C = {
   green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18", greenSoft: "#d3ead0",
   surface: "#ffffff", bg: "#f4f7f2",
 };
+function fmtXOF(n: number) { return new Intl.NumberFormat("fr-FR").format(n) + " FCFA"; }
+
 const AVATAR_PALETTE = ["#2ea82a","#1a6b18","#d4a843","#3f7d8c","#8c6a3f","#6a8c3f"];
 function avatarColor(name: string) {
   let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
@@ -42,14 +44,105 @@ function Badge({ children, tone="neutral" }: { children: React.ReactNode; tone?:
   return <span style={{ display:"inline-flex", alignItems:"center", background:t.bg, color:t.fg, fontSize:11.5, fontWeight:700, padding:"3px 10px", borderRadius:7, whiteSpace:"nowrap", textTransform:"capitalize" }}>{children}</span>;
 }
 
+// ── Actions dropdown ──────────────────────────────────────────────────────────
+function ActionsDropdown({ student, canInvite }: { student: Student; canInvite: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  async function runAction(key: string, next: "approved" | "rejected" | "awaiting_payment") {
+    setLoading(key); setMsg(null);
+    const r = await setStudentApplicationStatus(student.id, next);
+    setLoading(null);
+    if (r.error) setMsg("Error: " + r.error);
+    else { setMsg("Updated"); setTimeout(() => { setMsg(null); setOpen(false); }, 1200); }
+  }
+
+  const app = student.application_status ?? "submitted";
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700, color: C.ink, cursor: "pointer", whiteSpace: "nowrap" }}
+      >
+        ••• Actions
+      </button>
+      {open && (
+        <div style={{
+          position: "absolute", right: 0, top: "calc(100% + 4px)", zIndex: 50,
+          background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.12)", minWidth: 180, overflow: "hidden",
+        }}>
+          <Link href={`/admin/students/${student.id}/application`}
+            onClick={() => setOpen(false)}
+            style={{ display:"block", padding:"9px 16px", fontSize:13, fontWeight:600, color:C.ink, textDecoration:"none" }}
+            onMouseOver={e=>(e.currentTarget.style.background=C.greenWash)}
+            onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
+            View Application
+          </Link>
+          <Link href={`/admin/students/${student.id}/edit`}
+            onClick={() => setOpen(false)}
+            style={{ display:"block", padding:"9px 16px", fontSize:13, fontWeight:600, color:C.ink, textDecoration:"none" }}
+            onMouseOver={e=>(e.currentTarget.style.background=C.greenWash)}
+            onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
+            Edit
+          </Link>
+          {app !== "approved" && (
+            <button disabled={loading !== null} onClick={() => runAction("ap", "approved")}
+              style={{ display:"block", width:"100%", textAlign:"left", padding:"9px 16px", fontSize:13, fontWeight:600, color:"#1a6b18", background:"transparent", border:"none", cursor:"pointer", borderTop:`1px solid ${C.border}` }}
+              onMouseOver={e=>(e.currentTarget.style.background=C.greenWash)}
+              onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
+              {loading === "ap" ? "…" : "Approve"}
+            </button>
+          )}
+          {app !== "awaiting_payment" && (
+            <button disabled={loading !== null} onClick={() => runAction("aw", "awaiting_payment")}
+              style={{ display:"block", width:"100%", textAlign:"left", padding:"9px 16px", fontSize:13, fontWeight:600, color:"#9a7822", background:"transparent", border:"none", cursor:"pointer" }}
+              onMouseOver={e=>(e.currentTarget.style.background="#fffbeb")}
+              onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
+              {loading === "aw" ? "…" : "Set Awaiting Payment"}
+            </button>
+          )}
+          {app !== "rejected" && (
+            <button disabled={loading !== null} onClick={() => runAction("rj", "rejected")}
+              style={{ display:"block", width:"100%", textAlign:"left", padding:"9px 16px", fontSize:13, fontWeight:600, color:"#b3402f", background:"transparent", border:"none", cursor:"pointer" }}
+              onMouseOver={e=>(e.currentTarget.style.background="#fef2f2")}
+              onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
+              {loading === "rj" ? "…" : "Reject"}
+            </button>
+          )}
+          {canInvite && (
+            <div style={{ borderTop:`1px solid ${C.border}`, padding:"6px 10px" }}>
+              <ResendInviteButton studentId={student.id} lastInviteSentAt={student.last_invite_sent_at ?? null} />
+            </div>
+          )}
+          {msg && <p style={{ fontSize:11.5, padding:"6px 16px", color: msg.startsWith("Error") ? "#b3402f" : C.greenDark }}>{msg}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const LEVELS = ["All","A1","A2","B1","B2","C1","C2"];
 
-export function StudentsTableClient({ students, bestTestPct, paidStudentIds }: {
-  students: Student[]; bestTestPct: Record<string,number>; paidStudentIds: string[];
+export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuitionAmount }: {
+  students: Student[];
+  bestTestPct: Record<string,number>;
+  paymentTotals: Record<string,number>;
+  tuitionAmount: number;
 }) {
   const [q, setQ] = useState("");
   const [lvl, setLvl] = useState("All");
-  const paid = useMemo(() => new Set(paidStudentIds), [paidStudentIds]);
 
   function levelName(l: Student["levels"]) {
     if (!l) return "—";
@@ -65,6 +158,8 @@ export function StudentsTableClient({ students, bestTestPct, paidStudentIds }: {
       return matchLvl && matchQ;
     });
   }, [students, q, lvl]);
+
+  const HEADERS = ["Student","Level","Status","Balance","Portal","Actions"];
 
   return (
     <div className="cd-card" style={{ padding: 0 }}>
@@ -94,15 +189,14 @@ export function StudentsTableClient({ students, bestTestPct, paidStudentIds }: {
         </div>
       ) : (
         <div style={{ overflowX:"auto" }}>
-          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5, minWidth:700 }}>
             <thead>
               <tr>
-                {["Student","Level","Program","Attend.","Avg","Balance","Portal"].map((h, i) => (
+                {HEADERS.map((h, i) => (
                   <th key={h} style={{ textAlign: i >= 3 ? "center" : "left", padding:"11px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, borderBottom:`1px solid ${C.border}`, whiteSpace:"nowrap" }}>
                     {h}
                   </th>
                 ))}
-                <th style={{ padding:"11px 14px", borderBottom:`1px solid ${C.border}` }} />
               </tr>
             </thead>
             <tbody>
@@ -110,10 +204,13 @@ export function StudentsTableClient({ students, bestTestPct, paidStudentIds }: {
                 const displayName = s.first_name && s.last_name ? `${s.first_name} ${s.last_name}` : s.full_name;
                 const app = s.application_status ?? "submitted";
                 const hasLogin = !!s.user_id;
-                const canInvite = paid.has(s.id) && !hasLogin && s.status === "active";
+                const canInvite = !hasLogin && s.status === "active";
                 const lv = levelName(s.levels);
-                const score = bestTestPct[s.id];
-                const hasBal = false; // no balance field in current schema
+
+                // Balance
+                const totalPaid = paymentTotals[s.id] ?? 0;
+                const remaining = tuitionAmount - totalPaid;
+
                 return (
                   <tr key={s.id} className="cd-trow">
                     {/* Student */}
@@ -132,46 +229,37 @@ export function StudentsTableClient({ students, bestTestPct, paidStudentIds }: {
                     <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle" }}>
                       <LevelPillInline level={lv} />
                     </td>
-                    {/* App status */}
+                    {/* Status (application_status) */}
                     <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle" }}>
-                      <Badge tone={APP_TONE[app] ?? "neutral"}>{app.replace(/_/g," ")}</Badge>
-                    </td>
-                    {/* Attendance */}
-                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
-                      <span style={{ fontWeight:700, color:C.muted }}>—</span>
-                    </td>
-                    {/* Score */}
-                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
-                      <span style={{ fontWeight:700 }}>{score != null ? score + "%" : "—"}</span>
+                      <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                        <Badge tone={APP_TONE[app] ?? "neutral"}>{app.replace(/_/g," ")}</Badge>
+                        <Badge tone={STATUS_TONE[s.status ?? "pending"] ?? "neutral"}>{s.status ?? "pending"}</Badge>
+                      </div>
                     </td>
                     {/* Balance */}
                     <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
-                      <Badge tone={STATUS_TONE[s.status ?? "pending"] ?? "neutral"}>{s.status ?? "pending"}</Badge>
+                      {remaining <= 0 ? (
+                        <Badge tone="green">Paid in full</Badge>
+                      ) : totalPaid > 0 ? (
+                        <span style={{ fontSize:12.5, fontWeight:700, color:"#9a7822" }}>
+                          {fmtXOF(totalPaid)} / {fmtXOF(tuitionAmount)}
+                        </span>
+                      ) : (
+                        <span style={{ fontSize:12.5, fontWeight:600, color:C.muted }}>
+                          0 / {fmtXOF(tuitionAmount)}
+                        </span>
+                      )}
                     </td>
                     {/* Portal */}
                     <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
                       {hasLogin
                         ? <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                        : canInvite
-                          ? <ResendInviteButton studentId={s.id} lastInviteSentAt={s.last_invite_sent_at ?? null} />
-                          : <button className="cd-mini-btn">Invite</button>
+                        : <span style={{ fontSize:11.5, color:C.muted }}>No access</span>
                       }
                     </td>
-                    {/* Actions */}
-                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"right" }}>
-                      <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", gap:8 }}>
-                        <Link href={`/admin/students/${s.id}/application`}
-                          style={{ background:C.greenWash, border:"none", borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, color:C.greenDark, textDecoration:"none", display:"inline-block" }}>
-                          View
-                        </Link>
-                        <Link href={`/admin/students/${s.id}/edit`}
-                          style={{ background:C.bg, border:`1px solid ${C.border}`, borderRadius:8, padding:"6px 12px", fontSize:12, fontWeight:700, color:C.ink, textDecoration:"none", display:"inline-block" }}>
-                          Edit
-                        </Link>
-                        {s.status === "pending" && app !== "rejected" && (
-                          <AdmissionActions studentId={s.id} applicationStatus={app} />
-                        )}
-                      </div>
+                    {/* Actions dropdown */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
+                      <ActionsDropdown student={s} canInvite={canInvite} />
                     </td>
                   </tr>
                 );

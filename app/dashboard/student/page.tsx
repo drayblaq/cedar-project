@@ -81,6 +81,12 @@ export default async function StudentDashboardPage() {
         <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>{t("progress")}</p>
       </div>
 
+      {total === 0 && (grades?.length ?? 0) === 0 && (
+        <div className="cd-card" style={{ padding:"24px 26px", marginBottom:18, background:C.greenWash, border:`1px solid ${C.green}` }}>
+          <p style={{ fontSize:14.5, fontWeight:700, color:C.greenDeep }}>Your dashboard will fill up as your classes progress. Welcome to Cedar!</p>
+        </div>
+      )}
+
       {/* Gradient hero */}
       <div className="cd-card" style={{ marginBottom:18, background:"linear-gradient(120deg, #0e3b0c, #15561a)", border:"none", color:"#fff", padding:24 }}>
         <div style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:20, alignItems:"center" }}>

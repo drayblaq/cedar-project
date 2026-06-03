@@ -12,17 +12,55 @@ export async function createStudent(formData: FormData) {
   const phone = (formData.get("phone") as string) || null;
   const level_id = (formData.get("level_id") as string) || null;
   const enrollment_date = (formData.get("enrollment_date") as string) || null;
-  const notes = (formData.get("notes") as string) || null;
   const status = (formData.get("status") as string) || "active";
+
+  // Personal
+  const date_of_birth = (formData.get("dob") as string) || null;
+  const gender = (formData.get("gender") as string) || null;
+  const nationality = (formData.get("nationality") as string) || null;
+  const resident_address = (formData.get("resident_address") as string) || null;
+  const why_learn_english = (formData.get("why_learn_english") as string) || null;
+
+  // Academic / status
+  const application_status = (formData.get("application_status") as string) || "submitted";
+  const discovery_channel = (formData.get("discovery") as string) || null;
+  const educational_level = (formData.get("educational_level") as string) || null;
+  const program = (formData.get("program") as string) || null;
+
+  // Guardian / emergency contact (optional)
+  const guardian_name = (formData.get("guardian_name") as string) || null;
+  const guardian_phone = (formData.get("guardian_phone") as string) || null;
+  const guardian_address = (formData.get("guardian_address") as string) || null;
+  const parent_email = (formData.get("parent_email") as string) || null;
+
+  // Fold fields that have no dedicated column into notes
+  const baseNotes = (formData.get("notes") as string) || "";
+  const extra: string[] = [];
+  if (program) extra.push(`Program: ${program.replace(/_/g, " ")}`);
+  const notes = [baseNotes, ...extra].filter(Boolean).join("\n") || null;
 
   const { error } = await supabase.from("students").insert({
     full_name,
     email,
     phone,
+    whatsapp: phone,
     level_id: level_id || null,
     enrollment_date: enrollment_date || null,
+    date_of_birth,
+    gender: gender || null,
+    nationality,
+    resident_address,
+    why_learn_english,
+    application_status,
+    discovery_channel,
+    educational_level,
+    guardian_name,
+    guardian_phone,
+    guardian_address,
+    parent_whatsapp: guardian_phone,
+    parent_email,
     status,
-    notes: notes || null,
+    notes,
   });
 
   if (error) return { error: error.message };
@@ -41,14 +79,35 @@ export async function updateStudent(id: string, formData: FormData) {
   const notes = (formData.get("notes") as string) || null;
   const status = (formData.get("status") as string) || "active";
 
+  // Personal
+  const date_of_birth = (formData.get("dob") as string) || null;
+  const gender = (formData.get("gender") as string) || null;
+  const nationality = (formData.get("nationality") as string) || null;
+
+  // Academic / status
+  const application_status = (formData.get("application_status") as string) || "submitted";
+  const discovery_channel = (formData.get("discovery") as string) || null;
+
+  // Parent / guardian
+  const parent_whatsapp = (formData.get("parent_phone") as string) || null;
+  const parent_email = (formData.get("parent_email") as string) || null;
+
   const { error } = await supabase
     .from("students")
     .update({
       full_name,
       email,
       phone,
+      whatsapp: phone,
       level_id: level_id || null,
       enrollment_date: enrollment_date || null,
+      date_of_birth,
+      gender: gender || null,
+      nationality,
+      application_status,
+      discovery_channel,
+      parent_whatsapp,
+      parent_email,
       status,
       notes: notes || null,
       updated_at: new Date().toISOString(),
@@ -64,9 +123,37 @@ export async function updateStudent(id: string, formData: FormData) {
 
 export async function deleteStudent(id: string) {
   const supabase = await createClient();
+
+  // Only an admin may delete a student account.
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+  const { data: profile } = await supabase.from("profiles").select("role_id").eq("id", user.id).single();
+  let roleName: string | null = null;
+  if (profile?.role_id) {
+    const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
+    roleName = role?.name ?? null;
+  }
+  if (roleName !== "admin") return { error: "Only admins can delete student accounts." };
+
+  // Capture the linked auth user before removing the record.
+  const { data: studentRow } = await supabase.from("students").select("user_id").eq("id", id).maybeSingle();
+
   const { error } = await supabase.from("students").delete().eq("id", id);
   if (error) return { error: error.message };
+
+  // Best-effort: also remove the linked login account so the email can be reused.
+  const linkedUserId = (studentRow as { user_id?: string | null } | null)?.user_id;
+  if (linkedUserId) {
+    try {
+      const admin = createAdminClient();
+      await admin.auth.admin.deleteUser(linkedUserId);
+    } catch {
+      // Service role not configured or user already gone — student record is still deleted.
+    }
+  }
+
   revalidatePath("/dashboard");
+  revalidatePath("/admin");
   revalidatePath("/admin/students");
   return { error: null };
 }

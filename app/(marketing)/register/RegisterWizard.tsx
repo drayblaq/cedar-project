@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { submitPublicRegistration } from "./actions";
 
-type Step = 0 | 1 | 2 | 3 | 4 | 5;
+type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+const TOTAL_STEPS = 7;
 
 const card =
   "rounded-2xl border-[1.5px] border-[var(--mint-deep)] bg-white p-6 shadow-[0_8px_40px_rgba(46,168,42,0.08)] sm:p-8";
@@ -17,13 +18,30 @@ const btnPrimary =
   "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-0 bg-[var(--green)] px-8 py-3.5 font-extrabold text-white shadow-[0_8px_32px_rgba(46,168,42,0.28)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto";
 const btnPrimaryFont = { fontFamily: "var(--font-syne)" } as React.CSSProperties;
 const btnGhost = "text-sm font-medium text-[var(--text-muted)] hover:text-[var(--green-dark)]";
+const optionCard =
+  "flex cursor-pointer items-center gap-3 rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3";
 
-// Map a program slug to the display name and the level dropdown pre-selection
 const PROGRAM_META: Record<string, { name: string; level: string }> = {
-  "general-english":  { name: "General English",           level: "" },
-  "business-english": { name: "Business English",           level: "" },
-  "ielts-toefl-toeic":{ name: "IELTS · TOEFL · TOEIC",     level: "ielts-toefl" },
-  "workshops":        { name: "Workshops & Intensive",      level: "" },
+  "general-english":  { name: "General English",        level: "" },
+  "business-english": { name: "Business English",        level: "" },
+  "ielts-toefl-toeic":{ name: "IELTS · TOEFL · TOEIC",  level: "ielts-toefl" },
+  "workshops":        { name: "Workshops & Intensive",   level: "" },
+};
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Benin mobile: +229 then 10 digits starting with 01 (e.g. +229 0111223344)
+function isValidBeninPhone(raw: string) {
+  const digits = raw.replace(/[\s\-().]/g, "");
+  return /^\+?229(01\d{8})$/.test(digits);
+}
+
+const EDU_LEVELS = ["high_school", "undergraduate", "graduate", "postgraduate"] as const;
+const EDU_LABEL: Record<string, string> = {
+  high_school: "highSchool", undergraduate: "undergraduate", graduate: "graduate", postgraduate: "postgraduate",
+};
+const HEARD = ["social_media", "friends_family", "former_student", "other"] as const;
+const HEARD_LABEL: Record<string, string> = {
+  social_media: "socialMedia", friends_family: "friendsFamily", former_student: "formerStudent", other: "other",
 };
 
 interface Props {
@@ -42,83 +60,76 @@ export default function RegisterWizard({ initialProgram }: Props) {
   const programMeta = initialProgram ? PROGRAM_META[initialProgram] ?? null : null;
 
   const [fields, setFields] = useState({
-    first_name: "",
-    last_name: "",
-    gender: "",
+    why_learn_english: "",
+    full_name: "",
     date_of_birth: "",
-    nationality: "",
+    gender: "",
+    phone: "+229 ",
     email: "",
-    whatsapp: "",
-    address_line: "",
-    country: "",
-    city: "",
-    education_level: "",
-    parent_whatsapp: "",
-    parent_email: "",
+    resident_address: "",
+    guardian_name: "",
+    guardian_phone: "+229 ",
+    guardian_address: "",
+    educational_level: "",
     discovery_channel: "",
+    discovery_other: "",
+    declaration_agreed: false,
     level: programMeta?.level ?? "",
     message: programMeta ? `Interested in: ${programMeta.name}` : "",
   });
 
   const checklistItems = t.raw("checklistItems") as string[];
+  const allChecked = checklist.every(Boolean);
 
+  function set<K extends keyof typeof fields>(key: K, value: (typeof fields)[K]) {
+    setFields((f) => ({ ...f, [key]: value }));
+  }
   function toggleCheck(i: number) {
     setChecklist((c) => c.map((v, j) => (j === i ? !v : v)));
   }
-
-  const allChecked = checklist.every(Boolean);
-
   function goToStep(next: Step) {
     setError(null);
     setStep(next);
   }
 
-  function advanceFromPersonal() {
-    const { first_name, last_name, gender, date_of_birth, nationality } = fields;
-    if (!first_name.trim() || !last_name.trim() || !gender || !date_of_birth || !nationality.trim()) {
-      setError(t("errors.requiredPersonal"));
-      return;
-    }
+  function advanceFromWhy() {
+    if (!fields.why_learn_english.trim()) { setError(t("errors.requiredFields")); return; }
     goToStep(3);
   }
-
-  function advanceFromContact() {
-    const { email, whatsapp, address_line, country, city } = fields;
-    if (!email.trim() || !whatsapp.trim() || !address_line.trim() || !country.trim() || !city.trim()) {
-      setError(t("errors.requiredContact"));
+  function advanceFromPersonal() {
+    const { full_name, date_of_birth, gender, phone, email, resident_address } = fields;
+    if (!full_name.trim() || !date_of_birth || !gender || !phone.trim() || !email.trim() || !resident_address.trim()) {
+      setError(t("errors.requiredFields"));
+      return;
+    }
+    if (!EMAIL_RE.test(email.trim())) {
+      setError(t("errors.invalidEmail"));
+      return;
+    }
+    if (!isValidBeninPhone(phone)) {
+      setError(t("errors.invalidPhone"));
       return;
     }
     goToStep(4);
   }
-
-  function advanceFromAcademic() {
-    if (!fields.education_level.trim()) {
-      setError(t("errors.requiredAcademic"));
-      return;
-    }
-    goToStep(5);
+  function advanceFromOther() {
+    if (!fields.educational_level || !fields.discovery_channel) { setError(t("errors.requiredFields")); return; }
+    if (fields.discovery_channel === "other" && !fields.discovery_other.trim()) { setError(t("errors.requiredFields")); return; }
+    if (!fields.declaration_agreed) { setError(t("declarationRequired")); return; }
+    goToStep(6);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const { parent_whatsapp, parent_email, discovery_channel } = fields;
-    if (!parent_whatsapp.trim() || !parent_email.trim() || !discovery_channel) {
-      setError(t("errors.requiredParent"));
-      return;
-    }
-
+    if (!fields.declaration_agreed) { setError(t("declarationRequired")); return; }
     setLoading(true);
     setError(null);
     try {
       const fd = new FormData();
-      Object.entries(fields).forEach(([k, v]) => fd.set(k, v));
+      Object.entries(fields).forEach(([k, v]) => fd.set(k, typeof v === "boolean" ? (v ? "true" : "false") : v));
       const result = await submitPublicRegistration(fd);
       if (result.error) {
-        setError(
-          result.error === "DUPLICATE_EMAIL"
-            ? t("errors.duplicateEmail")
-            : result.error
-        );
+        setError(result.error === "DUPLICATE_EMAIL" ? t("errors.duplicateEmail") : result.error);
         return;
       }
       if ("placementToken" in result && result.placementToken) {
@@ -131,38 +142,24 @@ export default function RegisterWizard({ initialProgram }: Props) {
     }
   }
 
+  const ErrorBox = () =>
+    error ? (
+      <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
+        <p className="text-sm text-red-700">{error}</p>
+      </div>
+    ) : null;
+
   if (placementToken) {
     const testUrl = `/register/placement-test?token=${encodeURIComponent(placementToken)}`;
     return (
       <div className="mx-auto max-w-lg px-4 py-12 sm:px-6">
-        <div
-          className={`${card} text-center`}
-          style={{ borderColor: "rgba(46,168,42,0.35)", background: "linear-gradient(145deg, var(--mint) 0%, var(--white) 55%)" }}
-        >
-          <div
-            className="mx-auto flex h-16 w-16 items-center justify-center rounded-full text-2xl font-extrabold text-white"
-            style={{ background: "var(--green)", fontFamily: "var(--font-syne)" }}
-          >
-            ✓
-          </div>
-          <h2 className="mt-6 text-2xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
-            {t("successTitle")}
-          </h2>
+        <div className={`${card} text-center`} style={{ borderColor: "rgba(46,168,42,0.35)", background: "linear-gradient(145deg, var(--mint) 0%, var(--white) 55%)" }}>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full text-2xl font-extrabold text-white" style={{ background: "var(--green)", fontFamily: "var(--font-syne)" }}>✓</div>
+          <h2 className="mt-6 text-2xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>{t("successTitle")}</h2>
           <p className="mt-3 text-[var(--text-muted)]">{t("successBody")}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href={testUrl}
-              className="inline-flex justify-center rounded-xl px-6 py-3 font-bold text-white no-underline"
-              style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 28px rgba(46,168,42,0.35)" }}
-            >
-              {t("takeTestNow")}
-            </Link>
-            <Link
-              href="/"
-              className="inline-flex justify-center rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-white px-6 py-3 font-semibold text-[var(--green-dark)] no-underline hover:bg-[var(--mint)]"
-            >
-              {t("takeTestLater")}
-            </Link>
+            <Link href={testUrl} className="inline-flex justify-center rounded-xl px-6 py-3 font-bold text-white no-underline" style={{ background: "var(--green)", fontFamily: "var(--font-syne)", boxShadow: "0 8px 28px rgba(46,168,42,0.35)" }}>{t("takeTestNow")}</Link>
+            <Link href="/" className="inline-flex justify-center rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-white px-6 py-3 font-semibold text-[var(--green-dark)] no-underline hover:bg-[var(--mint)]">{t("takeTestLater")}</Link>
           </div>
         </div>
       </div>
@@ -172,302 +169,185 @@ export default function RegisterWizard({ initialProgram }: Props) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--green)]" style={{ fontFamily: "var(--font-syne)" }}>
-          {t("eyebrow")}
-        </p>
-        <span className="text-xs font-semibold text-[var(--text-muted)]">
-          {t("stepIndicator", { current: step + 1, total: 6 })}
-        </span>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--green)]" style={{ fontFamily: "var(--font-syne)" }}>{t("eyebrow")}</p>
+        <span className="text-xs font-semibold text-[var(--text-muted)]">{t("stepIndicator", { current: step + 1, total: TOTAL_STEPS })}</span>
       </div>
 
+      {/* Step 0 — Intro */}
       {step === 0 && (
         <div className={`${card} text-center`}>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--green-deep)] sm:text-3xl" style={{ fontFamily: "var(--font-syne)" }}>
-            {t("introTitle")}
-          </h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--green-deep)] sm:text-3xl" style={{ fontFamily: "var(--font-syne)" }}>{t("introTitle")}</h1>
           <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">{t("introBody")}</p>
-
-          {/* Pre-selected program banner */}
           {programMeta && (
             <div className="mx-auto mt-6 max-w-sm rounded-xl border border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3 text-left">
-              <p className="text-sm font-semibold text-[var(--green-dark)]">
-                {tp("preSelected", { program: programMeta.name })}
-              </p>
+              <p className="text-sm font-semibold text-[var(--green-dark)]">{tp("preSelected", { program: programMeta.name })}</p>
               <p className="mt-0.5 text-xs text-[var(--text-muted)]">{tp("changeBelow")}</p>
             </div>
           )}
-
-          <button type="button" onClick={() => goToStep(1)} className={`${btnPrimary} mt-10 w-full max-w-xs sm:mx-auto`} style={btnPrimaryFont}>
-            {t("start")}
-          </button>
+          <button type="button" onClick={() => goToStep(1)} className={`${btnPrimary} mt-10 w-full max-w-xs sm:mx-auto`} style={btnPrimaryFont}>{t("start")}</button>
         </div>
       )}
 
+      {/* Step 1 — Checklist */}
       {step === 1 && (
         <div className={`${card} space-y-4`}>
-          <button type="button" onClick={() => goToStep(0)} className={btnGhost}>
-            ← {t("back")}
-          </button>
-          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
-            {t("checklistTitle")}
-          </h2>
+          <button type="button" onClick={() => goToStep(0)} className={btnGhost}>← {t("back")}</button>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>{t("checklistTitle")}</h2>
           <p className="text-sm text-[var(--text-muted)]">{t("checklistIntro")}</p>
           <ul className="mt-4 space-y-3">
             {checklistItems.map((text, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-3 rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-[var(--mint)] px-3 py-3 sm:px-4"
-              >
-                <input
-                  type="checkbox"
-                  checked={checklist[i]}
-                  onChange={() => toggleCheck(i)}
-                  className="mt-1 h-4 w-4 shrink-0 rounded border-[var(--mint-deep)] text-[var(--green)] focus:ring-[var(--green)]"
-                />
+              <li key={i} className="flex items-start gap-3 rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-[var(--mint)] px-3 py-3 sm:px-4">
+                <input type="checkbox" checked={checklist[i]} onChange={() => toggleCheck(i)} className="mt-1 h-4 w-4 shrink-0 rounded border-[var(--mint-deep)] text-[var(--green)] focus:ring-[var(--green)]" />
                 <span className="text-sm leading-relaxed text-[var(--green-dark)]">{text}</span>
               </li>
             ))}
           </ul>
-          <button
-            type="button"
-            disabled={!allChecked}
-            onClick={() => goToStep(2)}
-            className={`${btnPrimary} mt-6 w-full`}
-            style={btnPrimaryFont}
-          >
-            {t("next")}
-          </button>
+          <button type="button" disabled={!allChecked} onClick={() => goToStep(2)} className={`${btnPrimary} mt-6 w-full`} style={btnPrimaryFont}>{t("next")}</button>
         </div>
       )}
 
+      {/* Step 2 — Why learn English */}
       {step === 2 && (
         <div className={`${card} space-y-5`}>
-          <button type="button" onClick={() => goToStep(1)} className={btnGhost}>
-            ← {t("back")}
-          </button>
-          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
-            {t("personalTitle")}
-          </h2>
+          <button type="button" onClick={() => goToStep(1)} className={btnGhost}>← {t("back")}</button>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>{t("whyLearn")}</h2>
+          <div>
+            <label className={labelClass}>{t("whyLearn")} *</label>
+            <textarea rows={5} className={inputClass} value={fields.why_learn_english} placeholder={t("whyLearnPlaceholder")} onChange={(e) => set("why_learn_english", e.target.value)} />
+          </div>
+          <ErrorBox />
+          <button type="button" onClick={advanceFromWhy} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>{t("next")}</button>
+        </div>
+      )}
+
+      {/* Step 3 — Personal Information */}
+      {step === 3 && (
+        <div className={`${card} space-y-5`}>
+          <button type="button" onClick={() => goToStep(2)} className={btnGhost}>← {t("back")}</button>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>{t("personalTitle")}</h2>
+          <div>
+            <label className={labelClass}>{t("fullName")} *</label>
+            <input className={inputClass} value={fields.full_name} onChange={(e) => set("full_name", e.target.value)} />
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className={labelClass}>{t("firstName")} *</label>
-              <input
-                className={inputClass}
-                value={fields.first_name}
-                onChange={(e) => setFields((f) => ({ ...f, first_name: e.target.value }))}
-              />
+              <label className={labelClass}>{t("dateOfBirth")} *</label>
+              <input type="date" className={inputClass} value={fields.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} />
             </div>
             <div>
-              <label className={labelClass}>{t("lastName")} *</label>
-              <input
-                className={inputClass}
-                value={fields.last_name}
-                onChange={(e) => setFields((f) => ({ ...f, last_name: e.target.value }))}
-              />
+              <span className={labelClass}>{t("gender.label")} *</span>
+              <div className="mt-2 flex gap-3">
+                {(["male", "female"] as const).map((g) => (
+                  <label key={g} className={`${optionCard} flex-1`}>
+                    <input type="radio" name="gender" value={g} checked={fields.gender === g} onChange={() => set("gender", g)} className="text-[var(--green)] focus:ring-[var(--green)]" />
+                    <span className="text-sm text-[var(--green-dark)]">{t(`gender.${g}`)}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
           <div>
-            <span className={labelClass}>{t("gender.label")} *</span>
-            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              {(["male", "female", "other"] as const).map((g) => (
-                <label
-                  key={g}
-                  className="flex cursor-pointer items-center gap-2 rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3 sm:flex-1"
-                >
-                  <input
-                    type="radio"
-                    name="gender"
-                    value={g}
-                    checked={fields.gender === g}
-                    onChange={() => setFields((f) => ({ ...f, gender: g }))}
-                    className="text-[var(--green)] focus:ring-[var(--green)]"
-                  />
-                  <span className="text-sm text-[var(--green-dark)]">{t(`gender.${g}`)}</span>
+            <label className={labelClass}>{t("guardianPhone")} *</label>
+            <input type="tel" inputMode="tel" className={inputClass} value={fields.phone} placeholder="+229 0111223344" onChange={(e) => set("phone", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelClass}>{t("email")} *</label>
+            <input type="email" inputMode="email" className={inputClass} value={fields.email} placeholder="name@gmail.com" onChange={(e) => set("email", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelClass}>{t("residentAddress")} *</label>
+            <input className={inputClass} value={fields.resident_address} onChange={(e) => set("resident_address", e.target.value)} />
+          </div>
+          <ErrorBox />
+          <button type="button" onClick={advanceFromPersonal} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>{t("next")}</button>
+        </div>
+      )}
+
+      {/* Step 4 — Emergency contact (optional) */}
+      {step === 4 && (
+        <div className={`${card} space-y-5`}>
+          <button type="button" onClick={() => goToStep(3)} className={btnGhost}>← {t("back")}</button>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
+            {t("emergencyContact")} <span className="text-sm font-medium text-[var(--text-muted)]">{t("optional")}</span>
+          </h2>
+          <div>
+            <label className={labelClass}>{t("guardianName")}</label>
+            <input className={inputClass} value={fields.guardian_name} onChange={(e) => set("guardian_name", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelClass}>{t("guardianPhone")}</label>
+            <input type="tel" inputMode="tel" className={inputClass} value={fields.guardian_phone} placeholder="+229 0111223344" onChange={(e) => set("guardian_phone", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelClass}>{t("guardianAddress")}</label>
+            <input className={inputClass} value={fields.guardian_address} onChange={(e) => set("guardian_address", e.target.value)} />
+          </div>
+          <button type="button" onClick={() => goToStep(5)} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>{t("next")}</button>
+        </div>
+      )}
+
+      {/* Step 5 — Other information */}
+      {step === 5 && (
+        <div className={`${card} space-y-6`}>
+          <button type="button" onClick={() => goToStep(4)} className={btnGhost}>← {t("back")}</button>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>{t("otherInfoTitle")}</h2>
+
+          {/* Educational level */}
+          <div>
+            <span className={labelClass}>{t("educationalLevel")} *</span>
+            <div className="mt-2 space-y-2">
+              {EDU_LEVELS.map((e) => (
+                <label key={e} className={optionCard}>
+                  <input type="checkbox" checked={fields.educational_level === e} onChange={() => set("educational_level", fields.educational_level === e ? "" : e)} className="h-4 w-4 rounded text-[var(--green)] focus:ring-[var(--green)]" />
+                  <span className="text-sm text-[var(--green-dark)]">{t(EDU_LABEL[e])}</span>
                 </label>
               ))}
             </div>
           </div>
+
+          {/* How heard */}
           <div>
-            <label className={labelClass}>{t("dob")} *</label>
-            <input
-              type="date"
-              className={inputClass}
-              value={fields.date_of_birth}
-              onChange={(e) => setFields((f) => ({ ...f, date_of_birth: e.target.value }))}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>{t("nationality")} *</label>
-            <input
-              className={inputClass}
-              value={fields.nationality}
-              onChange={(e) => setFields((f) => ({ ...f, nationality: e.target.value }))}
-            />
-          </div>
-          {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
-              <p className="text-sm text-red-700">{error}</p>
+            <span className={labelClass}>{t("howHeard")} *</span>
+            <div className="mt-2 space-y-2">
+              {HEARD.map((h) => (
+                <label key={h} className={optionCard}>
+                  <input type="checkbox" checked={fields.discovery_channel === h} onChange={() => set("discovery_channel", fields.discovery_channel === h ? "" : h)} className="h-4 w-4 rounded text-[var(--green)] focus:ring-[var(--green)]" />
+                  <span className="text-sm text-[var(--green-dark)]">{t(HEARD_LABEL[h])}</span>
+                </label>
+              ))}
+              {fields.discovery_channel === "other" && (
+                <input className={inputClass} value={fields.discovery_other} placeholder={t("otherSpecify")} onChange={(e) => set("discovery_other", e.target.value)} />
+              )}
             </div>
-          )}
-          <button type="button" onClick={advanceFromPersonal} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
-            {t("next")}
-          </button>
+          </div>
+
+          {/* Declaration */}
+          <label className="flex items-start gap-3 rounded-xl border-[1.5px] border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3">
+            <input type="checkbox" checked={fields.declaration_agreed} onChange={(e) => set("declaration_agreed", e.target.checked)} className="mt-1 h-4 w-4 shrink-0 rounded text-[var(--green)] focus:ring-[var(--green)]" />
+            <span className="text-sm leading-relaxed text-[var(--green-dark)]">{t("declaration")} *</span>
+          </label>
+
+          <ErrorBox />
+          <button type="button" onClick={advanceFromOther} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>{t("next")}</button>
         </div>
       )}
 
-      {step === 3 && (
-        <div className={`${card} space-y-5`}>
-          <button type="button" onClick={() => goToStep(2)} className={btnGhost}>
-            ← {t("back")}
-          </button>
-          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
-            {t("contactTitle")}
-          </h2>
-          <div>
-            <label className={labelClass}>{t("email")} *</label>
-            <input
-              type="email"
-              className={inputClass}
-              value={fields.email}
-              onChange={(e) => setFields((f) => ({ ...f, email: e.target.value }))}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>{t("whatsapp")} *</label>
-            <input
-              type="tel"
-              className={inputClass}
-              value={fields.whatsapp}
-              onChange={(e) => setFields((f) => ({ ...f, whatsapp: e.target.value }))}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>{t("address")} *</label>
-            <input
-              className={inputClass}
-              value={fields.address_line}
-              onChange={(e) => setFields((f) => ({ ...f, address_line: e.target.value }))}
-            />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className={labelClass}>{t("country")} *</label>
-              <input
-                className={inputClass}
-                value={fields.country}
-                onChange={(e) => setFields((f) => ({ ...f, country: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>{t("city")} *</label>
-              <input
-                className={inputClass}
-                value={fields.city}
-                onChange={(e) => setFields((f) => ({ ...f, city: e.target.value }))}
-              />
-            </div>
-          </div>
-          {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
-          <button type="button" onClick={advanceFromContact} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
-            {t("next")}
-          </button>
-        </div>
-      )}
-
-      {step === 4 && (
-        <div className={`${card} space-y-5`}>
-          <button type="button" onClick={() => goToStep(3)} className={btnGhost}>
-            ← {t("back")}
-          </button>
-          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
-            {t("academicTitle")}
-          </h2>
-          <p className="text-sm leading-relaxed text-[var(--text-muted)]">{t("educationLevelIntro")}</p>
-          <div>
-            <label className={labelClass}>{t("educationLevelLabel")} *</label>
-            <textarea
-              rows={4}
-              className={inputClass}
-              value={fields.education_level}
-              onChange={(e) => setFields((f) => ({ ...f, education_level: e.target.value }))}
-              placeholder={t("educationLevelPlaceholder")}
-            />
-          </div>
-          {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
-          <button type="button" onClick={advanceFromAcademic} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>
-            {t("next")}
-          </button>
-        </div>
-      )}
-
-      {step === 5 && (
+      {/* Step 6 — Program + level + submit */}
+      {step === 6 && (
         <form onSubmit={handleSubmit} className={`${card} space-y-5`}>
-          <button type="button" onClick={() => goToStep(4)} className={btnGhost}>
-            ← {t("back")}
-          </button>
-          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>
-            {t("parentTitle")}
-          </h2>
+          <button type="button" onClick={() => goToStep(5)} className={btnGhost}>← {t("back")}</button>
+          <h2 className="text-xl font-extrabold text-[var(--green-deep)]" style={{ fontFamily: "var(--font-syne)" }}>{t("programTitle")}</h2>
 
-          {/* Pre-selected program reminder */}
           {programMeta && (
             <div className="rounded-xl border border-[var(--mint-deep)] bg-[var(--mint)] px-4 py-3">
-              <p className="text-sm font-semibold text-[var(--green-dark)]">
-                {tp("preSelected", { program: programMeta.name })}
-              </p>
+              <p className="text-sm font-semibold text-[var(--green-dark)]">{tp("preSelected", { program: programMeta.name })}</p>
               <p className="mt-0.5 text-xs text-[var(--text-muted)]">{tp("changeBelow")}</p>
             </div>
           )}
 
           <div>
-            <label className={labelClass}>{t("parentWhatsapp")} *</label>
-            <input
-              type="tel"
-              className={inputClass}
-              value={fields.parent_whatsapp}
-              onChange={(e) => setFields((f) => ({ ...f, parent_whatsapp: e.target.value }))}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>{t("parentEmail")} *</label>
-            <input
-              type="email"
-              className={inputClass}
-              value={fields.parent_email}
-              onChange={(e) => setFields((f) => ({ ...f, parent_email: e.target.value }))}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>{t("discovery.label")} *</label>
-            <select
-              className={inputClass}
-              value={fields.discovery_channel}
-              onChange={(e) => setFields((f) => ({ ...f, discovery_channel: e.target.value }))}
-            >
-              <option value="">{t("discovery.placeholder")}</option>
-              <option value="social_media">{t("discovery.social_media")}</option>
-              <option value="friend_family">{t("discovery.friend_family")}</option>
-              <option value="search_engine">{t("discovery.search_engine")}</option>
-              <option value="school_partner">{t("discovery.school_partner")}</option>
-              <option value="advertisement">{t("discovery.advertisement")}</option>
-              <option value="other">{t("discovery.other")}</option>
-            </select>
-          </div>
-          <div>
             <label className={labelClass}>{t("preferredLevel")}</label>
-            <select
-              className={inputClass}
-              value={fields.level}
-              onChange={(e) => setFields((f) => ({ ...f, level: e.target.value }))}
-            >
+            <select className={inputClass} value={fields.level} onChange={(e) => set("level", e.target.value)}>
               <option value="">{t("levelPlaceholder")}</option>
               <option value="beginner">{t("levels.beginner")}</option>
               <option value="elementary">{t("levels.elementary")}</option>
@@ -480,27 +360,11 @@ export default function RegisterWizard({ initialProgram }: Props) {
           </div>
           <div>
             <label className={labelClass}>{t("message")}</label>
-            <textarea
-              rows={3}
-              className={inputClass}
-              value={fields.message}
-              onChange={(e) => setFields((f) => ({ ...f, message: e.target.value }))}
-            />
+            <textarea rows={3} className={inputClass} value={fields.message} onChange={(e) => set("message", e.target.value)} />
           </div>
           <p className="text-xs text-[var(--text-muted)]">{t("securityNote")}</p>
-          {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className={`${btnPrimary} w-full`}
-            style={btnPrimaryFont}
-          >
-            {loading ? t("submitting") : t("submit")}
-          </button>
+          <ErrorBox />
+          <button type="submit" disabled={loading} className={`${btnPrimary} w-full`} style={btnPrimaryFont}>{loading ? t("submitting") : t("submit")}</button>
         </form>
       )}
     </div>

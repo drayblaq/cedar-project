@@ -1,0 +1,10 @@
+ALTER TABLE students ADD COLUMN IF NOT EXISTS why_learn_english text;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS date_of_birth date;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS gender text CHECK (gender IN ('male', 'female'));
+ALTER TABLE students ADD COLUMN IF NOT EXISTS resident_address text;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS educational_level text;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS discovery_channel text;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS guardian_name text;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS guardian_phone text;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS guardian_address text;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS declaration_agreed boolean DEFAULT false;

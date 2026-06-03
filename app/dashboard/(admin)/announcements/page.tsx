@@ -25,7 +25,7 @@ export default async function AnnouncementsPage() {
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
           {!announcements?.length ? (
             <div className="cd-card" style={{ padding:40, textAlign:"center" }}>
-              <p style={{ color:C.muted, fontSize:13.5 }}>No announcements yet.</p>
+              <p style={{ color:C.muted, fontSize:13.5 }}>No announcements yet. Post one to notify all students.</p>
             </div>
           ) : announcements.map(a => (
             <div key={a.id} className="cd-card" style={{ padding:22, display:"flex", gap:16, alignItems:"flex-start" }}>

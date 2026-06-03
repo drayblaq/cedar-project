@@ -10,6 +10,7 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin/classes",      label: "Classes",       iconKey: "classes" },
   { href: "/admin/announcements",label: "Announcements", iconKey: "announcements" },
   { href: "/admin/calendar",     label: "Calendar",      iconKey: "calendar" },
+  { href: "/admin/settings",     label: "Settings",      iconKey: "settings" },
 ];
 
 const STAFF_NAV: NavItem[] = [
@@ -69,11 +70,26 @@ export async function TopNav() {
     roleName === "parent"  ? PARENT_NAV  :
     [];
 
+  // Admin notifications (e.g. new registrations)
+  let notifications: { id: string; title: string; body: string | null; link: string | null; is_read: boolean; created_at: string }[] = [];
+  let unreadCount = 0;
+  if (roleName === "admin") {
+    const { data } = await supabase
+      .from("notifications")
+      .select("id, title, body, link, is_read, created_at")
+      .order("created_at", { ascending: false })
+      .limit(15);
+    notifications = data ?? [];
+    unreadCount = notifications.filter((n) => !n.is_read).length;
+  }
+
   return (
     <TopNavClient
       items={navItems}
       userName={userName}
       userRole={roleName}
+      notifications={notifications}
+      unreadCount={unreadCount}
     />
   );
 }

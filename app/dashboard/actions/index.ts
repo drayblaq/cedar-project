@@ -6,3 +6,5 @@ export * from "./announcements";
 export * from "./calendar";
 export * from "./classes";
 export * from "./parents";
+export * from "./settings";
+export * from "./notifications";

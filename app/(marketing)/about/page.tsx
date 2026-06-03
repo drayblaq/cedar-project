@@ -54,7 +54,7 @@ export default function AboutPage() {
           <div className="mb-12 grid grid-cols-1 gap-10 sm:mb-16 lg:mb-20 lg:grid-cols-2 lg:gap-16 xl:gap-20">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80"
+              src="/happy-black-females-student-during-a-class-in-lecture-hall-looking-at-camera.webp"
               alt="Students studying together at Cedar Training Center"
               style={{ width: "100%", borderRadius: 24, objectFit: "cover", aspectRatio: "4/3", boxShadow: "0 20px 60px rgba(46,168,42,0.15)" }}
             />
@@ -92,7 +92,7 @@ export default function AboutPage() {
           <div className="relative overflow-hidden rounded-[28px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=1400&q=85&fit=crop"
+              src="/college-students-studying-in-library-computer-lab.webp"
               alt="Cedar Training Center classroom"
               className="block h-[280px] w-full object-cover sm:h-[360px] lg:h-[400px]"
             />

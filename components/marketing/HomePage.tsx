@@ -122,11 +122,11 @@ export default function HomePage() {
   ];
 
   const programs = [
-    { img: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?w=600&q=85&fit=crop", lv: tr.p1lv, t: tr.p1t, p: tr.p1p, tag: tr.p1tag },
-    { img: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=85&fit=crop", lv: tr.p2lv, t: tr.p2t, p: tr.p2p, tag: tr.p2tag },
-    { img: "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=600&q=85&fit=crop", lv: tr.p3lv, t: tr.p3t, p: tr.p3p, tag: tr.p3tag },
-    { img: "https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=85&fit=crop", lv: tr.p4lv, t: tr.p4t, p: tr.p4p, tag: tr.p4tag },
-    { img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=85&fit=crop", lv: tr.p5lv, t: tr.p5t, p: tr.p5p, tag: tr.p5tag },
+    { img: "/college-students-studying-in-library-computer-lab.webp", lv: tr.p1lv, t: tr.p1t, p: tr.p1p, tag: tr.p1tag },
+    { img: "/young-black-man-writing-in-notebook.webp", lv: tr.p2lv, t: tr.p2t, p: tr.p2p, tag: tr.p2tag },
+    { img: "/student-writing-in-notebook-while-sitting-with-tablet-pc-in-college-library.webp", lv: tr.p3lv, t: tr.p3t, p: tr.p3p, tag: tr.p3tag },
+    { img: "/shot-of-a-teacher-assisting-a-struggling-student-with-schoolwork-in-a-classroom.webp", lv: tr.p4lv, t: tr.p4t, p: tr.p4p, tag: tr.p4tag },
+    { img: "/black-ethnicity-student-writing-while-studying-in-classroom.webp", lv: tr.p5lv, t: tr.p5t, p: tr.p5p, tag: tr.p5tag },
   ];
 
   const contactItems = [
@@ -162,14 +162,10 @@ export default function HomePage() {
         </div>
         {/* Hero right photo */}
         <div className="animate-slide-right delay-300r relative order-first min-h-[44vh] w-full overflow-hidden lg:order-none lg:min-h-0 lg:h-full">
-          <Image src="https://images.unsplash.com/photo-1531545514256-b1400bc00f31?w=1200&q=80" alt="Students learning English at Cedar Training Center" fill style={{ objectFit: "cover" }} priority />
+          <Image src="/homepage.webp" alt="Students learning English at Cedar Training Center" fill style={{ objectFit: "cover" }} priority />
           <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(to right, var(--mint) 0%, transparent 20%, transparent 80%, var(--mint) 100%)" }} />
           <div className="animate-float-pill absolute right-4 top-4 z-[5] rounded-full px-3 py-2 text-[0.65rem] font-extrabold uppercase tracking-wide text-white sm:right-8 sm:top-8 sm:px-[18px] sm:py-2.5 sm:text-[0.78rem]" style={{ background: "var(--green)", fontFamily: "var(--font-inter)", boxShadow: "0 8px 24px rgba(46,168,42,0.4)" }}>
             IELTS · TOEFL · TOEIC
-          </div>
-          <div className="animate-float-pill-2 absolute bottom-6 right-4 z-[5] flex items-center gap-2 rounded-xl border-2 border-[var(--mint-deep)] bg-white px-3 py-2.5 text-[0.7rem] font-extrabold sm:bottom-10 sm:right-10 sm:gap-2.5 sm:px-5 sm:py-3 sm:text-[0.78rem]" style={{ color: "var(--green-dark)", fontFamily: "var(--font-inter)", boxShadow: "0 8px 32px rgba(46,168,42,0.15)" }}>
-            <span style={{ fontSize: "1.6rem", color: "var(--green)" }}>98%</span>
-            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--green-dark)", lineHeight: 1.3 }}>Student<br />Satisfaction</div>
           </div>
         </div>
       </section>
@@ -190,10 +186,10 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div className="reveal-left relative mx-auto h-[340px] w-full max-w-lg sm:h-[440px] lg:mx-0 lg:h-[580px] lg:max-w-none">
             <div style={{ position: "absolute", top: 0, left: 0, width: "65%", height: "76%", borderRadius: 24, overflow: "hidden", boxShadow: "0 32px 80px rgba(46,168,42,0.15)" }}>
-              <Image src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80" alt="Students learning at Cedar" fill style={{ objectFit: "cover" }} />
+              <Image src="/happy-black-females-student-during-a-class-in-lecture-hall-looking-at-camera.webp" alt="Students learning at Cedar" fill style={{ objectFit: "cover" }} />
             </div>
             <div style={{ position: "absolute", bottom: 0, right: 0, width: "54%", height: "56%", borderRadius: 24, overflow: "hidden", border: "5px solid var(--white)", boxShadow: "0 20px 60px rgba(46,168,42,0.18)" }}>
-              <Image src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=500&q=85&fit=crop" alt="Classroom at Cedar Training Center" fill style={{ objectFit: "cover" }} />
+              <Image src="/confident-male-high-school-student-smiles-during-class.webp" alt="Classroom at Cedar Training Center" fill style={{ objectFit: "cover" }} />
             </div>
           </div>
           <div className="reveal-right">
@@ -294,11 +290,7 @@ export default function HomePage() {
           </div>
           <div className="reveal-right relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
             <div className="relative aspect-[3/4] overflow-hidden rounded-3xl">
-              <Image src="https://images.unsplash.com/photo-1529390079861-591de354faf5?w=700&q=85&fit=crop" alt="Professional at Cedar Training Center" fill style={{ objectFit: "cover" }} />
-            </div>
-            <div className="absolute -bottom-3 -left-1 rounded-2xl border-4 border-white px-5 py-4 text-white sm:-bottom-6 sm:-left-4 sm:px-7 sm:py-5" style={{ background: "var(--green)", fontFamily: "var(--font-inter)", boxShadow: "0 16px 48px rgba(46,168,42,0.4)" }}>
-              <div style={{ fontSize: "2.6rem", fontWeight: 800, lineHeight: 1 }}>98%</div>
-              <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 4, opacity: 0.85 }}>Student satisfaction</div>
+              <Image src="/young-black-man-writing-in-notebook.webp" alt="Student at Cedar Training Center" fill style={{ objectFit: "cover" }} />
             </div>
           </div>
         </div>

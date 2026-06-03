@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const programs = [
   {
     slug: "general-english",
-    img: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?w=800&q=80",
+    img: "/college-students-studying-in-library-computer-lab.webp",
     levelBadge: "All Levels",
     title: "General English",
     titleFr: "Anglais général",
@@ -24,7 +24,7 @@ const programs = [
   },
   {
     slug: "business-english",
-    img: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80",
+    img: "/young-black-man-writing-in-notebook.webp",
     levelBadge: "Professional",
     title: "Business English",
     titleFr: "Anglais professionnel",
@@ -39,7 +39,7 @@ const programs = [
   },
   {
     slug: "ielts-toefl-toeic",
-    img: "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800&q=80",
+    img: "/student-writing-in-notebook-while-sitting-with-tablet-pc-in-college-library.webp",
     levelBadge: "Exam Prep",
     title: "International test preparation: TOEIC, TOEFL, IELTS",
     titleFr: "Préparation aux tests internationaux : TOEIC, TOEFL, IELTS",
@@ -54,7 +54,7 @@ const programs = [
   },
   {
     slug: "workshops",
-    img: "https://images.unsplash.com/photo-1529390079861-591de354faf5?w=800&q=80",
+    img: "/shot-of-a-teacher-assisting-a-struggling-student-with-schoolwork-in-a-classroom.webp",
     levelBadge: "Workshops",
     title: "Communication and conversation workshops",
     titleFr: "Ateliers de communication et de conversation",
@@ -69,7 +69,7 @@ const programs = [
   },
   {
     slug: "personalised",
-    img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80",
+    img: "/confident-male-high-school-student-smiles-during-class.webp",
     levelBadge: "Intensive",
     title: "Personalised courses and intensive programs",
     titleFr: "Cours personnalisés et programmes intensifs",

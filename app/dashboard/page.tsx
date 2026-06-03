@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { RevenueTrendChart, LevelBarChart } from "./OverviewCharts";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function fmtXOF(n: number) { return new Intl.NumberFormat("fr-FR").format(n) + " CFA"; }
+function fmtXOF(n: number) { return new Intl.NumberFormat("fr-FR").format(n) + " FCFA"; }
 function fmtDate(iso: string) {
   return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
