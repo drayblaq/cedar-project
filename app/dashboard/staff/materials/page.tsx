@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { createMaterial, deleteMaterial } from "@/app/dashboard/actions/index";
+import { deleteMaterial } from "@/app/dashboard/actions/index";
+import { MaterialUploadForm } from "./MaterialUploadForm";
 
 const C = { ink: "#16241a", muted: "#687a6c", border: "#e6ece4", green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18" };
 
@@ -14,173 +15,107 @@ const TYPE_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
   document: { bg: "#f9fafb", fg: "#374151", label: "Document" },
   other:    { bg: "#f8fafc", fg: "#475569", label: "Other" },
 };
-
 function TypeBadge({ type }: { type: string }) {
   const s = TYPE_STYLE[type] ?? TYPE_STYLE.other;
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", background: s.bg, color: s.fg,
-      fontSize: 11.5, fontWeight: 700, padding: "3px 10px", borderRadius: 7, whiteSpace: "nowrap" }}>
+    <span style={{ display: "inline-flex", alignItems: "center", background: s.bg, color: s.fg, fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 6, whiteSpace: "nowrap" }}>
       {s.label}
     </span>
   );
 }
 
-function TypeIcon({ type }: { type: string }) {
-  if (type === "pdf") return (
-    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#b91c1c" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/>
-    </svg>
-  );
-  if (type === "link") return (
-    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-    </svg>
-  );
-  if (type === "video") return (
-    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="5 3 19 12 5 21 5 3"/>
-    </svg>
-  );
-  return (
-    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>
-    </svg>
-  );
-}
+type Material = {
+  id: string; title: string; description: string | null; material_type: string;
+  url: string | null; level_id: string | null; topic: string | null;
+  week_number: number | null; is_public: boolean; created_at: string;
+};
 
 export default async function StaffMaterialsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: myClasses } = await supabase
-    .from("staff_classes")
-    .select("class_id, classes(id, name, level_id, levels(name))")
-    .eq("profile_id", user.id);
+  const { data: levels } = await supabase.from("levels").select("id, name").order("sort_order");
+  const levelName: Record<string, string> = {};
+  for (const l of levels ?? []) levelName[l.id] = l.name;
 
-  const classList = (myClasses ?? []).map((row) => {
-    const c = row.classes as unknown as { id: string; name: string; level_id: string; levels: { name?: string } | null };
-    const levelName = Array.isArray(c?.levels) ? c.levels[0]?.name : (c?.levels as { name?: string } | null)?.name;
-    return c?.id ? { id: c.id, name: c.name, levelId: c.level_id, levelName: levelName ?? "" } : null;
-  }).filter(Boolean) as { id: string; name: string; levelId: string; levelName: string }[];
+  const { data: materialsRaw } = await supabase
+    .from("materials")
+    .select("id, title, description, material_type, url, level_id, topic, week_number, is_public, created_at")
+    .eq("uploaded_by", user.id)
+    .order("week_number", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: false });
+  const materials = (materialsRaw ?? []) as Material[];
 
-  const classIds = classList.map(c => c.id);
-  const { data: allMaterials } = classIds.length
-    ? await supabase.from("materials").select("*").in("class_id", classIds).order("created_at", { ascending: false })
-    : { data: [] };
-
-  type MatRow = { id: string; title: string; description: string | null; material_type: string; url: string | null; created_at: string; class_id: string };
-  const materialsByClass: Record<string, MatRow[]> = {};
-  for (const m of allMaterials ?? []) {
-    const mat = m as MatRow;
-    if (!materialsByClass[mat.class_id]) materialsByClass[mat.class_id] = [];
-    materialsByClass[mat.class_id]!.push(mat);
+  // Group by level
+  const groups: Record<string, Material[]> = {};
+  for (const m of materials) {
+    const key = m.is_public ? "__public" : (m.level_id ?? "__none");
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(m);
   }
+  const groupKeys = Object.keys(groups);
 
-  if (!classList.length) {
-    return (
-      <div>
-        <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink, marginBottom: 8 }}>Materials</h1>
-        <div className="cd-card" style={{ padding: 40, textAlign: "center" }}>
-          <p style={{ color: C.muted }}>You are not assigned to any class yet. Ask an admin to assign you from Classes.</p>
-        </div>
-      </div>
-    );
+  function groupLabel(key: string) {
+    if (key === "__public") return "All students (public)";
+    if (key === "__none") return "Unassigned";
+    return levelName[key] ?? "Level";
   }
 
   return (
     <div>
       <div style={{ marginBottom: 18 }}>
         <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>Course Materials</h1>
-        <p style={{ fontSize: 13.5, color: C.muted, marginTop: 4 }}>Add and manage learning materials for your classes.</p>
+        <p style={{ fontSize: 13.5, color: C.muted, marginTop: 4 }}>Upload PDFs and resources for your students.</p>
       </div>
 
-      {classList.map(cls => (
-        <div key={cls.id} style={{ marginBottom: 32 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, marginBottom: 14 }}>
-            {cls.name}
-            <span style={{ marginLeft: 10, fontSize: 12.5, fontWeight: 600, color: C.muted }}>{cls.levelName}</span>
-          </h2>
-
-          <div className="cd-grid-2-1" style={{ alignItems: "flex-start" }}>
-            {/* Materials list */}
-            <div className="cd-card" style={{ padding: 0 }}>
-              {!(materialsByClass[cls.id] ?? []).length ? (
-                <p style={{ padding: "32px 22px", textAlign: "center", color: C.muted, fontSize: 13.5 }}>
-                  No materials added yet for this class.
+      <div className="cd-grid-2-1" style={{ alignItems: "flex-start" }}>
+        {/* Section B — uploaded materials grouped by level */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          {!materials.length ? (
+            <div className="cd-card" style={{ padding: "40px 24px", textAlign: "center" }}>
+              <p style={{ color: C.muted, fontSize: 13.5 }}>No materials uploaded yet. Use the form to add your first resource.</p>
+            </div>
+          ) : (
+            groupKeys.map((key) => (
+              <div key={key}>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: C.muted, marginBottom: 10 }}>
+                  {groupLabel(key)}
                 </p>
-              ) : (
-                <div>
-                  {(materialsByClass[cls.id] ?? []).map((m) => {
-                    const mat = m as { id: string; title: string; description: string | null; material_type: string; url: string | null; created_at: string };
-                    return (
-                      <div key={mat.id} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "14px 18px", borderBottom: `1px solid ${C.border}` }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 10, background: C.greenWash, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                          <TypeIcon type={mat.material_type} />
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: C.ink }}>{mat.title}</span>
-                            <TypeBadge type={mat.material_type} />
-                          </div>
-                          {mat.description && <p style={{ fontSize: 12.5, color: C.muted, marginTop: 3, lineHeight: 1.5 }}>{mat.description}</p>}
-                          <div style={{ fontSize: 11.5, color: C.muted, marginTop: 4 }}>{fmtDate(mat.created_at)}</div>
-                        </div>
-                        <div style={{ display: "flex", gap: 8, flexShrink: 0, alignItems: "center" }}>
-                          {mat.url && (
-                            <a href={mat.url} target="_blank" rel="noopener noreferrer"
-                              className="cd-mini-btn" style={{ textDecoration: "none" }}>
-                              Open
-                            </a>
+                <div className="cd-card" style={{ padding: 0 }}>
+                  {groups[key].map((m, i) => (
+                    <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 18px", borderBottom: i < groups[key].length - 1 ? `1px solid ${C.border}` : "none" }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                          {m.week_number != null && (
+                            <span style={{ fontSize: 11, fontWeight: 700, color: C.greenDark, background: C.greenWash, borderRadius: 6, padding: "2px 8px" }}>Week {m.week_number}</span>
                           )}
-                          <form action={deleteMaterial.bind(null, mat.id) as unknown as (fd: FormData) => Promise<void>} style={{ display: "inline" }}>
-                            <button type="submit" style={{ background: "rgba(201,74,58,.1)", border: "none", borderRadius: 8, padding: "5px 11px", fontSize: 12, fontWeight: 700, color: "#b3402f", cursor: "pointer" }}>
-                              Delete
-                            </button>
-                          </form>
+                          {m.topic && <span style={{ fontSize: 12, color: C.muted }}>{m.topic}</span>}
+                          <TypeBadge type={m.material_type} />
                         </div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: C.ink, marginTop: 3 }}>{m.title}</div>
+                        <div style={{ fontSize: 11.5, color: C.muted, marginTop: 2 }}>{fmtDate(m.created_at)}</div>
                       </div>
-                    );
-                  })}
+                      <div style={{ display: "flex", gap: 8, flexShrink: 0, alignItems: "center" }}>
+                        {m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" className="cd-mini-btn" style={{ textDecoration: "none" }}>Open</a>}
+                        <form action={deleteMaterial.bind(null, m.id) as unknown as (fd: FormData) => Promise<void>} style={{ display: "inline" }}>
+                          <button type="submit" style={{ background: "rgba(201,74,58,.1)", border: "none", borderRadius: 8, padding: "5px 11px", fontSize: 12, fontWeight: 700, color: "#b3402f", cursor: "pointer" }}>Delete</button>
+                        </form>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-
-            {/* Add material form */}
-            <div className="cd-card" style={{ padding: 22 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 16 }}>Add material</h3>
-              <form action={createMaterial as unknown as (fd: FormData) => Promise<void>} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                <input type="hidden" name="class_id" value={cls.id} />
-                <label className="cd-fld">
-                  <span>Title</span>
-                  <input name="title" type="text" required placeholder="e.g. Unit 3 Grammar Notes" />
-                </label>
-                <label className="cd-fld">
-                  <span>Description (optional)</span>
-                  <input name="description" type="text" placeholder="Brief description…" />
-                </label>
-                <label className="cd-fld">
-                  <span>Type</span>
-                  <select name="material_type" defaultValue="link">
-                    <option value="pdf">PDF</option>
-                    <option value="link">Link</option>
-                    <option value="video">Video</option>
-                    <option value="document">Document</option>
-                    <option value="other">Other</option>
-                  </select>
-                </label>
-                <label className="cd-fld">
-                  <span>URL</span>
-                  <input name="url" type="url" placeholder="https://…" />
-                </label>
-                <button type="submit" className="cd-btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                  Add material
-                </button>
-              </form>
-            </div>
-          </div>
+              </div>
+            ))
+          )}
         </div>
-      ))}
+
+        {/* Section A — upload form */}
+        <div className="cd-card" style={{ padding: 22, height: "fit-content" }}>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 16 }}>Upload new material</h2>
+          <MaterialUploadForm levels={(levels ?? []) as { id: string; name: string }[]} />
+        </div>
+      </div>
     </div>
   );
 }

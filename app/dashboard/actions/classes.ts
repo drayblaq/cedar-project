@@ -43,18 +43,56 @@ export async function createMaterial(formData: FormData) {
   const title = formData.get("title") as string;
   const description = (formData.get("description") as string) || null;
   const material_type = formData.get("material_type") as string;
+  const class_id = (formData.get("class_id") as string) || null;
+  const level_id = (formData.get("level_id") as string) || null;
+  const topic = (formData.get("topic") as string) || null;
+  const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
+  const is_public = formData.get("is_public") === "true";
+  const file = formData.get("file") as File | null;
   const url = (formData.get("url") as string) || null;
-  const class_id = formData.get("class_id") as string;
 
-  if (!title || !material_type || !class_id) {
-    return { error: "Title, type and class are required" };
+  if (!title || !material_type) return { error: "Title and type are required" };
+
+  let fileUrl: string | null = url;
+  let storedPath: string | null = null;
+
+  // Handle file upload to Supabase Storage
+  if (file && file.size > 0) {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${level_id || "general"}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("course-materials")
+      .upload(filePath, file, { contentType: file.type, upsert: false });
+
+    if (uploadError) return { error: `Upload failed: ${uploadError.message}` };
+
+    const { data: urlData } = supabase.storage.from("course-materials").getPublicUrl(filePath);
+    fileUrl = urlData.publicUrl;
+    storedPath = filePath;
   }
 
-  const { error } = await supabase
-    .from("materials")
-    .insert({ title, description, material_type, url, class_id, uploaded_by: user.id });
+  if (!fileUrl && material_type !== "other") {
+    return { error: "Please provide a file or URL" };
+  }
+
+  const { error } = await supabase.from("materials").insert({
+    title,
+    description,
+    material_type,
+    url: fileUrl,
+    file_path: storedPath,
+    class_id,
+    level_id,
+    topic,
+    week_number,
+    is_public,
+    uploaded_by: user.id,
+  });
 
   if (error) return { error: error.message };
+
   revalidatePath("/admin/classes");
   revalidatePath("/staff");
   revalidatePath("/staff/materials");

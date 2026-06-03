@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { createClass, assignStaffToClass, createAssignment, createMaterial, deleteMaterial, createTimetableSlot, deleteTimetableSlot } from "@/app/dashboard/actions/index";
+import { createClass, assignStaffToClass, createAssignment, deleteMaterial, createTimetableSlot, deleteTimetableSlot } from "@/app/dashboard/actions/index";
+import { MaterialUploadForm } from "@/app/dashboard/staff/materials/MaterialUploadForm";
 
 const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenWash:"#eef6ec", greenDark:"#1a6b18" };
 
@@ -106,22 +107,8 @@ export default async function ClassesPage() {
                       })}
                     </div>
                   )}
-                  {/* Quick add */}
-                  <form action={createMaterial as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                    <input type="hidden" name="class_id" value={cl.id} />
-                    <input name="title" type="text" required placeholder="Material title…" className="cd-fld" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }} />
-                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-                      <select name="material_type" defaultValue="link" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }}>
-                        <option value="pdf">PDF</option>
-                        <option value="link">Link</option>
-                        <option value="video">Video</option>
-                        <option value="document">Document</option>
-                        <option value="other">Other</option>
-                      </select>
-                      <input name="url" type="url" placeholder="https://…" style={{ background:C.greenWash, border:`1.5px solid ${C.border}`, borderRadius:8, padding:"7px 11px", fontSize:12.5, color:C.ink, outline:"none", fontFamily:"inherit" }} />
-                    </div>
-                    <button type="submit" className="cd-mini-btn" style={{ width:"100%", justifyContent:"center" }}>+ Add</button>
-                  </form>
+                  {/* Add material (file upload or URL) */}
+                  <MaterialUploadForm levels={(levels ?? []) as { id: string; name: string }[]} defaultLevelId={cl.level_id} />
                 </div>
 
                 {/* Timetable section */}
