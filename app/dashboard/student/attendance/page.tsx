@@ -80,7 +80,7 @@ export default async function StudentAttendancePage() {
                       <tr key={r.id} className="cd-trow">
                         <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, fontWeight:600, color:C.ink }}>{new Date(r.date).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}</td>
                         <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"right" }}>
-                          <span style={{ display:"inline-flex", background:tn.bg, color:tn.fg, fontSize:11.5, fontWeight:700, padding:"3px 10px", borderRadius:7 }}>{ts(r.status as "present"|"absent"|"late")}</span>
+                          <span style={{ display:"inline-flex", background:tn.bg, color:tn.fg, fontSize:11.5, fontWeight:700, padding:"3px 10px", borderRadius:7 }}>{ts((r.status === "late" ? "absent" : r.status) as "present"|"absent")}</span>
                         </td>
                       </tr>
                     );

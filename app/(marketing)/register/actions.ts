@@ -5,10 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// Benin mobile: +229 followed by 10 digits starting with 01 (e.g. +229 0111223344)
+// Benin number in E.164 from the phone input: +229 followed by 8–11 digits.
 function isValidBeninPhone(raw: string) {
   const digits = raw.replace(/[\s\-().]/g, "");
-  return /^\+?229(01\d{8})$/.test(digits);
+  return /^\+?229\d{8,11}$/.test(digits);
 }
 
 const LEVEL_SLUG_TO_NAME: Record<string, string> = {

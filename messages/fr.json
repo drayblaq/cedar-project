@@ -297,7 +297,6 @@
       "thisMonth": "Ce mois-ci",
       "present": "Présent",
       "absent": "Absent",
-      "late": "En retard",
       "average": "Moyenne",
       "lastAnnouncements": "Dernières annonces",
       "attendanceSummary": "Résumé des présences",
@@ -374,8 +373,7 @@
       "under_review": "En cours d'examen",
       "awaiting_payment": "En attente de paiement",
       "present": "Présent",
-      "absent": "Absent",
-      "late": "En retard"
+      "absent": "Absent"
     }
   }
 }

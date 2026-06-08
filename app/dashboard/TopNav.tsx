@@ -72,17 +72,21 @@ export async function TopNav() {
     roleName === "parent"  ? PARENT_NAV  :
     [];
 
-  // Admin notifications (e.g. new registrations)
-  let notifications: { id: string; title: string; body: string | null; link: string | null; is_read: boolean; created_at: string }[] = [];
+  // Admin notifications (e.g. new registrations, messages, payments)
+  let notifications: { id: string; type: string; title: string; body: string | null; link: string | null; is_read: boolean; created_at: string }[] = [];
   let unreadCount = 0;
   if (roleName === "admin") {
     const { data } = await supabase
       .from("notifications")
-      .select("id, title, body, link, is_read, created_at")
+      .select("id, type, title, body, link, is_read, created_at")
       .order("created_at", { ascending: false })
-      .limit(15);
+      .limit(8);
     notifications = data ?? [];
-    unreadCount = notifications.filter((n) => !n.is_read).length;
+    const { count } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("is_read", false);
+    unreadCount = count ?? notifications.filter((n) => !n.is_read).length;
   }
 
   return (

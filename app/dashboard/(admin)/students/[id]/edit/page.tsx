@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { updateStudent } from "@/app/dashboard/actions/index";
+import { PhoneInputField } from "@/components/PhoneInput";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -72,7 +73,7 @@ export default async function EditStudentPage({
             </div>
             <div>
               <label style={labelStyle}>Phone / WhatsApp<Required /></label>
-              <input name="phone" type="tel" required defaultValue={student.phone ?? s.whatsapp ?? ""} placeholder="+229 …" style={inputStyle} />
+              <PhoneInputField name="phone" required value={student.phone ?? s.whatsapp ?? ""} placeholder="01 11 22 33 44" />
             </div>
             <div>
               <label style={labelStyle}>Date of birth</label>
@@ -155,7 +156,7 @@ export default async function EditStudentPage({
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16, marginBottom: 32 }}>
             <div>
               <label style={labelStyle}>Parent phone / WhatsApp</label>
-              <input name="parent_phone" type="tel" defaultValue={s.parent_whatsapp ?? ""} placeholder="+229 …" style={inputStyle} />
+              <PhoneInputField name="parent_phone" value={s.parent_whatsapp ?? ""} placeholder="01 11 22 33 44" />
             </div>
             <div>
               <label style={labelStyle}>Parent email</label>

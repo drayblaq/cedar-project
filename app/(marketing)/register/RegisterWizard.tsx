@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { submitPublicRegistration } from "./actions";
+import { PhoneInputField } from "@/components/PhoneInput";
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 const TOTAL_STEPS = 7;
@@ -29,10 +30,10 @@ const PROGRAM_META: Record<string, { name: string; level: string }> = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// Benin mobile: +229 then 10 digits starting with 01 (e.g. +229 0111223344)
+// Benin number in E.164 from the phone input: +229 followed by 8–11 digits.
 function isValidBeninPhone(raw: string) {
   const digits = raw.replace(/[\s\-().]/g, "");
-  return /^\+?229(01\d{8})$/.test(digits);
+  return /^\+?229\d{8,11}$/.test(digits);
 }
 
 const EDU_LEVELS = ["high_school", "undergraduate", "graduate", "postgraduate"] as const;
@@ -64,11 +65,11 @@ export default function RegisterWizard({ initialProgram }: Props) {
     full_name: "",
     date_of_birth: "",
     gender: "",
-    phone: "+229 ",
+    phone: "",
     email: "",
     resident_address: "",
     guardian_name: "",
-    guardian_phone: "+229 ",
+    guardian_phone: "",
     guardian_address: "",
     educational_level: "",
     discovery_channel: "",
@@ -248,7 +249,7 @@ export default function RegisterWizard({ initialProgram }: Props) {
           </div>
           <div>
             <label className={labelClass}>{t("guardianPhone")} *</label>
-            <input type="tel" inputMode="tel" className={inputClass} value={fields.phone} placeholder="+229 0111223344" onChange={(e) => set("phone", e.target.value)} />
+            <PhoneInputField name="phone" value={fields.phone} onChange={(v) => set("phone", v)} placeholder="01 11 22 33 44" />
           </div>
           <div>
             <label className={labelClass}>{t("email")} *</label>
@@ -276,7 +277,7 @@ export default function RegisterWizard({ initialProgram }: Props) {
           </div>
           <div>
             <label className={labelClass}>{t("guardianPhone")}</label>
-            <input type="tel" inputMode="tel" className={inputClass} value={fields.guardian_phone} placeholder="+229 0111223344" onChange={(e) => set("guardian_phone", e.target.value)} />
+            <PhoneInputField name="guardian_phone" value={fields.guardian_phone} onChange={(v) => set("guardian_phone", v)} placeholder="01 11 22 33 44" />
           </div>
           <div>
             <label className={labelClass}>{t("guardianAddress")}</label>

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createStudent } from "@/app/dashboard/actions/index";
+import { PhoneInputField } from "@/components/PhoneInput";
 import Link from "next/link";
 
 const C = { ink: "#16241a", muted: "#687a6c", border: "#e6ece4", green: "#2ea82a", greenWash: "#eef6ec" };
@@ -60,7 +61,7 @@ export default async function NewStudentPage() {
             </div>
             <div>
               <label style={labelStyle}>Phone / WhatsApp<Required /></label>
-              <input name="phone" type="tel" required placeholder="+229 …" style={inputStyle} />
+              <PhoneInputField name="phone" required placeholder="01 11 22 33 44" />
             </div>
             <div>
               <label style={labelStyle}>Date of birth</label>
@@ -181,7 +182,7 @@ export default async function NewStudentPage() {
             </div>
             <div>
               <label style={labelStyle}>Phone number</label>
-              <input name="guardian_phone" type="tel" placeholder="+229 …" style={inputStyle} />
+              <PhoneInputField name="guardian_phone" placeholder="01 11 22 33 44" />
             </div>
             <div>
               <label style={labelStyle}>Resident address</label>

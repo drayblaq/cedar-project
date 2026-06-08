@@ -297,7 +297,6 @@
       "thisMonth": "This month",
       "present": "Present",
       "absent": "Absent",
-      "late": "Late",
       "average": "Average",
       "lastAnnouncements": "Latest Announcements",
       "attendanceSummary": "Attendance Summary",
@@ -374,8 +373,7 @@
       "under_review": "Under Review",
       "awaiting_payment": "Awaiting Payment",
       "present": "Present",
-      "absent": "Absent",
-      "late": "Late"
+      "absent": "Absent"
     }
   }
 }

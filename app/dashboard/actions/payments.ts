@@ -39,6 +39,22 @@ export async function createPayment(formData: FormData) {
 
   if (error) return { error: error.message };
   await tryFinalizeEnrollmentAfterPayment(supabase, student_id);
+
+  // Notify admins (best-effort, service role so RLS/role never blocks it)
+  try {
+    const { data: stu } = await supabase.from("students").select("full_name").eq("id", student_id).maybeSingle();
+    const studentName = (stu as { full_name?: string } | null)?.full_name ?? "A student";
+    const admin = createAdminClient();
+    await admin.from("notifications").insert({
+      type: "payment",
+      title: "Payment received",
+      body: `${studentName} paid ${new Intl.NumberFormat("fr-FR").format(amount)} ${currency}`,
+      link: "/admin/payments",
+    });
+  } catch {
+    // non-critical
+  }
+
   revalidatePath("/admin");
   revalidatePath("/admin/payments");
   revalidatePath("/admin/students");

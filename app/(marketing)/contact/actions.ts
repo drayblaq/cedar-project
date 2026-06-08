@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function submitContactForm(formData: FormData) {
   const supabase = await createClient();
@@ -19,5 +20,19 @@ export async function submitContactForm(formData: FormData) {
     .insert({ name, email, phone, message });
 
   if (error) return { error: "Failed to send message. Please try again." };
+
+  // Notify admins (best-effort, service role since the submitter is anonymous)
+  try {
+    const admin = createAdminClient();
+    await admin.from("notifications").insert({
+      type: "contact",
+      title: "New contact message",
+      body: `${name} sent a message`,
+      link: "/admin/messages",
+    });
+  } catch {
+    // non-critical
+  }
+
   return { success: true };
 }

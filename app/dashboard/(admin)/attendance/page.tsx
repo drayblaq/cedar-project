@@ -29,13 +29,11 @@ export default async function AttendancePage({
     acc[r.student_id] = r.status; return acc;
   }, {});
 
-  const dateFmt = new Date(date+"T12:00:00").toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
-
   return (
     <div style={{ padding:"30px 30px 60px" }}>
       <div style={{ marginBottom:18 }}>
         <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>Attendance</h1>
-        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>{dateFmt}</p>
+        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>Mark each student present or absent for the selected day.</p>
       </div>
       <AttendanceForm date={date} students={students} initialStatus={byStudent} saveAction={saveAttendance} />
     </div>

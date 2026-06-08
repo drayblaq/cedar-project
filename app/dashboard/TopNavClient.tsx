@@ -5,9 +5,9 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { markNotificationsRead } from "@/app/dashboard/actions/index";
+import { markNotificationsRead, markNotificationRead } from "@/app/dashboard/actions/index";
 
-type Notification = { id: string; title: string; body: string | null; link: string | null; is_read: boolean; created_at: string };
+type Notification = { id: string; type?: string; title: string; body: string | null; link: string | null; is_read: boolean; created_at: string };
 
 export type NavItem = { href: string; label: string; iconKey: string };
 
@@ -82,6 +82,29 @@ function timeAgo(iso: string) {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+function TypeIcon({ type }: { type?: string }) {
+  if (type === "contact") {
+    return (
+      <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, background: "#eff6ff", color: "#1d4ed8", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+      </span>
+    );
+  }
+  if (type === "payment") {
+    return (
+      <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, background: "#f5f3ff", color: "#7c3aed", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      </span>
+    );
+  }
+  // registration / default → green person
+  return (
+    <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, background: "#eef6ec", color: "#1a6b18", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </span>
+  );
+}
+
 function NotificationBell({ notifications, unreadCount }: { notifications: Notification[]; unreadCount: number }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -95,56 +118,66 @@ function NotificationBell({ notifications, unreadCount }: { notifications: Notif
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  async function toggle() {
-    const next = !open;
-    setOpen(next);
-    if (next && unreadCount > 0) {
-      await markNotificationsRead();
-      router.refresh();
-    }
+  async function markAll() {
+    await markNotificationsRead();
+    router.refresh();
   }
+  async function openItem(n: Notification) {
+    setOpen(false);
+    if (!n.is_read) { await markNotificationRead(n.id); }
+    if (n.link) router.push(n.link);
+    router.refresh();
+  }
+
+  const recent = notifications.slice(0, 5);
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      <button onClick={toggle} className="cedar-icon-btn" title="Notifications" style={{ position: "relative" }}>
+      <button onClick={() => setOpen((o) => !o)} className="cedar-icon-btn" title="Notifications" style={{ position: "relative" }}>
         <BellIcon />
         {unreadCount > 0 && (
           <span style={{ position: "absolute", top: -5, right: -5, minWidth: 17, height: 17, padding: "0 4px",
-            borderRadius: 9, background: "#e0533f", color: "#fff", fontSize: 10, fontWeight: 800,
+            borderRadius: 9, background: "#ef4444", color: "#fff", fontSize: 10, fontWeight: 800,
             display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
       {open && (
-        <div style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 60, width: 320,
+        <div style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 60, width: 340,
           background: "#fff", border: "1px solid #e6ece4", borderRadius: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.12)", overflow: "hidden" }}>
-          <div style={{ padding: "12px 16px", borderBottom: "1px solid #e6ece4", fontSize: 13, fontWeight: 800, color: "#16241a" }}>
-            Notifications
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid #e6ece4" }}>
+            <span style={{ fontSize: 13, fontWeight: 800, color: "#16241a" }}>Notifications</span>
+            {unreadCount > 0 && (
+              <button onClick={markAll} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11.5, fontWeight: 700, color: "#2ea82a", fontFamily: "inherit" }}>
+                Mark all read
+              </button>
+            )}
           </div>
-          {!notifications.length ? (
+          {!recent.length ? (
             <p style={{ padding: "24px 16px", textAlign: "center", fontSize: 13, color: "#687a6c" }}>No notifications yet.</p>
           ) : (
             <div style={{ maxHeight: 360, overflowY: "auto" }}>
-              {notifications.map((n) => {
-                const content = (
-                  <div style={{ padding: "11px 16px", borderBottom: "1px solid #f0f3ee", background: n.is_read ? "#fff" : "#f3fbf2", display: "flex", gap: 10 }}>
-                    <span style={{ width: 7, height: 7, borderRadius: "50%", marginTop: 6, flexShrink: 0, background: n.is_read ? "transparent" : "#2ea82a" }} />
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 12.5, fontWeight: 700, color: "#16241a", lineHeight: 1.35 }}>{n.title}</div>
-                      {n.body && <div style={{ fontSize: 11.5, color: "#687a6c", marginTop: 2, lineHeight: 1.4 }}>{n.body}</div>}
-                      <div style={{ fontSize: 10.5, color: "#9aa89c", marginTop: 3 }}>{timeAgo(n.created_at)}</div>
-                    </div>
-                  </div>
-                );
-                return n.link ? (
-                  <Link key={n.id} href={n.link} onClick={() => setOpen(false)} style={{ textDecoration: "none" }}>{content}</Link>
-                ) : (
-                  <div key={n.id}>{content}</div>
-                );
-              })}
+              {recent.map((n) => (
+                <button key={n.id} onClick={() => openItem(n)}
+                  style={{ display: "flex", gap: 11, width: "100%", textAlign: "left", padding: "11px 16px",
+                    borderBottom: "1px solid #f0f3ee", cursor: "pointer", fontFamily: "inherit",
+                    background: n.is_read ? "#fff" : "#f3f8ff",
+                    borderLeft: n.is_read ? "3px solid transparent" : "3px solid #3b82f6" }}>
+                  <TypeIcon type={n.type} />
+                  <span style={{ minWidth: 0 }}>
+                    <span style={{ display: "block", fontSize: 12.5, fontWeight: 700, color: "#16241a", lineHeight: 1.35 }}>{n.title}</span>
+                    {n.body && <span style={{ display: "block", fontSize: 11.5, color: "#687a6c", marginTop: 2, lineHeight: 1.4 }}>{n.body}</span>}
+                    <span style={{ display: "block", fontSize: 10.5, color: "#9aa89c", marginTop: 3 }}>{timeAgo(n.created_at)}</span>
+                  </span>
+                </button>
+              ))}
             </div>
           )}
+          <Link href="/admin/messages" onClick={() => setOpen(false)}
+            style={{ display: "block", textAlign: "center", padding: "11px 16px", borderTop: "1px solid #e6ece4", fontSize: 12.5, fontWeight: 700, color: "#2ea82a", textDecoration: "none" }}>
+            View all
+          </Link>
         </div>
       )}
     </div>

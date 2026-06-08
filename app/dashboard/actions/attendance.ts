@@ -9,10 +9,11 @@ export async function saveAttendance(formData: FormData) {
   if (!date) return { error: "Missing date" };
 
   const rows: Record<string, string> = {};
+  // Only 'present' / 'absent' are valid. Unmarked students are not submitted.
   for (const [key, value] of formData.entries()) {
     if (key.startsWith("status_") && typeof value === "string") {
       const studentId = key.slice(7);
-      rows[studentId] = value === "absent" || value === "late" ? value : "present";
+      rows[studentId] = value === "absent" ? "absent" : "present";
     }
   }
 

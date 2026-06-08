@@ -61,10 +61,9 @@ export default async function ParentStudentDetailPage({ params }: { params: Prom
 
   const attRows = attRes.data ?? [];
   const presentCount = attRows.filter(r=>r.status==="present").length;
-  const lateCount = attRows.filter(r=>r.status==="late").length;
   const absentCount = attRows.filter(r=>r.status==="absent").length;
   const totalAtt = attRows.length;
-  const attPct = totalAtt>0 ? Math.round(((presentCount+lateCount)/totalAtt)*100) : null;
+  const attPct = totalAtt>0 ? Math.round((presentCount/totalAtt)*100) : null;
 
   const grades = gradesRes.data ?? [];
   const scores = grades.map(g=>Number(g.score)).filter(n=>!isNaN(n));
@@ -95,11 +94,10 @@ export default async function ParentStudentDetailPage({ params }: { params: Prom
             {ts(student.status as "active"|"pending"|"inactive")}
           </span>
         </div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", marginTop:20, borderRadius:12, border:`1px solid ${C.border}`, background:"#f4f7f2", overflow:"hidden" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", marginTop:20, borderRadius:12, border:`1px solid ${C.border}`, background:"#f4f7f2", overflow:"hidden" }}>
           {[
             { label:t("attendanceSummary"), value: attPct!=null?`${attPct}%`:"—" },
             { label:ts("present"), value:presentCount },
-            { label:ts("late"), value:lateCount },
             { label:ts("absent"), value:absentCount },
           ].map((stat,i) => (
             <div key={stat.label} style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"16px 8px", textAlign:"center", borderLeft: i>0?`1px solid ${C.border}`:"none" }}>
@@ -114,7 +112,7 @@ export default async function ParentStudentDetailPage({ params }: { params: Prom
       <div className="cd-card" style={{ padding:0, marginBottom:18 }}>
         <div style={{ padding:"18px 22px 6px" }}>
           <h2 style={{ fontSize:15, fontWeight:700, color:C.ink }}>{t("last30days")}</h2>
-          {totalAtt>0 && <p style={{ fontSize:12.5, color:C.muted, marginTop:2 }}>{presentCount} {ts("present")} · {lateCount} {ts("late")} · {absentCount} {ts("absent")}</p>}
+          {totalAtt>0 && <p style={{ fontSize:12.5, color:C.muted, marginTop:2 }}>{presentCount} {ts("present")} · {absentCount} {ts("absent")}</p>}
         </div>
         {!attRows.length ? (
           <p style={{ padding:"32px 22px", textAlign:"center", color:C.muted, fontSize:13.5 }}>{t("noAttendance30")}</p>
@@ -129,7 +127,7 @@ export default async function ParentStudentDetailPage({ params }: { params: Prom
                     <tr key={a.date} className="cd-trow">
                       <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, color:C.ink, fontWeight:600 }}>{fmtDate(a.date)}</td>
                       <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"right" }}>
-                        <span style={{ display:"inline-flex", background:tn.bg, color:tn.fg, fontSize:11.5, fontWeight:700, padding:"3px 10px", borderRadius:7 }}>{ts(a.status as "present"|"absent"|"late")}</span>
+                        <span style={{ display:"inline-flex", background:tn.bg, color:tn.fg, fontSize:11.5, fontWeight:700, padding:"3px 10px", borderRadius:7 }}>{ts((a.status === "late" ? "absent" : a.status) as "present"|"absent")}</span>
                       </td>
                     </tr>
                   );

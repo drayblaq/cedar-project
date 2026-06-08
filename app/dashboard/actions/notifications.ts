@@ -22,3 +22,13 @@ export async function markNotificationsRead() {
   revalidatePath("/admin");
   return { success: true };
 }
+
+/** Mark a single notification as read (admin only). */
+export async function markNotificationRead(id: string) {
+  const { supabase, ok } = await isAdmin();
+  if (!ok) return { error: "Not authorized" };
+  const { error } = await supabase.from("notifications").update({ is_read: true }).eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/admin");
+  return { success: true };
+}

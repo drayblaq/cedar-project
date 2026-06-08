@@ -133,7 +133,7 @@ export default async function ParentAttendancePage() {
                             <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, fontWeight:600, color:C.ink }}>{fmtDate(r.date)}</td>
                             <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"right" }}>
                               <span style={{ display:"inline-flex", background:tn.bg, color:tn.fg, fontSize:11.5, fontWeight:700, padding:"3px 10px", borderRadius:7 }}>
-                                {ts(r.status as "present"|"absent"|"late")}
+                                {ts((r.status === "late" ? "absent" : r.status) as "present"|"absent")}
                               </span>
                             </td>
                           </tr>
