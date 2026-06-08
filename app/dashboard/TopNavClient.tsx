@@ -238,6 +238,7 @@ export function TopNavClient({ items, userName, userRole, notifications = [], un
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -247,61 +248,108 @@ export function TopNavClient({ items, userName, userRole, notifications = [], un
   }
 
   function isActive(href: string) {
-    // Exact match for root pages so /admin doesn't match /admin/students
     const exactRoots = ["/admin", "/student", "/staff", "/parent"];
     if (exactRoots.includes(href)) return pathname === href;
     return pathname.startsWith(href);
   }
 
   return (
-    <header className="cedar-topnav">
-      <div className="cedar-topnav-inner">
-        {/* Logo */}
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 11, textDecoration: "none", flexShrink: 0 }}>
-          <Image src="/logo.png" alt="Cedar" width={30} height={30} style={{ objectFit: "contain" }} />
-          <span style={{ fontWeight: 800, fontSize: 15, lineHeight: 1.05, letterSpacing: "-0.01em", color: "#16241a" }}>
-            Cedar <span style={{ color: "#2ea82a" }}>Training</span> Center
-          </span>
-        </Link>
+    <>
+      <header className="cedar-topnav">
+        <div className="cedar-topnav-inner">
+          {/* Logo */}
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 11, textDecoration: "none", flexShrink: 0 }}>
+            <Image src="/logo.png" alt="Cedar" width={30} height={30} style={{ objectFit: "contain" }} />
+            <span style={{ fontWeight: 800, fontSize: 15, lineHeight: 1.05, letterSpacing: "-0.01em", color: "#16241a" }}>
+              Cedar <span style={{ color: "#2ea82a" }}>Training</span> Center
+            </span>
+          </Link>
 
-        {/* Horizontal nav — primary tabs + "More" overflow */}
-        <nav className="cedar-topnav-nav" aria-label="Main navigation">
-          {(items.length > MAX_PRIMARY_TABS ? items.slice(0, MAX_PRIMARY_TABS) : items).map(({ href, label, iconKey }) => (
-            <Link
-              key={href}
-              href={href}
-              className={"cedar-tnav-item" + (isActive(href) ? " cedar-tnav-on" : "")}
-            >
-              <NavIcon name={iconKey} />
-              <span>{label}</span>
-            </Link>
-          ))}
-          {items.length > MAX_PRIMARY_TABS && (
-            <MoreMenu items={items.slice(MAX_PRIMARY_TABS)} isActive={isActive} />
-          )}
-        </nav>
+          {/* Horizontal nav — primary tabs + "More" overflow (hidden on mobile) */}
+          <nav className="cedar-topnav-nav" aria-label="Main navigation">
+            {(items.length > MAX_PRIMARY_TABS ? items.slice(0, MAX_PRIMARY_TABS) : items).map(({ href, label, iconKey }) => (
+              <Link
+                key={href}
+                href={href}
+                className={"cedar-tnav-item" + (isActive(href) ? " cedar-tnav-on" : "")}
+              >
+                <NavIcon name={iconKey} />
+                <span>{label}</span>
+              </Link>
+            ))}
+            {items.length > MAX_PRIMARY_TABS && (
+              <MoreMenu items={items.slice(MAX_PRIMARY_TABS)} isActive={isActive} />
+            )}
+          </nav>
 
-        {/* User + sign-out */}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-          {userRole === "admin" && (
-            <NotificationBell notifications={notifications} unreadCount={unreadCount} />
-          )}
-          <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-            <div style={{ width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
-              background: avatarBg(userName), color: "#fff", display: "flex",
-              alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 11.5 }}>
-              {initials(userName)}
+          {/* User + sign-out */}
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+            {userRole === "admin" && (
+              <NotificationBell notifications={notifications} unreadCount={unreadCount} />
+            )}
+            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                background: avatarBg(userName), color: "#fff", display: "flex",
+                alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 11.5 }}>
+                {initials(userName)}
+              </div>
+              <div className="cedar-username-block" style={{ lineHeight: 1.25 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#16241a", whiteSpace: "nowrap" }}>{userName}</div>
+                <div style={{ fontSize: 11, color: "#687a6c", textTransform: "capitalize" }}>{userRole}</div>
+              </div>
             </div>
-            <div style={{ lineHeight: 1.25 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#16241a", whiteSpace: "nowrap" }}>{userName}</div>
-              <div style={{ fontSize: 11, color: "#687a6c", textTransform: "capitalize" }}>{userRole}</div>
+            <button onClick={handleSignOut} className="cedar-icon-btn cedar-signout-btn" title="Sign out">
+              <NavIcon name="logout" size={18} />
+            </button>
+            {/* Hamburger — mobile only */}
+            <button
+              className="cedar-hamburger"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="Open menu"
+              aria-expanded={menuOpen}
+            >
+              <span className={`cedar-ham-bar${menuOpen ? " cedar-ham-bar-1-open" : ""}`} />
+              <span className={`cedar-ham-bar${menuOpen ? " cedar-ham-bar-2-open" : ""}`} />
+              <span className={`cedar-ham-bar${menuOpen ? " cedar-ham-bar-3-open" : ""}`} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile drawer */}
+      {menuOpen && (
+        <>
+          <div
+            className="cedar-drawer-backdrop"
+            onClick={() => setMenuOpen(false)}
+          />
+          <div className="cedar-drawer">
+            <div className="cedar-drawer-header">
+              <span style={{ fontWeight: 700, fontSize: 14, color: "#16241a" }}>Cedar Training Center</span>
+              <button onClick={() => setMenuOpen(false)} className="cedar-drawer-close" aria-label="Close menu">✕</button>
+            </div>
+            <nav className="cedar-drawer-nav">
+              {items.map(({ href, label, iconKey }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setMenuOpen(false)}
+                  className={"cedar-drawer-item" + (isActive(href) ? " cedar-tnav-on" : "")}
+                >
+                  <NavIcon name={iconKey} size={18} />
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </nav>
+            <div className="cedar-drawer-footer">
+              <button onClick={handleSignOut} className="cedar-drawer-signout">
+                <NavIcon name="logout" size={16} />
+                Sign out
+              </button>
             </div>
           </div>
-          <button onClick={handleSignOut} className="cedar-icon-btn" title="Sign out">
-            <NavIcon name="logout" size={18} />
-          </button>
-        </div>
-      </div>
-    </header>
+        </>
+      )}
+    </>
   );
 }

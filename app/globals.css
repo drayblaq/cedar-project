@@ -491,9 +491,73 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 1080px) {
   .cedar-page-content { padding: 88px 20px 60px; }
 }
+/* ── Hamburger button ─────────────────────────────────────────── */
+.cedar-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.cedar-ham-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #374151;
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.cedar-ham-bar-1-open { transform: rotate(45deg) translate(5px, 5px); }
+.cedar-ham-bar-2-open { opacity: 0; }
+.cedar-ham-bar-3-open { transform: rotate(-45deg) translate(5px, -5px); }
+
+/* ── Mobile drawer ────────────────────────────────────────────── */
+.cedar-drawer-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 40;
+}
+.cedar-drawer {
+  position: fixed; top: 0; left: 0; height: 100%; width: 280px;
+  background: #fff; z-index: 50; display: flex; flex-direction: column;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+}
+.cedar-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px; border-bottom: 1px solid #eef2ec; flex-shrink: 0;
+}
+.cedar-drawer-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; color: #687a6c; padding: 4px 6px;
+}
+.cedar-drawer-nav {
+  flex: 1; overflow-y: auto; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px;
+}
+.cedar-drawer-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 9px; text-decoration: none;
+  font-size: 14px; font-weight: 600; color: #374151;
+  transition: background 0.15s, color 0.15s;
+}
+.cedar-drawer-item:hover { background: #eef6ec; color: #1a6b18; }
+.cedar-drawer-footer {
+  padding: 16px; border-top: 1px solid #eef2ec; flex-shrink: 0;
+}
+.cedar-drawer-signout {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 10px 12px; border-radius: 9px; border: 1px solid #e5e7eb;
+  background: none; cursor: pointer; font-size: 13.5px; font-weight: 600;
+  color: #687a6c; font-family: inherit; transition: border-color 0.15s, color 0.15s;
+}
+.cedar-drawer-signout:hover { border-color: #ef4444; color: #ef4444; }
+
 @media (max-width: 680px) {
   .cedar-topnav-nav { display: none; }
   .cedar-page-content { padding: 84px 16px 50px; }
+  .cedar-hamburger { display: flex; }
+  .cedar-username-block { display: none; }
+  .cedar-signout-btn { display: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
