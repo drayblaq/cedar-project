@@ -6,10 +6,12 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin/students",     label: "Students",      iconKey: "students" },
   { href: "/admin/payments",     label: "Payments",      iconKey: "payments" },
   { href: "/admin/attendance",   label: "Attendance",    iconKey: "attendance" },
-  { href: "/admin/grades",       label: "Grades",        iconKey: "grades" },
+  { href: "/admin/grades",       label: "Level Assessment", iconKey: "grades" },
   { href: "/admin/classes",      label: "Classes",       iconKey: "classes" },
   { href: "/admin/announcements",label: "Announcements", iconKey: "announcements" },
   { href: "/admin/calendar",     label: "Calendar",      iconKey: "calendar" },
+  { href: "/admin/parent-links", label: "Parent Links",  iconKey: "parentLinks" },
+  { href: "/admin/messages",     label: "Messages",      iconKey: "mail" },
   { href: "/admin/settings",     label: "Settings",      iconKey: "settings" },
 ];
 
@@ -23,7 +25,7 @@ const STAFF_NAV: NavItem[] = [
 
 const STUDENT_NAV: NavItem[] = [
   { href: "/student",               label: "Overview",       iconKey: "progress" },
-  { href: "/student/grades",        label: "My Grades",      iconKey: "grades" },
+  { href: "/student/grades",        label: "My Level",       iconKey: "grades" },
   { href: "/student/attendance",    label: "Attendance",     iconKey: "attendance" },
   { href: "/student/materials",     label: "Materials",      iconKey: "book" },
   { href: "/student/announcements", label: "Announcements",  iconKey: "announcements" },

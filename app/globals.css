@@ -456,13 +456,13 @@ h1, h2, h3, h4, h5, h6 {
   background: #ffffff;
   border-bottom: 1px solid #eef2ec;
   box-shadow: 0 1px 3px rgba(20,40,26,.06);
-  position: sticky; top: 0; z-index: 50;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
 }
 .cedar-topnav-inner {
-  max-width: 1180px; margin: 0 auto; height: 70px;
-  display: flex; align-items: center; gap: 20px; padding: 0 32px;
+  height: 70px;
+  display: flex; align-items: center; gap: 18px; padding: 0 16px;
 }
-.cedar-topnav-nav { display: flex; gap: 3px; margin-left: 18px; flex: 1; overflow-x: auto; }
+.cedar-topnav-nav { display: flex; align-items: center; gap: 3px; margin-left: 14px; flex: 1; }
 
 .cedar-tnav-item {
   display: inline-flex; align-items: center; gap: 7px;
@@ -483,18 +483,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 .cedar-icon-btn:hover { border-color: #2ea82a; color: #2ea82a; }
 
-/* content wrapper */
+/* content wrapper — top padding clears the fixed 70px nav */
 .cedar-page-content {
-  max-width: 1180px; margin: 0 auto; padding: 34px 32px 70px; width: 100%;
+  max-width: 1180px; margin: 0 auto; padding: 94px 32px 70px; width: 100%;
 }
 
 @media (max-width: 1080px) {
-  .cedar-topnav-inner { padding: 0 20px; }
-  .cedar-page-content { padding: 24px 20px 60px; }
+  .cedar-page-content { padding: 88px 20px 60px; }
 }
 @media (max-width: 680px) {
   .cedar-topnav-nav { display: none; }
-  .cedar-page-content { padding: 20px 16px 50px; }
+  .cedar-page-content { padding: 84px 16px 50px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════

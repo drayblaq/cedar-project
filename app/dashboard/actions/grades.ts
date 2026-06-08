@@ -24,6 +24,28 @@ export async function createGrade(formData: FormData) {
   redirect("/dashboard/grades");
 }
 
+export async function saveSkillLevel(studentId: string, skillArea: string, skillLevel: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("grades")
+    .upsert(
+      {
+        student_id: studentId,
+        skill_area: skillArea,
+        skill_level: skillLevel,
+        subject_or_type: skillArea, // backwards compat (NOT NULL column)
+        academic_term_id: null,
+      },
+      { onConflict: "student_id,skill_area" }
+    );
+
+  if (error) return { error: error.message };
+  revalidatePath("/admin/grades");
+  revalidatePath("/student/grades");
+  return { success: true };
+}
+
 export async function deleteGrade(id: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("grades").delete().eq("id", id);

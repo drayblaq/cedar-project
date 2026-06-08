@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { submitContactForm } from "@/app/(marketing)/contact/actions";
 
 function PinIcon() {
   return (
@@ -39,10 +40,18 @@ const details = [
 
 export default function MarketingContact() {
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSent(true);
+    const fd = new FormData(e.currentTarget);
+    setError(null);
+    startTransition(async () => {
+      const res = await submitContactForm(fd);
+      if (res?.error) setError(res.error);
+      else setSent(true);
+    });
   }
 
   return (
@@ -77,21 +86,24 @@ export default function MarketingContact() {
             ) : (
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                 {[
-                  { label: "Full name", type: "text", placeholder: "Your name" },
-                  { label: "Email", type: "email", placeholder: "your@email.com" },
-                  { label: "Phone / WhatsApp (optional)", type: "tel", placeholder: "+229 ..." },
-                ].map(({ label, type, placeholder }) => (
-                  <div key={label} style={{ marginBottom: 20 }}>
+                  { name: "name", label: "Full name", type: "text", placeholder: "Your name" },
+                  { name: "email", label: "Email", type: "email", placeholder: "your@email.com" },
+                  { name: "phone", label: "Phone / WhatsApp (optional)", type: "tel", placeholder: "+229 ..." },
+                ].map(({ name, label, type, placeholder }) => (
+                  <div key={name} style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 8 }}>{label}</label>
-                    <input type={type} placeholder={placeholder} required={!label.includes("optional")} style={{ width: "100%", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 12, padding: "14px 16px", color: "var(--text)", fontSize: "0.95rem", fontFamily: "var(--font-inter)", outline: "none" }} />
+                    <input name={name} type={type} placeholder={placeholder} required={!label.includes("optional")} style={{ width: "100%", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 12, padding: "14px 16px", color: "var(--text)", fontSize: "0.95rem", fontFamily: "var(--font-inter)", outline: "none" }} />
                   </div>
                 ))}
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 8 }}>Message</label>
-                  <textarea rows={5} placeholder="How can we help you?" required style={{ width: "100%", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 12, padding: "14px 16px", color: "var(--text)", fontSize: "0.95rem", fontFamily: "var(--font-inter)", outline: "none", resize: "vertical" }} />
+                  <textarea name="message" rows={5} placeholder="How can we help you?" required style={{ width: "100%", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 12, padding: "14px 16px", color: "var(--text)", fontSize: "0.95rem", fontFamily: "var(--font-inter)", outline: "none", resize: "vertical" }} />
                 </div>
-                <button type="submit" style={{ display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer", border: "none", background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, marginTop: 8 }}>
-                  Send message →
+                {error && (
+                  <p style={{ marginBottom: 14, fontSize: "0.875rem", fontWeight: 600, color: "#b3402f" }}>{error}</p>
+                )}
+                <button type="submit" disabled={pending} style={{ display: "inline-flex", alignItems: "center", gap: 10, cursor: pending ? "not-allowed" : "pointer", opacity: pending ? 0.7 : 1, border: "none", background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, marginTop: 8 }}>
+                  {pending ? "Sending…" : "Send message →"}
                 </button>
               </form>
             )}

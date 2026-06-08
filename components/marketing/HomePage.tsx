@@ -10,7 +10,7 @@ type Lang = "en" | "fr";
 const t = {
   en: {
     eyebrow: "English Training · Cotonou, Bénin",
-    title1: "Learn", title2: "English", title3: "with Cedar",
+    title1: "Learn English at", title3: "CTC",
     sub: "Supporting every learner in acquiring English to succeed in their studies, career and international environment.",
     apply: "Apply Now", explore: "Explore Programs",
     whoWeAre: "Who We Are",
@@ -47,7 +47,7 @@ const t = {
   },
   fr: {
     eyebrow: "Formation en anglais · Cotonou, Bénin",
-    title1: "Apprendre", title2: "l'Anglais", title3: "avec Cedar",
+    title1: "Apprendre l'anglais", title3: " au CTC",
     sub: "Accompagner chaque apprenant dans l'acquisition de l'anglais afin de favoriser son intégration et sa réussite dans un environnement international.",
     apply: "Candidater", explore: "Voir les programmes",
     whoWeAre: "Qui sommes-nous",
@@ -143,7 +143,6 @@ export default function HomePage() {
           </p>
           <h1 className="animate-slide-up delay-200" style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(2.4rem, 4vw, 3.75rem)", fontWeight: 700, lineHeight: 1.08, letterSpacing: "-0.01em", color: "var(--green-deep)" }}>
             <span style={{ color: "var(--green-deep)" }}>{tr.title1}</span><br />
-            {tr.title2}<br />
             <span style={{ color: "var(--green)" }}>{tr.title3}</span>
           </h1>
           <p className="animate-slide-up delay-300" style={{ marginTop: 24, fontSize: "1.1rem", lineHeight: 1.75, color: "#1a3a1a", fontWeight: 500, maxWidth: 440 }}>{tr.sub}</p>
