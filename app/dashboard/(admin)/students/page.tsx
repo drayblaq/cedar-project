@@ -56,10 +56,16 @@ export default async function StudentsPage() {
             {total} enrolled · {withLogin} with portal access
           </p>
         </div>
-        <Link href="/admin/students/new" className="cd-btn-primary" style={{ textDecoration: "none" }}>
-          <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14 M5 12h14" /></svg>
-          Add student
-        </Link>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link href="/admin/students/import" className="cd-btn-ghost" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 7 }}>
+            <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import CSV
+          </Link>
+          <Link href="/admin/students/new" className="cd-btn-primary" style={{ textDecoration: "none" }}>
+            <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14 M5 12h14" /></svg>
+            Add student
+          </Link>
+        </div>
       </div>
 
       <StudentsTableClient
