@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { createClass, assignStaffToClass, createTimetableSlot, deleteTimetableSlot, deleteMaterial } from "@/app/dashboard/actions/index";
+import { useState, useMemo, useTransition } from "react";
+import { createClass, assignStaffToClass, createTimetableSlot, deleteTimetableSlot, deleteMaterial, removeStaffFromClass } from "@/app/dashboard/actions/index";
 import { MaterialUploadForm } from "@/app/dashboard/staff/materials/MaterialUploadForm";
 
 const C = { ink: "#16241a", muted: "#687a6c", border: "#e6ece4", green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18", bg: "#f4f7f2" };
@@ -29,9 +29,40 @@ function TypeBadge({ type }: { type: string }) {
 const th: React.CSSProperties = { textAlign: "left", padding: "11px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted, borderBottom: `1px solid ${C.border}`, whiteSpace: "nowrap" };
 const td: React.CSSProperties = { padding: "12px 14px", borderBottom: `1px solid ${C.border}`, color: C.ink, verticalAlign: "middle" };
 
-type ClassRow = { id: string; name: string; level_id: string; levelName: string; staff: string[]; studentCount: number };
+type StaffAssignment = { profileId: string; name: string };
+type ClassRow = { id: string; name: string; level_id: string; levelName: string; staff: StaffAssignment[]; studentCount: number };
 type Slot = { id: string; class_id: string; className: string; day_of_week: number; start_time: string; end_time: string; room: string | null };
 type Material = { id: string; title: string; material_type: string; url: string | null; week_number: number | null; topic: string | null; levelName: string };
+
+function RemoveStaffChip({ profileId, classId, name }: { profileId: string; classId: string; name: string }) {
+  const [pending, startTransition] = useTransition();
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: C.greenWash, borderRadius: 7, padding: "3px 8px", fontSize: 12.5, fontWeight: 600, color: C.greenDark, opacity: pending ? 0.5 : 1 }}>
+      {name}
+      <button onClick={() => startTransition(async () => { await removeStaffFromClass(profileId, classId); })} disabled={pending} title="Remove" style={{ background: "none", border: "none", cursor: "pointer", color: "#b3402f", fontWeight: 800, fontSize: 12, lineHeight: 1, padding: "0 0 0 2px" }}>×</button>
+    </span>
+  );
+}
+
+function DeleteSlotButton({ slotId }: { slotId: string }) {
+  const [pending, startTransition] = useTransition();
+  return (
+    <button disabled={pending} onClick={() => startTransition(async () => { await deleteTimetableSlot(slotId); })}
+      style={{ marginTop: 6, background: "none", border: "none", color: pending ? C.muted : "#b3402f", fontSize: 11.5, fontWeight: 700, cursor: "pointer", padding: 0 }}>
+      {pending ? "…" : "Remove"}
+    </button>
+  );
+}
+
+function DeleteMaterialButton({ materialId }: { materialId: string }) {
+  const [pending, startTransition] = useTransition();
+  return (
+    <button disabled={pending} onClick={() => startTransition(async () => { await deleteMaterial(materialId); })}
+      style={{ background: "rgba(201,74,58,.1)", border: "none", borderRadius: 8, padding: "5px 11px", fontSize: 12, fontWeight: 700, color: pending ? C.muted : "#b3402f", cursor: "pointer" }}>
+      {pending ? "…" : "Delete"}
+    </button>
+  );
+}
 
 export function ClassesTabs({ levels, staff, classes, timetable, materials }: {
   levels: { id: string; name: string }[];
@@ -131,7 +162,15 @@ export function ClassesTabs({ levels, staff, classes, timetable, materials }: {
                       <tr key={c.id} className="cd-trow">
                         <td style={{ ...td, fontWeight: 700 }}>{c.name}</td>
                         <td style={td}><LevelPill level={c.levelName} /></td>
-                        <td style={{ ...td, color: c.staff.length ? C.ink : C.muted }}>{c.staff.length ? c.staff.join(", ") : "Unassigned"}</td>
+                        <td style={{ ...td, color: c.staff.length ? C.ink : C.muted }}>
+                          {c.staff.length ? (
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                              {c.staff.map((s) => (
+                                <RemoveStaffChip key={s.profileId} profileId={s.profileId} classId={c.id} name={s.name} />
+                              ))}
+                            </div>
+                          ) : "Unassigned"}
+                        </td>
                         <td style={{ ...td, textAlign: "center", fontWeight: 700 }}>{c.studentCount}</td>
                       </tr>
                     ))}
@@ -164,9 +203,7 @@ export function ClassesTabs({ levels, staff, classes, timetable, materials }: {
                         {fmtTime(s.start_time)} – {fmtTime(s.end_time)}
                       </div>
                       {s.room && <div style={{ fontSize: 11.5, color: C.muted, marginTop: 4 }}>{s.room}</div>}
-                      <form action={deleteTimetableSlot.bind(null, s.id) as unknown as (fd: FormData) => Promise<void>} style={{ marginTop: 6 }}>
-                        <button type="submit" style={{ background: "none", border: "none", color: "#b3402f", fontSize: 11.5, fontWeight: 700, cursor: "pointer", padding: 0 }}>Remove</button>
-                      </form>
+                      <DeleteSlotButton slotId={s.id} />
                     </div>
                   ))}
                 </div>
@@ -223,9 +260,7 @@ export function ClassesTabs({ levels, staff, classes, timetable, materials }: {
                         <td style={{ ...td, textAlign: "right" }}>
                           <div style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
                             {m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" className="cd-mini-btn" style={{ textDecoration: "none" }}>Open</a>}
-                            <form action={deleteMaterial.bind(null, m.id) as unknown as (fd: FormData) => Promise<void>} style={{ display: "inline" }}>
-                              <button type="submit" style={{ background: "rgba(201,74,58,.1)", border: "none", borderRadius: 8, padding: "5px 11px", fontSize: 12, fontWeight: 700, color: "#b3402f", cursor: "pointer" }}>Delete</button>
-                            </form>
+                            <DeleteMaterialButton materialId={m.id} />
                           </div>
                         </td>
                       </tr>

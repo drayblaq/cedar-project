@@ -6,14 +6,12 @@ import { inviteStudentLogin } from "@/app/dashboard/actions/index";
 interface Props {
   studentId: string;
   lastInviteSentAt: string | null;
+  studentStatus?: string | null;
 }
 
 export function ResendInviteButton({ studentId, lastInviteSentAt }: Props) {
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorText, setErrorText] = useState<string | null>(null);
-
-  const isResend = lastInviteSentAt !== null;
-  const label = isResend ? "Resend invite" : "Send login invite";
 
   async function handleClick() {
     setState("loading");
@@ -21,7 +19,7 @@ export function ResendInviteButton({ studentId, lastInviteSentAt }: Props) {
     const result = await inviteStudentLogin(studentId);
     if (result.success) {
       setState("success");
-      setTimeout(() => setState("idle"), 3000);
+      setTimeout(() => setState("idle"), 4000);
     } else {
       setErrorText(result.error ?? "Failed to send invite");
       setState("error");
@@ -30,30 +28,27 @@ export function ResendInviteButton({ studentId, lastInviteSentAt }: Props) {
   }
 
   const lastSentLabel = lastInviteSentAt
-    ? new Date(lastInviteSentAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
+    ? new Date(lastInviteSentAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
     : null;
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col items-end gap-1">
       <button
         type="button"
         onClick={handleClick}
-        disabled={state === "loading"}
-        className="text-sm font-medium text-emerald-600 hover:underline disabled:opacity-50 text-left"
+        disabled={state === "loading" || state === "success"}
+        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
       >
-        {state === "idle" && label}
-        {state === "loading" && "Sending…"}
-        {state === "success" && "✓ Sent"}
-        {state === "error" && "✗ Failed"}
+        {state === "loading" ? "Sending…" :
+         state === "success"  ? "✓ Sent"   :
+         state === "error"    ? "✗ Try again" :
+         lastInviteSentAt ? "Resend invite" : "Send login invite"}
       </button>
       {state === "error" && errorText && (
         <span className="text-xs text-red-600">{errorText}</span>
       )}
       {state === "idle" && lastSentLabel && (
-        <span className="text-xs text-slate-400">Last sent: {lastSentLabel}</span>
-      )}
-      {state === "idle" && !lastSentLabel && (
-        <span className="text-xs text-slate-400">Never invited</span>
+        <span className="text-xs text-gray-400">Last sent: {lastSentLabel}</span>
       )}
     </div>
   );

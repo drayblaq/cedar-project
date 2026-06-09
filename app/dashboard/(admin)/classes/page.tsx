@@ -14,14 +14,15 @@ export default async function ClassesPage() {
   // Staff assignments per class
   const { data: staffClasses } = await supabase
     .from("staff_classes")
-    .select("class_id, profiles(full_name)");
-  const staffByClass: Record<string, string[]> = {};
+    .select("class_id, profile_id, profiles(full_name)");
+  const staffByClass: Record<string, { profileId: string; name: string }[]> = {};
   for (const sc of staffClasses ?? []) {
     const cid = (sc as { class_id: string }).class_id;
+    const pid = (sc as { profile_id: string }).profile_id;
     const prof = (sc as { profiles?: { full_name?: string } | { full_name?: string }[] }).profiles;
     const name = Array.isArray(prof) ? prof[0]?.full_name : prof?.full_name;
     if (!staffByClass[cid]) staffByClass[cid] = [];
-    if (name) staffByClass[cid].push(name);
+    if (name) staffByClass[cid].push({ profileId: pid, name });
   }
 
   // Student counts per level
@@ -39,7 +40,7 @@ export default async function ClassesPage() {
       name: c.name,
       level_id: c.level_id as string,
       levelName: lvl ?? "—",
-      staff: staffByClass[c.id] ?? [],
+      staff: staffByClass[c.id] ?? [] as { profileId: string; name: string }[],
       studentCount: c.level_id ? (countByLevel[c.level_id as string] ?? 0) : 0,
     };
   });

@@ -14,10 +14,7 @@ export function AdmissionActions({
   const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const status = applicationStatus ?? "submitted";
 
-  async function run(
-    key: string,
-    next: "approved" | "rejected" | "awaiting_payment" | "under_review"
-  ) {
+  async function run(key: string, next: "approved" | "rejected" | "awaiting_payment" | "under_review") {
     setLoading(key);
     setMsg(null);
     const r = await setStudentApplicationStatus(studentId, next);
@@ -27,39 +24,46 @@ export function AdmissionActions({
   }
 
   if (status === "rejected") {
-    return <span className="text-xs text-slate-400">Rejected</span>;
+    return <span className="text-xs text-gray-400">Application rejected.</span>;
   }
 
+  const busy = loading !== null;
+
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          disabled={loading !== null}
+          disabled={busy}
           onClick={() => run("ap", "approved")}
-          className="rounded-lg bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50
+            bg-green-600 text-white hover:bg-green-700
+            ${status === "approved" ? "ring-2 ring-green-600 ring-offset-1" : ""}`}
         >
           {loading === "ap" ? "…" : "Approve"}
         </button>
         <button
           type="button"
-          disabled={loading !== null}
+          disabled={busy}
           onClick={() => run("aw", "awaiting_payment")}
-          className="rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-900 hover:bg-amber-100 disabled:opacity-50"
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50
+            bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100
+            ${status === "awaiting_payment" ? "ring-2 ring-amber-400 ring-offset-1" : ""}`}
         >
-          {loading === "aw" ? "…" : "Awaiting payment"}
+          {loading === "aw" ? "…" : "Awaiting Payment"}
         </button>
         <button
           type="button"
-          disabled={loading !== null}
+          disabled={busy}
           onClick={() => run("rj", "rejected")}
-          className="rounded-lg border border-red-200 bg-red-50 px-2 py-1 text-xs font-semibold text-red-800 hover:bg-red-100 disabled:opacity-50"
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50
+            bg-red-50 text-red-600 border border-red-200 hover:bg-red-100`}
         >
           {loading === "rj" ? "…" : "Reject"}
         </button>
       </div>
       {msg && (
-        <span className={msg.type === "err" ? "text-xs text-red-600" : "text-xs text-emerald-600"}>
+        <span className={msg.type === "err" ? "text-xs text-red-600" : "text-xs text-green-600"}>
           {msg.text}
         </span>
       )}

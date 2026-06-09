@@ -26,23 +26,6 @@ async function requireAdmin() {
   return { supabase, error: null };
 }
 
-export async function updateSetting(key: string, value: string) {
-  if (!ALLOWED_KEYS.has(key)) return { error: "Unknown setting" };
-
-  const { supabase, error: authErr } = await requireAdmin();
-  if (authErr) return { error: authErr };
-
-  // upsert so it works whether or not the row was seeded
-  const { error } = await supabase
-    .from("settings")
-    .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
-
-  if (error) return { error: error.message };
-  revalidatePath("/admin/settings");
-  revalidatePath("/admin");
-  return { success: true };
-}
-
 /** Save every setting submitted by the settings form in one go. */
 export async function updateSettings(formData: FormData) {
   const { supabase, error: authErr } = await requireAdmin();

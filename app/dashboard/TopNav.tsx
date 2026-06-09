@@ -6,7 +6,7 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin/students",     label: "Students",      iconKey: "students" },
   { href: "/admin/payments",     label: "Payments",      iconKey: "payments" },
   { href: "/admin/attendance",   label: "Attendance",    iconKey: "attendance" },
-  { href: "/admin/grades",       label: "Level Assessment", iconKey: "grades" },
+  { href: "/admin/grades",       label: "English Level",    iconKey: "grades" },
   { href: "/admin/classes",      label: "Classes",       iconKey: "classes" },
   { href: "/admin/announcements",label: "Announcements", iconKey: "announcements" },
   { href: "/admin/calendar",     label: "Calendar",      iconKey: "calendar" },
@@ -16,11 +16,12 @@ const ADMIN_NAV: NavItem[] = [
 ];
 
 const STAFF_NAV: NavItem[] = [
-  { href: "/staff",              label: "My Classes",   iconKey: "myClasses" },
-  { href: "/staff/attendance",   label: "Attendance",   iconKey: "attendance" },
-  { href: "/staff/grades",       label: "Grades",       iconKey: "grades" },
-  { href: "/staff/assignments",  label: "Assignments",  iconKey: "doc" },
-  { href: "/staff/materials",    label: "Materials",    iconKey: "book" },
+  { href: "/staff",              label: "My Classes",    iconKey: "myClasses" },
+  { href: "/staff/attendance",   label: "Attendance",    iconKey: "attendance" },
+  { href: "/staff/grades",       label: "Grades",        iconKey: "grades" },
+  { href: "/staff/levels",       label: "English Level", iconKey: "grades" },
+  { href: "/staff/assignments",  label: "Assignments",   iconKey: "doc" },
+  { href: "/staff/materials",    label: "Materials",     iconKey: "book" },
 ];
 
 const STUDENT_NAV: NavItem[] = [

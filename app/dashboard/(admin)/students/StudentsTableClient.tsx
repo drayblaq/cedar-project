@@ -44,6 +44,52 @@ function Badge({ children, tone="neutral" }: { children: React.ReactNode; tone?:
   return <span style={{ display:"inline-flex", alignItems:"center", background:t.bg, color:t.fg, fontSize:11.5, fontWeight:700, padding:"3px 10px", borderRadius:7, whiteSpace:"nowrap", textTransform:"capitalize" }}>{children}</span>;
 }
 
+// ── Small inline SVG icons ────────────────────────────────────────────────────
+function Icon({ d, color = "currentColor" }: { d: string; color?: string }) {
+  return (
+    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+      {d.split(" M").map((seg, i) => <path key={i} d={i === 0 ? seg : "M" + seg} />)}
+    </svg>
+  );
+}
+const ICONS = {
+  eye:     "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
+  pencil:  "M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7 M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z",
+  check:   "M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11",
+  clock:   "M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z M12 6v6l4 2",
+  x:       "M18 6L6 18 M6 6l12 12",
+  mail:    "M4 4h16v16H4z M22 6l-10 7L2 6",
+};
+
+function DropItem({ icon, label, color, hover, onClick, disabled, borderTop, href, onClose }: {
+  icon: string; label: string; color: string; hover: string;
+  onClick?: () => void; disabled?: boolean; borderTop?: boolean;
+  href?: string; onClose?: () => void;
+}) {
+  const style: React.CSSProperties = {
+    display: "flex", alignItems: "center", gap: 9, width: "100%", textAlign: "left",
+    padding: "9px 14px", fontSize: 13, fontWeight: 600, color, background: "transparent",
+    border: "none", cursor: disabled ? "default" : "pointer", textDecoration: "none",
+    borderTop: borderTop ? `1px solid ${C.border}` : undefined, opacity: disabled ? 0.5 : 1,
+    fontFamily: "inherit",
+  };
+  function onHover(e: React.MouseEvent<HTMLElement>) { e.currentTarget.style.background = hover; }
+  function onOut(e: React.MouseEvent<HTMLElement>) { e.currentTarget.style.background = "transparent"; }
+
+  if (href) {
+    return (
+      <Link href={href} onClick={onClose} style={style} onMouseOver={onHover} onMouseOut={onOut}>
+        <Icon d={icon} color={color} />{label}
+      </Link>
+    );
+  }
+  return (
+    <button onClick={onClick} disabled={disabled} style={style} onMouseOver={onHover} onMouseOut={onOut}>
+      <Icon d={icon} color={color} />{label}
+    </button>
+  );
+}
+
 // ── Actions dropdown ──────────────────────────────────────────────────────────
 function ActionsDropdown({ student, canInvite }: { student: Student; canInvite: boolean }) {
   const [open, setOpen] = useState(false);
@@ -68,6 +114,7 @@ function ActionsDropdown({ student, canInvite }: { student: Student; canInvite: 
   }
 
   const app = student.application_status ?? "submitted";
+  const busy = loading !== null;
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
@@ -81,52 +128,34 @@ function ActionsDropdown({ student, canInvite }: { student: Student; canInvite: 
         <div style={{
           position: "absolute", right: 0, top: "calc(100% + 4px)", zIndex: 50,
           background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)", minWidth: 180, overflow: "hidden",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.12)", minWidth: 200, overflow: "hidden", padding: "4px 0",
         }}>
-          <Link href={`/admin/students/${student.id}/application`}
-            onClick={() => setOpen(false)}
-            style={{ display:"block", padding:"9px 16px", fontSize:13, fontWeight:600, color:C.ink, textDecoration:"none" }}
-            onMouseOver={e=>(e.currentTarget.style.background=C.greenWash)}
-            onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
-            View Application
-          </Link>
-          <Link href={`/admin/students/${student.id}/edit`}
-            onClick={() => setOpen(false)}
-            style={{ display:"block", padding:"9px 16px", fontSize:13, fontWeight:600, color:C.ink, textDecoration:"none" }}
-            onMouseOver={e=>(e.currentTarget.style.background=C.greenWash)}
-            onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
-            Edit
-          </Link>
+          {/* Group 1: navigate */}
+          <DropItem icon={ICONS.eye}    label="View Application" color={C.ink}     hover={C.greenWash} href={`/admin/students/${student.id}/application`} onClose={() => setOpen(false)} />
+          <DropItem icon={ICONS.pencil} label="Edit"             color={C.ink}     hover={C.greenWash} href={`/admin/students/${student.id}/edit`}        onClose={() => setOpen(false)} />
+
+          {/* Group 2: status actions */}
           {app !== "approved" && (
-            <button disabled={loading !== null} onClick={() => runAction("ap", "approved")}
-              style={{ display:"block", width:"100%", textAlign:"left", padding:"9px 16px", fontSize:13, fontWeight:600, color:"#1a6b18", background:"transparent", border:"none", cursor:"pointer", borderTop:`1px solid ${C.border}` }}
-              onMouseOver={e=>(e.currentTarget.style.background=C.greenWash)}
-              onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
-              {loading === "ap" ? "…" : "Approve"}
-            </button>
+            <DropItem icon={ICONS.check} label={loading === "ap" ? "…" : "Approve"} color="#1a6b18" hover={C.greenWash} onClick={() => runAction("ap", "approved")} disabled={busy} borderTop />
           )}
           {app !== "awaiting_payment" && (
-            <button disabled={loading !== null} onClick={() => runAction("aw", "awaiting_payment")}
-              style={{ display:"block", width:"100%", textAlign:"left", padding:"9px 16px", fontSize:13, fontWeight:600, color:"#9a7822", background:"transparent", border:"none", cursor:"pointer" }}
-              onMouseOver={e=>(e.currentTarget.style.background="#fffbeb")}
-              onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
-              {loading === "aw" ? "…" : "Set Awaiting Payment"}
-            </button>
+            <DropItem icon={ICONS.clock} label={loading === "aw" ? "…" : "Set Awaiting Payment"} color="#9a7822" hover="#fffbeb" onClick={() => runAction("aw", "awaiting_payment")} disabled={busy} borderTop={app === "approved"} />
           )}
           {app !== "rejected" && (
-            <button disabled={loading !== null} onClick={() => runAction("rj", "rejected")}
-              style={{ display:"block", width:"100%", textAlign:"left", padding:"9px 16px", fontSize:13, fontWeight:600, color:"#b3402f", background:"transparent", border:"none", cursor:"pointer" }}
-              onMouseOver={e=>(e.currentTarget.style.background="#fef2f2")}
-              onMouseOut={e=>(e.currentTarget.style.background="transparent")}>
-              {loading === "rj" ? "…" : "Reject"}
-            </button>
+            <DropItem icon={ICONS.x} label={loading === "rj" ? "…" : "Reject"} color="#b3402f" hover="#fef2f2" onClick={() => runAction("rj", "rejected")} disabled={busy} />
           )}
+
+          {/* Group 3: invite */}
           {canInvite && (
-            <div style={{ borderTop:`1px solid ${C.border}`, padding:"6px 10px" }}>
-              <ResendInviteButton studentId={student.id} lastInviteSentAt={student.last_invite_sent_at ?? null} />
+            <div style={{ borderTop: `1px solid ${C.border}`, padding: "4px 0" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "9px 14px" }}>
+                <Icon d={ICONS.mail} color={C.greenDark} />
+                <ResendInviteButton studentId={student.id} lastInviteSentAt={student.last_invite_sent_at ?? null} />
+              </div>
             </div>
           )}
-          {msg && <p style={{ fontSize:11.5, padding:"6px 16px", color: msg.startsWith("Error") ? "#b3402f" : C.greenDark }}>{msg}</p>}
+
+          {msg && <p style={{ fontSize: 11.5, padding: "6px 16px", color: msg.startsWith("Error") ? "#b3402f" : C.greenDark }}>{msg}</p>}
         </div>
       )}
     </div>
@@ -252,10 +281,13 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
                     </td>
                     {/* Portal */}
                     <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
-                      {hasLogin
-                        ? <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                        : <span style={{ fontSize:11.5, color:C.muted }}>No access</span>
-                      }
+                      {hasLogin ? (
+                        <span style={{ display:"inline-flex", alignItems:"center", gap:4, fontSize:12, fontWeight:700, color:"#1a6b18" }}>✓ Active</span>
+                      ) : s.last_invite_sent_at ? (
+                        <span style={{ display:"inline-flex", alignItems:"center", gap:4, fontSize:12, fontWeight:600, color:"#d97706" }}>Invited</span>
+                      ) : (
+                        <span style={{ fontSize:11.5, color:C.muted }}>No access</span>
+                      )}
                     </td>
                     {/* Actions dropdown */}
                     <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>

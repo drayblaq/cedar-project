@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTuitionAmount, getSetting } from "@/lib/settings";
 import { AdmissionActions } from "../../AdmissionActions";
 import { DeleteStudentButton } from "../../DeleteStudentButton";
+import { ResendInviteButton } from "../../ResendInviteButton";
 
 const C = { ink: "#16241a", muted: "#687a6c", border: "#e6ece4", green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18" };
 
@@ -142,6 +143,56 @@ export default async function StudentApplicationPage({
           {declarationAgreed ? "✓ Declaration agreed" : "Declaration not agreed"}
         </span>
         <span style={{ fontSize: 12.5, color: C.muted }}>The applicant confirmed the information is accurate and agreed to the code of conduct.</span>
+      </div>
+
+      {/* Portal access */}
+      <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Portal Access</h3>
+        {s.user_id ? (
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Portal access active</p>
+                <p className="text-xs text-gray-500">
+                  {s.last_invite_sent_at
+                    ? `Last invite: ${new Date(String(s.last_invite_sent_at)).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
+                    : "Student has logged in before"}
+                </p>
+              </div>
+            </div>
+            <ResendInviteButton studentId={id} lastInviteSentAt={s.last_invite_sent_at ? String(s.last_invite_sent_at) : null} />
+          </div>
+        ) : s.status === "active" ? (
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">No portal access yet</p>
+                <p className="text-xs text-gray-500">
+                  {s.last_invite_sent_at
+                    ? `Invite sent ${new Date(String(s.last_invite_sent_at)).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} — student hasn't accepted yet`
+                    : "Send an invite to give this student portal access"}
+                </p>
+              </div>
+            </div>
+            <ResendInviteButton studentId={id} lastInviteSentAt={s.last_invite_sent_at ? String(s.last_invite_sent_at) : null} />
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">Portal access locked</p>
+              <p className="text-xs text-gray-500">Activate the student and confirm payment to send a login invite</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Payment balance */}

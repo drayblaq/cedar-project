@@ -29,7 +29,7 @@ export default async function GradesPage() {
   return (
     <div style={{ padding: "30px 30px 60px" }}>
       <div style={{ marginBottom: 18 }}>
-        <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>English Level Assessment</h1>
+        <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>English Level</h1>
         <p style={{ fontSize: 13.5, color: C.muted, marginTop: 4 }}>Track each student&apos;s CEFR level per skill area.</p>
       </div>
 
