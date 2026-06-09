@@ -35,13 +35,13 @@ export default async function StaffDashboardPage() {
 
   const studentCounts: Record<string,number> = {};
   for (const c of classList) {
-    const { count } = await supabase.from("students").select("id",{count:"exact",head:true}).eq("level_id", c.levelId);
+    const { count } = await supabase.from("students").select("id",{count:"exact",head:true}).eq("class_id", c.id);
     studentCounts[c.id] = count ?? 0;
   }
 
   const markedToday = new Set<string>();
   for (const c of classList) {
-    const ids = (await supabase.from("students").select("id").eq("level_id", c.levelId)).data?.map(s=>s.id) ?? [];
+    const ids = (await supabase.from("students").select("id").eq("class_id", c.id)).data?.map(s=>s.id) ?? [];
     if (ids.length) {
       const { count } = await supabase.from("attendance").select("id",{count:"exact",head:true}).eq("date",today).in("student_id",ids);
       if ((count ?? 0) > 0) markedToday.add(c.id);
@@ -50,7 +50,7 @@ export default async function StaffDashboardPage() {
 
   const weeklyByClass: Record<string, Record<string,boolean>> = {};
   for (const c of classList) {
-    const ids = (await supabase.from("students").select("id").eq("level_id", c.levelId)).data?.map(s=>s.id) ?? [];
+    const ids = (await supabase.from("students").select("id").eq("class_id", c.id)).data?.map(s=>s.id) ?? [];
     const weekly: Record<string,boolean> = {};
     for (const d of weekDates) {
       if (!ids.length) { weekly[d]=false; continue; }

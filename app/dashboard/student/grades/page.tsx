@@ -71,11 +71,11 @@ export default async function StudentLevelPage() {
             const isOverall = s.key === "overall";
             return (
               <div key={s.key} style={{
-                display: "flex", alignItems: "center", gap: 16, padding: "16px 14px",
+                display: "flex", alignItems: "center", gap: 12, padding: "16px 14px", flexWrap: "wrap",
                 borderBottom: i < SKILLS.length - 1 ? `1px solid ${C.border}` : "none",
                 background: isOverall ? C.greenWash : "transparent", borderRadius: isOverall ? 12 : 0,
               }}>
-                <div style={{ width: 130, flexShrink: 0, fontSize: 13.5, fontWeight: isOverall ? 800 : 700, color: C.ink }}>{s.label}</div>
+                <div className="skill-row-label" style={{ width: 130, flexShrink: 0, fontSize: 13.5, fontWeight: isOverall ? 800 : 700, color: C.ink }}>{s.label}</div>
                 <div style={{ minWidth: 42, flexShrink: 0 }}>
                   <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 40, height: 28, borderRadius: 7, background: tone.bg, color: tone.fg, fontSize: 13, fontWeight: 800 }}>
                     {level ?? "—"}
@@ -86,7 +86,7 @@ export default async function StudentLevelPage() {
                     <div style={{ height: "100%", width: `${pct}%`, background: tone.bar, borderRadius: 5, transition: "width .3s" }} />
                   </div>
                 </div>
-                <div style={{ width: 150, flexShrink: 0, fontSize: 12.5, color: C.muted, textAlign: "right" }}>
+                <div className="skill-row-desc" style={{ width: 150, flexShrink: 0, fontSize: 12.5, color: C.muted, textAlign: "right" }}>
                   {level ? CEFR_NAME[level] : "Not assessed"}
                 </div>
               </div>

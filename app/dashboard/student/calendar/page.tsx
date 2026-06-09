@@ -105,7 +105,7 @@ export default async function StudentCalendarPage(props: {
   const WEEK_DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   return (
-    <div>
+    <div style={{ padding: "30px 0 60px" }}>
       <div style={{ marginBottom: 18 }}>
         <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>
           {t("weeklyCalendar")}
@@ -122,7 +122,7 @@ export default async function StudentCalendarPage(props: {
             <p style={{ color: C.muted, fontSize: 13.5 }}>No recurring schedule set yet. Check back after your class is configured.</p>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${activeDays.length}, minmax(140px, 1fr))`, gap: 12, overflowX: "auto" }}>
+          <div className="cd-timetable-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${activeDays.length}, minmax(140px, 1fr))`, gap: 12, overflowX: "auto" }}>
             {activeDays.map(day => (
               <div key={day} className="cd-card" style={{ padding: 0, overflow: "hidden" }}>
                 {/* Day header */}
@@ -185,7 +185,7 @@ export default async function StudentCalendarPage(props: {
         {/* Week grid */}
         <div className="cd-card" style={{ padding: 0, overflowX: "auto" }}>
           {/* Day headers */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", borderBottom: `1px solid ${C.border}` }}>
+          <div className="cd-week-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", borderBottom: `1px solid ${C.border}` }}>
             {days.map((day, i) => {
               const isToday = day.toISOString().slice(0, 10) === todayStr;
               return (
@@ -201,7 +201,7 @@ export default async function StudentCalendarPage(props: {
             })}
           </div>
           {/* Event rows */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", minHeight: 80 }}>
+          <div className="cd-week-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", minHeight: 80 }}>
             {days.map((day, i) => {
               const dayStr = day.toISOString().slice(0, 10);
               const dayEvents = eventsByDay[dayStr] ?? [];

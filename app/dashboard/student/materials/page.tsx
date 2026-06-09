@@ -131,7 +131,7 @@ export default async function StudentMaterialsPage() {
 
 function MaterialCard({ m }: { m: Material }) {
   return (
-    <div className="cd-card material-card" style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
+    <div className="cd-card material-card" style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
       <div style={{ width: 44, height: 44, borderRadius: 11, background: C.greenWash, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
         <TypeIcon type={m.material_type} />
       </div>
@@ -141,8 +141,9 @@ function MaterialCard({ m }: { m: Material }) {
       </div>
       {m.url && (
         <a href={m.url} target="_blank" rel="noopener noreferrer"
-          style={{ display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0, background: C.green, color: "#fff",
-            borderRadius: 9, padding: "9px 16px", fontSize: 13, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
+          className="material-btn"
+          style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, flexShrink: 0, background: C.green, color: "#fff",
+            borderRadius: 9, padding: "11px 16px", fontSize: 13, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap", minHeight: 44 }}>
           {openLabel(m.material_type)}
         </a>
       )}

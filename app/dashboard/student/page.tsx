@@ -25,13 +25,13 @@ function LevelTrack({ current }: { current: string }) {
   const order = ["A1","A2","B1","B2","C1","C2"];
   const idx = order.indexOf(current);
   return (
-    <div style={{ display:"flex", alignItems:"center" }}>
+    <div style={{ display:"flex", alignItems:"center", minWidth:0, width:"100%" }}>
       {order.map((l, i) => (
-        <div key={l} style={{ display:"flex", alignItems:"center", flex: i<order.length-1?1:"0 0 auto" }}>
-          <div style={{ width:34, height:34, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12.5, fontWeight:800, flexShrink:0,
+        <div key={l} style={{ display:"flex", alignItems:"center", flex: i<order.length-1?1:"0 0 auto", minWidth:0 }}>
+          <div style={{ width:32, height:32, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11.5, fontWeight:800, flexShrink:0,
             background: i<=idx ? "#fff" : "rgba(255,255,255,.15)", color: i<=idx ? C.greenDeep : "rgba(255,255,255,.5)",
             boxShadow: i===idx ? "0 0 0 3px rgba(111,220,106,.6)" : "none" }}>{l}</div>
-          {i<order.length-1 && <div style={{ flex:1, height:3, background: i<idx ? C.greenBright : "rgba(255,255,255,.15)", borderRadius:3, minWidth:14 }} />}
+          {i<order.length-1 && <div style={{ flex:1, height:3, background: i<idx ? C.greenBright : "rgba(255,255,255,.15)", borderRadius:3, minWidth:8 }} />}
         </div>
       ))}
     </div>
@@ -89,7 +89,7 @@ export default async function StudentDashboardPage() {
 
       {/* Gradient hero */}
       <div className="cd-card" style={{ marginBottom:18, background:"linear-gradient(120deg, #0e3b0c, #15561a)", border:"none", color:"#fff", padding:24 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:20, alignItems:"center" }}>
+        <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
           <div>
             <div style={{ fontSize:12, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:C.greenBright, marginBottom:8 }}>Current level</div>
             <div style={{ fontSize:30, fontWeight:800, letterSpacing:"-0.02em", lineHeight:1.12 }}>{level}</div>
@@ -97,7 +97,7 @@ export default async function StudentDashboardPage() {
               {student.email}{student.enrollment_date ? ` · enrolled ${new Date(student.enrollment_date).toLocaleDateString("en-GB",{month:"short",year:"numeric"})}` : ""}
             </div>
           </div>
-          <div style={{ flex:"1 1 320px", minWidth:240 }}><LevelTrack current={knownLevel} /></div>
+          <LevelTrack current={knownLevel} />
         </div>
       </div>
 

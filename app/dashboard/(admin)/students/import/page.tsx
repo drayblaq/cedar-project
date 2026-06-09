@@ -96,7 +96,7 @@ export default function ImportStudentsPage() {
   const errors  = results.filter((r) => r.status === "error").length;
 
   return (
-    <div style={{ padding: "30px 30px 60px", maxWidth: 900 }}>
+    <div style={{ padding: "30px 30px 60px" }}>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <Link href="/admin/students" style={{ fontSize: 13, color: C.muted, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 14 }}>

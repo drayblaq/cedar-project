@@ -92,6 +92,8 @@ export async function updateStudent(id: string, formData: FormData) {
   const parent_whatsapp = (formData.get("parent_phone") as string) || null;
   const parent_email = (formData.get("parent_email") as string) || null;
 
+  const class_id = (formData.get("class_id") as string) || null;
+
   const { error } = await supabase
     .from("students")
     .update({
@@ -100,6 +102,7 @@ export async function updateStudent(id: string, formData: FormData) {
       phone,
       whatsapp: phone,
       level_id: level_id || null,
+      class_id: class_id || null,
       enrollment_date: enrollment_date || null,
       date_of_birth,
       gender: gender || null,

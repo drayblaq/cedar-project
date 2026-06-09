@@ -38,13 +38,14 @@ export default async function EditStudentPage({
   const supabase = await createClient();
   const { data: student } = await supabase
     .from("students")
-    .select("id, full_name, email, phone, whatsapp, level_id, enrollment_date, notes, status, application_status, date_of_birth, gender, nationality, discovery_channel, parent_whatsapp, parent_email")
+    .select("id, full_name, email, phone, whatsapp, level_id, class_id, enrollment_date, notes, status, application_status, date_of_birth, gender, nationality, discovery_channel, parent_whatsapp, parent_email")
     .eq("id", id)
     .single();
 
   if (!student) notFound();
 
   const { data: levels } = await supabase.from("levels").select("id, name").order("sort_order");
+  const { data: classes } = await supabase.from("classes").select("id, name").order("name");
   const s = student as Record<string, string | null>;
 
   return (
@@ -103,6 +104,15 @@ export default async function EditStudentPage({
                 <option value="">— Select level —</option>
                 {(levels ?? []).map(l => (
                   <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Class</label>
+              <select name="class_id" defaultValue={student.class_id ?? ""} style={inputStyle}>
+                <option value="">— No class assigned —</option>
+                {(classes ?? []).map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>

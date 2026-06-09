@@ -11,6 +11,8 @@ type Student = {
   status: string | null; application_status: string | null;
   last_invite_sent_at: string | null;
   levels: { name?: string } | { name?: string }[] | null;
+  class_id: string | null;
+  classes: { name?: string } | { name?: string }[] | null;
 };
 
 const C = {
@@ -177,6 +179,10 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
     if (!l) return "—";
     return Array.isArray(l) ? (l[0] as {name?:string})?.name ?? "—" : (l as {name?:string})?.name ?? "—";
   }
+  function className(c: Student["classes"]) {
+    if (!c) return null;
+    return Array.isArray(c) ? (c[0] as {name?:string})?.name ?? null : (c as {name?:string})?.name ?? null;
+  }
 
   const filtered = useMemo(() => {
     const qq = q.toLowerCase().trim();
@@ -188,7 +194,7 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
     });
   }, [students, q, lvl]);
 
-  const HEADERS = ["Student","Level","Status","Balance","Portal","Actions"];
+  const HEADERS = ["Student","Level","Class","Status","Balance","Portal","Actions"];
 
   return (
     <div className="cd-card" style={{ padding: 0 }}>
@@ -222,7 +228,7 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
             <thead>
               <tr>
                 {HEADERS.map((h, i) => (
-                  <th key={h} style={{ textAlign: i >= 3 ? "center" : "left", padding:"11px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, borderBottom:`1px solid ${C.border}`, whiteSpace:"nowrap" }}>
+                  <th key={h} style={{ textAlign: i >= 4 ? "center" : "left", padding:"11px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, borderBottom:`1px solid ${C.border}`, whiteSpace:"nowrap" }}>
                     {h}
                   </th>
                 ))}
@@ -235,6 +241,7 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
                 const hasLogin = !!s.user_id;
                 const canInvite = !hasLogin && s.status === "active";
                 const lv = levelName(s.levels);
+                const cls = className(s.classes);
 
                 // Balance
                 const totalPaid = paymentTotals[s.id] ?? 0;
@@ -257,6 +264,14 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
                     {/* Level */}
                     <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle" }}>
                       <LevelPillInline level={lv} />
+                    </td>
+                    {/* Class */}
+                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle" }}>
+                      {cls ? (
+                        <span style={{ fontSize:12.5, fontWeight:600, color:C.ink }}>{cls}</span>
+                      ) : (
+                        <span style={{ fontSize:11.5, color:C.muted }}>—</span>
+                      )}
                     </td>
                     {/* Status (application_status) */}
                     <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle" }}>

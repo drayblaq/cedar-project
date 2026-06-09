@@ -485,7 +485,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* content wrapper — top padding clears the fixed 70px nav */
 .cedar-page-content {
-  max-width: 1180px; margin: 0 auto; padding: 94px 32px 70px; width: 100%;
+  max-width: 1600px; margin: 0 auto; padding: 94px 32px 70px; width: 100%;
 }
 
 @media (max-width: 1080px) {
@@ -758,12 +758,24 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ── Responsive ── */
 @media (max-width: 1080px) {
-  .cedar-dash .cd-grid-2-1   { grid-template-columns: 1fr; }
-  .cedar-dash .cd-grid-stats { grid-template-columns: repeat(2,1fr); }
+  .cedar-dash .cd-grid-2-1    { grid-template-columns: 1fr; }
+  .cedar-dash .cd-grid-stats  { grid-template-columns: repeat(2,1fr); }
+  .cedar-dash .cd-grid-stats-3 { grid-template-columns: repeat(2,1fr); }
+  .cedar-dash .cd-staff-layout { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 680px) {
   .cedar-dash .cd-grid-stats,
   .cedar-dash .cd-grid-stats-3 { grid-template-columns: 1fr; }
+  /* Timetable: stack days vertically on mobile */
+  .cd-timetable-grid { display: flex !important; flex-direction: column !important; }
+  /* Material card: stack icon + text + button vertically */
+  .material-card { flex-direction: column !important; align-items: flex-start !important; }
+  .material-card .material-btn { width: 100% !important; justify-content: center !important; }
+  /* Grades skill rows: hide description on mobile */
+  .skill-row-desc { display: none !important; }
+  .skill-row-label { width: auto !important; min-width: 90px !important; }
+  /* Calendar week grid: scroll horizontally */
+  .cd-week-grid { min-width: 500px; }
 }
 
 /* ── Phone input (react-phone-number-input) — match Cedar design ── */

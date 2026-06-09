@@ -12,6 +12,7 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin/calendar",     label: "Calendar",      iconKey: "calendar" },
   { href: "/admin/parent-links", label: "Parent Links",  iconKey: "parentLinks" },
   { href: "/admin/messages",     label: "Messages",      iconKey: "mail" },
+  { href: "/admin/staff",        label: "Staff",         iconKey: "students" },
   { href: "/admin/settings",     label: "Settings",      iconKey: "settings" },
 ];
 

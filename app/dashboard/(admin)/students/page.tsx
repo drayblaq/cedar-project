@@ -9,7 +9,7 @@ export default async function StudentsPage() {
   const supabase = await createClient();
   const { data: students } = await supabase
     .from("students")
-    .select("id, full_name, first_name, last_name, email, phone, user_id, enrollment_date, status, application_status, last_invite_sent_at, levels(name)")
+    .select("id, full_name, first_name, last_name, email, phone, user_id, enrollment_date, status, application_status, last_invite_sent_at, levels(name), class_id, classes(name)")
     .order("full_name");
 
   const studentIds = (students ?? []).map((s) => s.id);
