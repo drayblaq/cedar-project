@@ -65,7 +65,7 @@ export default async function StaffMaterialsPage() {
   return (
     <div>
       <div style={{ marginBottom: 18 }}>
-        <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>Course Materials</h1>
+        <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>Course Library</h1>
         <p style={{ fontSize: 13.5, color: C.muted, marginTop: 4 }}>Upload PDFs and resources for your students.</p>
       </div>
 

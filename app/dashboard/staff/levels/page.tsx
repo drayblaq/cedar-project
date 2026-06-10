@@ -64,7 +64,6 @@ export default async function StaffLevelsPage() {
     <div style={{ padding: "30px 30px 60px" }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>My Students — English Level</h1>
-        <p style={{ fontSize: 13.5, color: C.muted, marginTop: 4 }}>Set CEFR levels for your students.</p>
       </div>
 
       {!classes.length ? (

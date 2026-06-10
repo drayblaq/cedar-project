@@ -3,38 +3,103 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStudentForCurrentUser, levelName } from "@/lib/student-auth";
 
-const C = { ink:"#16241a", muted:"#687a6c", border:"#e6ece4", green:"#2ea82a", greenDeep:"#0e3b0c", greenWash:"#eef6ec", greenBright:"#6fdc6a" };
+const S = {
+  ink: "#0f172a", sub: "#475569", muted: "#94a3b8",
+  border: "#e2e8f0", surface: "#fff", bg: "#f8fafc",
+  green: "#16a34a", greenLight: "#f0fdf4", greenMid: "#dcfce7", greenDark: "#166534",
+  amber: "#d97706", amberLight: "#fffbeb",
+  card: "0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04)",
+};
 
-function Ring({ value, size=92, stroke=9, label, color=C.green }: { value:number; size?:number; stroke?:number; label?:string; color?:string }) {
-  const r = (size-stroke)/2, circ = 2*Math.PI*r, off = circ*(1-value/100);
+const CEFR_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"];
+const CEFR_LABEL: Record<string, string> = {
+  A1: "Beginner", A2: "Elementary", B1: "Intermediate",
+  B2: "Upper-Intermediate", C1: "Advanced", C2: "Proficient",
+};
+
+function levelColor(l: string): { bg: string; fg: string; dot: string } {
+  if (l === "A1" || l === "A2") return { bg: "#fef3c7", fg: "#92400e", dot: "#f59e0b" };
+  if (l === "B1" || l === "B2") return { bg: "#dbeafe", fg: "#1e3a8a", dot: "#3b82f6" };
+  if (l === "C1" || l === "C2") return { bg: S.greenMid, fg: S.greenDark, dot: S.green };
+  return { bg: "#f1f5f9", fg: S.sub, dot: S.muted };
+}
+
+function LevelBadge({ level, large }: { level: string; large?: boolean }) {
+  const c = levelColor(level);
   return (
-    <div style={{ position:"relative", width:size, height:size, flexShrink:0 }}>
-      <svg width={size} height={size} style={{ transform:"rotate(-90deg)" }}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={C.greenWash} strokeWidth={stroke} />
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round" />
-      </svg>
-      <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-        <span style={{ fontSize:size*0.26, fontWeight:800, color:C.ink, letterSpacing:"-0.02em" }}>{value}%</span>
-        {label && <span style={{ fontSize:10.5, fontWeight:600, color:C.muted, marginTop:1 }}>{label}</span>}
-      </div>
+    <span style={{
+      display: "inline-flex", alignItems: "center", justifyContent: "center",
+      background: c.bg, color: c.fg,
+      fontSize: large ? 15 : 12, fontWeight: 800,
+      padding: large ? "5px 14px" : "3px 9px",
+      borderRadius: large ? 10 : 7,
+      letterSpacing: "0.03em",
+    }}>{level}</span>
+  );
+}
+
+function StatCard({ value, label, sub, color = S.green }: { value: string | number; label: string; sub?: string; color?: string }) {
+  return (
+    <div style={{
+      background: S.surface, border: `1px solid ${S.border}`, borderRadius: 16,
+      padding: "22px 24px", boxShadow: S.card, display: "flex", flexDirection: "column", gap: 6,
+    }}>
+      <div style={{ fontSize: 40, fontWeight: 900, color, letterSpacing: "-0.03em", lineHeight: 1 }}>{value}</div>
+      <div style={{ fontSize: 13.5, fontWeight: 700, color: S.ink, marginTop: 4 }}>{label}</div>
+      {sub && <div style={{ fontSize: 12, color: S.muted }}>{sub}</div>}
     </div>
   );
 }
 
 function LevelTrack({ current }: { current: string }) {
-  const order = ["A1","A2","B1","B2","C1","C2"];
-  const idx = order.indexOf(current);
+  const idx = CEFR_ORDER.indexOf(current);
   return (
-    <div style={{ display:"flex", alignItems:"center", minWidth:0, width:"100%" }}>
-      {order.map((l, i) => (
-        <div key={l} style={{ display:"flex", alignItems:"center", flex: i<order.length-1?1:"0 0 auto", minWidth:0 }}>
-          <div style={{ width:32, height:32, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11.5, fontWeight:800, flexShrink:0,
-            background: i<=idx ? "#fff" : "rgba(255,255,255,.15)", color: i<=idx ? C.greenDeep : "rgba(255,255,255,.5)",
-            boxShadow: i===idx ? "0 0 0 3px rgba(111,220,106,.6)" : "none" }}>{l}</div>
-          {i<order.length-1 && <div style={{ flex:1, height:3, background: i<idx ? C.greenBright : "rgba(255,255,255,.15)", borderRadius:3, minWidth:8 }} />}
-        </div>
-      ))}
+    <div style={{ display: "flex", alignItems: "center", gap: 0, width: "100%" }}>
+      {CEFR_ORDER.map((l, i) => {
+        const isActive = i === idx;
+        const isDone = i < idx;
+        const c = levelColor(l);
+        return (
+          <div key={l} style={{ display: "flex", alignItems: "center", flex: i < CEFR_ORDER.length - 1 ? 1 : "0 0 auto" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: "50%", display: "flex", alignItems: "center",
+                justifyContent: "center", fontSize: 11.5, fontWeight: 800, flexShrink: 0,
+                background: isActive ? c.dot : isDone ? c.dot : S.border,
+                color: isActive || isDone ? "#fff" : S.muted,
+                boxShadow: isActive ? `0 0 0 4px ${c.bg}, 0 0 0 6px ${c.dot}40` : "none",
+                transition: "all .2s",
+              }}>{l}</div>
+              {isActive && (
+                <span style={{ fontSize: 9.5, fontWeight: 700, color: c.dot, letterSpacing: "0.04em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                  You are here
+                </span>
+              )}
+            </div>
+            {i < CEFR_ORDER.length - 1 && (
+              <div style={{ flex: 1, height: 3, background: isDone ? c.dot : S.border, borderRadius: 3, margin: "0 4px", marginBottom: isActive ? 22 : 0, transition: "background .3s" }} />
+            )}
+          </div>
+        );
+      })}
     </div>
+  );
+}
+
+function QuickLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+  return (
+    <Link href={href} style={{
+      display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+      background: S.surface, border: `1px solid ${S.border}`, borderRadius: 14,
+      padding: "18px 14px", textDecoration: "none", boxShadow: S.card,
+      flex: 1, minWidth: 90,
+      transition: "border-color .15s",
+    }}>
+      <div style={{ width: 42, height: 42, borderRadius: 11, background: S.greenLight, color: S.green, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {icon}
+      </div>
+      <span style={{ fontSize: 12.5, fontWeight: 700, color: S.ink, textAlign: "center" }}>{label}</span>
+    </Link>
   );
 }
 
@@ -44,9 +109,9 @@ export default async function StudentDashboardPage() {
 
   if (!result?.student) {
     return (
-      <div style={{ padding:"30px 30px 60px" }}>
-        <h1 style={{ fontSize:23, fontWeight:800, color:C.ink, letterSpacing:"-0.02em" }}>{t("progress")}</h1>
-        <p style={{ marginTop:8, fontSize:14, color:C.muted, maxWidth:560, lineHeight:1.6 }}>{t("noStudentRecord")}</p>
+      <div style={{ padding: "40px 30px 60px" }}>
+        <h1 style={{ fontSize: 28, fontWeight: 900, color: S.ink, letterSpacing: "-0.03em" }}>{t("progress")}</h1>
+        <p style={{ marginTop: 10, fontSize: 15, color: S.sub, maxWidth: 520, lineHeight: 1.7 }}>{t("noStudentRecord")}</p>
       </div>
     );
   }
@@ -56,129 +121,167 @@ export default async function StudentDashboardPage() {
 
   const { data: attendanceRows } = await supabase.from("attendance").select("status").eq("student_id", student.id);
   const total = attendanceRows?.length ?? 0;
-  const presentOrLate = attendanceRows?.filter(r => r.status==="present"||r.status==="late").length ?? 0;
-  const attendancePct = total>0 ? Math.round((presentOrLate/total)*100) : 0;
+  const presentCount = attendanceRows?.filter(r => r.status === "present" || r.status === "late").length ?? 0;
+  const absentCount = attendanceRows?.filter(r => r.status === "absent").length ?? 0;
+  const attendancePct = total > 0 ? Math.round((presentCount / total) * 100) : 0;
 
   const { data: grades } = await supabase
     .from("grades").select("id, subject_or_type, score, academic_terms(name)")
-    .eq("student_id", student.id).order("created_at",{ascending:false}).limit(8);
-  const scored = (grades ?? []).map(g=>Number(g.score)).filter(n=>!isNaN(n));
-  const avgScore = scored.length ? Math.round(scored.reduce((a,b)=>a+b,0)/scored.length) : 0;
+    .eq("student_id", student.id).order("created_at", { ascending: false }).limit(8);
+  const scored = (grades ?? []).map(g => Number(g.score)).filter(n => !isNaN(n));
+  const avgScore = scored.length ? Math.round(scored.reduce((a, b) => a + b, 0) / scored.length) : 0;
 
-  const today = new Date().toISOString().slice(0,10);
-  const { data: events } = await supabase
-    .from("calendar_events").select("id, title, event_date, event_type")
-    .gte("event_date", today).order("event_date",{ascending:true}).limit(4);
+  const { data: announcements } = await supabase
+    .from("announcements").select("id, title, body, published_at")
+    .order("published_at", { ascending: false }).limit(2);
 
   const level = levelName(student.levels);
   const firstName = student.full_name.split(" ")[0];
-  const knownLevel = ["A1","A2","B1","B2","C1","C2"].includes(level) ? level : "A1";
+  const knownLevel = CEFR_ORDER.includes(level) ? level : "A1";
+  const lc = levelColor(knownLevel);
+
+  const enrolledStr = student.enrollment_date
+    ? `Enrolled ${new Date(student.enrollment_date).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}`
+    : "Enrolled";
 
   return (
-    <div style={{ padding:"30px 30px 60px" }}>
-      <div style={{ marginBottom:18 }}>
-        <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>{t("welcome")}, {firstName} 👋</h1>
-        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>{t("progress")}</p>
+    <div style={{ padding: "36px 30px 70px", background: S.bg, minHeight: "100%" }}>
+      {/* ── Welcome header ───────────────────────────────── */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
+          <h1 style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-0.03em", color: S.ink, lineHeight: 1 }}>
+            Welcome back, {firstName}
+          </h1>
+          <LevelBadge level={knownLevel} large />
+        </div>
+        <p style={{ fontSize: 14, color: S.sub }}>{enrolledStr} · {CEFR_LABEL[knownLevel] ?? knownLevel}</p>
       </div>
 
-      {total === 0 && (grades?.length ?? 0) === 0 && (
-        <div className="cd-card" style={{ padding:"24px 26px", marginBottom:18, background:C.greenWash, border:`1px solid ${C.green}` }}>
-          <p style={{ fontSize:14.5, fontWeight:700, color:C.greenDeep }}>Your dashboard will fill up as your classes progress. Welcome to Cedar!</p>
-        </div>
-      )}
+      {/* ── Stat cards ────────────────────────────────────── */}
+      <div className="cd-grid-stats-3" style={{ marginBottom: 24 }}>
+        <StatCard
+          value={`${attendancePct}%`}
+          label="Attendance Rate"
+          sub={`${presentCount} present · ${absentCount} absent`}
+          color={attendancePct >= 80 ? S.green : attendancePct >= 60 ? S.amber : "#dc2626"}
+        />
+        <StatCard
+          value={avgScore > 0 ? avgScore : "—"}
+          label="Average Grade"
+          sub={scored.length ? `Across ${scored.length} assessments` : "No grades yet"}
+          color={avgScore >= 80 ? S.green : avgScore >= 60 ? S.amber : S.sub}
+        />
+        <StatCard
+          value={knownLevel}
+          label="Current Level"
+          sub={CEFR_LABEL[knownLevel] ?? ""}
+          color={lc.dot}
+        />
+      </div>
 
-      {/* Gradient hero */}
-      <div className="cd-card" style={{ marginBottom:18, background:"linear-gradient(120deg, #0e3b0c, #15561a)", border:"none", color:"#fff", padding:24 }}>
-        <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
-          <div>
-            <div style={{ fontSize:12, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:C.greenBright, marginBottom:8 }}>Current level</div>
-            <div style={{ fontSize:30, fontWeight:800, letterSpacing:"-0.02em", lineHeight:1.12 }}>{level}</div>
-            <div style={{ fontSize:13.5, opacity:.8, marginTop:10 }}>
-              {student.email}{student.enrollment_date ? ` · enrolled ${new Date(student.enrollment_date).toLocaleDateString("en-GB",{month:"short",year:"numeric"})}` : ""}
+      {/* ── Level progress ────────────────────────────────── */}
+      <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 16, padding: "24px 28px", marginBottom: 24, boxShadow: S.card }}>
+        <div style={{ marginBottom: 20 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: S.muted, marginBottom: 4 }}>Your Learning Journey</p>
+          <h2 style={{ fontSize: 17, fontWeight: 800, color: S.ink }}>CEFR Level Progression — A1 to C2</h2>
+        </div>
+        <LevelTrack current={knownLevel} />
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 18, flexWrap: "wrap", gap: 8 }}>
+          {CEFR_ORDER.map(l => {
+            const c = levelColor(l);
+            return (
+              <div key={l} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11.5, color: S.sub }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: c.dot }} />
+                {CEFR_LABEL[l]}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Quick links ───────────────────────────────────── */}
+      <div style={{ display: "flex", gap: 12, marginBottom: 28, flexWrap: "wrap" }}>
+        <QuickLink href="/student/materials" label="Materials" icon={
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        } />
+        <QuickLink href="/student/grades" label="My Level" icon={
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        } />
+        <QuickLink href="/student/attendance" label="Attendance" icon={
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        } />
+        <QuickLink href="/student/announcements" label="Announcements" icon={
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l15-6v14L3 13v-2z"/></svg>
+        } />
+        <QuickLink href="/student/calendar" label="Calendar" icon={
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        } />
+      </div>
+
+      {/* ── Announcements ─────────────────────────────────── */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="cd-grid-2-1">
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: S.ink }}>Recent Announcements</h2>
+            <Link href="/student/announcements" style={{ fontSize: 13, fontWeight: 700, color: S.green, textDecoration: "none" }}>View all</Link>
+          </div>
+          {!announcements?.length ? (
+            <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 14, padding: "32px 24px", textAlign: "center", boxShadow: S.card }}>
+              <p style={{ fontSize: 14, color: S.muted }}>No announcements yet.</p>
             </div>
-          </div>
-          <LevelTrack current={knownLevel} />
-        </div>
-      </div>
-
-      {/* Stat rings */}
-      <div className="cd-grid-stats-3">
-        <div className="cd-card" style={{ padding:22, display:"flex", alignItems:"center", gap:16 }}>
-          <Ring value={attendancePct} label={t("attendance").toLowerCase()} />
-          <div>
-            <div style={{ fontSize:13.5, fontWeight:700, color:C.ink }}>{t("attendanceRate")}</div>
-            <div style={{ fontSize:12.5, color:C.muted, marginTop:3 }}>{presentOrLate} of {total} sessions.</div>
-          </div>
-        </div>
-        <div className="cd-card" style={{ padding:22, display:"flex", alignItems:"center", gap:16 }}>
-          <Ring value={avgScore} label={t("grades").toLowerCase()} color="#bf9636" />
-          <div>
-            <div style={{ fontSize:13.5, fontWeight:700, color:C.ink }}>{t("averageGrade")}</div>
-            <div style={{ fontSize:12.5, color:C.muted, marginTop:3 }}>Across all skills.</div>
-          </div>
-        </div>
-        <div className="cd-card" style={{ padding:20, display:"flex", flexDirection:"column", gap:14 }}>
-          <div style={{ width:40, height:40, borderRadius:11, background:C.greenWash, color:C.green, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          </div>
-          <div>
-            <div style={{ fontSize:27, fontWeight:800, color:C.ink, lineHeight:1 }}>{level}</div>
-            <div style={{ fontSize:12.5, fontWeight:600, color:C.muted, marginTop:6 }}>Enrolled & active</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Grades + upcoming */}
-      <div className="cd-grid-2-1" style={{ marginTop:18 }}>
-        <div className="cd-card" style={{ padding:0 }}>
-          <div style={{ padding:"18px 22px 6px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <h3 style={{ fontSize:15, fontWeight:700, color:C.ink }}>{t("grades")}</h3>
-            <Link href="/student/grades" style={{ color:C.green, fontSize:12.5, fontWeight:700, textDecoration:"none" }}>View all →</Link>
-          </div>
-          {!grades?.length ? (
-            <p style={{ padding:"32px 22px", textAlign:"center", color:C.muted, fontSize:13.5 }}>{t("noGrades")}</p>
           ) : (
-            <div style={{ overflowX:"auto" }}>
-              <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
-                <thead><tr>
-                  {["Skill","Score"].map((h,i)=>(
-                    <th key={h} style={{ textAlign:i===1?"center":"left", padding:"11px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, borderBottom:`1px solid ${C.border}` }}>{h}</th>
-                  ))}
-                </tr></thead>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {announcements.map(a => (
+                <div key={a.id} style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 14, padding: "18px 20px", boxShadow: S.card }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, marginBottom: 6 }}>
+                    <h3 style={{ fontSize: 14.5, fontWeight: 700, color: S.ink, lineHeight: 1.3 }}>{a.title}</h3>
+                    <span style={{ fontSize: 11, color: S.muted, whiteSpace: "nowrap", marginTop: 2 }}>
+                      {new Date(a.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                    </span>
+                  </div>
+                  {a.body && <p style={{ fontSize: 13, color: S.sub, lineHeight: 1.6 }}>{a.body}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── Grades summary ─── */}
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: S.ink }}>Recent Grades</h2>
+            <Link href="/student/grades" style={{ fontSize: 13, fontWeight: 700, color: S.green, textDecoration: "none" }}>View all</Link>
+          </div>
+          <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 14, overflow: "hidden", boxShadow: S.card }}>
+            {!grades?.length ? (
+              <div style={{ padding: "32px 24px", textAlign: "center" }}>
+                <p style={{ fontSize: 14, color: S.muted }}>{t("noGrades")}</p>
+              </div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+                <thead>
+                  <tr style={{ background: "#f8fafc" }}>
+                    <th style={{ textAlign: "left", padding: "11px 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: S.muted, borderBottom: `1px solid ${S.border}` }}>Skill</th>
+                    <th style={{ textAlign: "center", padding: "11px 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: S.muted, borderBottom: `1px solid ${S.border}` }}>Score</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  {grades.map((g: {id:string; subject_or_type:string; score:number|null}) => (
-                    <tr key={g.id} className="cd-trow">
-                      <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, fontWeight:600, color:C.ink, textTransform:"capitalize" }}>{g.subject_or_type}</td>
-                      <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"center", fontWeight:800, color: g.score!=null && Number(g.score)>=85?"#1a8a2a":g.score!=null&&Number(g.score)>=70?"#9a7822":C.ink }}>{g.score ?? "—"}</td>
-                    </tr>
-                  ))}
+                  {grades.slice(0, 6).map((g: { id: string; subject_or_type: string; score: number | null }) => {
+                    const sc = Number(g.score);
+                    const scoreColor = !isNaN(sc) && sc >= 80 ? S.greenDark : !isNaN(sc) && sc >= 60 ? S.amber : S.sub;
+                    return (
+                      <tr key={g.id} style={{ borderBottom: `1px solid ${S.border}` }}>
+                        <td style={{ padding: "11px 16px", fontWeight: 600, color: S.ink, textTransform: "capitalize" }}>{g.subject_or_type}</td>
+                        <td style={{ padding: "11px 16px", textAlign: "center" }}>
+                          <span style={{ fontSize: 14, fontWeight: 800, color: scoreColor }}>{g.score ?? "—"}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
-            </div>
-          )}
-        </div>
-
-        <div className="cd-card" style={{ padding:22 }}>
-          <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:14 }}>Upcoming</h3>
-          {!events?.length ? (
-            <p style={{ color:C.muted, fontSize:13 }}>{t("noAnnouncements")}</p>
-          ) : (
-            <div style={{ display:"flex", flexDirection:"column", gap:13 }}>
-              {events.map(e => {
-                const dd = e.event_date.split("-")[2];
-                const mon = new Date(e.event_date).toLocaleDateString("en-GB",{month:"short"});
-                return (
-                  <div key={e.id} style={{ display:"flex", gap:12, alignItems:"center" }}>
-                    <div style={{ width:42, textAlign:"center", flexShrink:0 }}>
-                      <div style={{ fontSize:17, fontWeight:800, color:C.ink, lineHeight:1 }}>{dd}</div>
-                      <div style={{ fontSize:10, fontWeight:700, color:C.muted, textTransform:"uppercase" }}>{mon}</div>
-                    </div>
-                    <div style={{ flex:1 }}><div style={{ fontSize:13, fontWeight:700, color:C.ink }}>{e.title}</div></div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

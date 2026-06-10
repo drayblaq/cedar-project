@@ -57,9 +57,7 @@ const ICON_PATHS: Record<string,string> = {
   wallet: "M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2 M3 7h18v10H3z M16 12h.01",
   check:  "M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11",
   clock:  "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 7v5l3 2",
-  trend:  "M23 6l-9.5 9.5-5-5L1 18 M17 6h6v6",
   chevR:  "M9 6l6 6-6 6",
-  plus:   "M12 5v14 M5 12h14",
 };
 function SvgIcon({ name, size=21 }: {name:string;size?:number}) {
   const d = ICON_PATHS[name]; if (!d) return null;
@@ -72,24 +70,16 @@ function SvgIcon({ name, size=21 }: {name:string;size?:number}) {
   );
 }
 
-function StatCard({ icon, label, value, sub, tone="green", delta }: {
+function StatCard({ icon, label, value, sub, tone="green" }: {
   icon:string; label:string; value:React.ReactNode; sub?:string;
-  tone?:"green"|"gold"|"blue"|"dark"; delta?:number;
+  tone?:"green"|"gold"|"blue"|"dark";
 }) {
   const toneColors = { green:C.green, gold:"#bf9636", blue:"#3f7d8c", dark:C.greenDeep };
   return (
     <div className="cd-card" style={{ padding:20, display:"flex", flexDirection:"column", gap:14 }}>
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-        <div style={{ width:40, height:40, borderRadius:11, background:C.greenWash, color:toneColors[tone],
-          display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <SvgIcon name={icon} size={21} />
-        </div>
-        {delta != null && (
-          <span style={{ display:"inline-flex", alignItems:"center", gap:3, fontSize:12, fontWeight:700,
-            color:delta>=0?"#1a8a2a":"#b3402f" }}>
-            <SvgIcon name="trend" size={14} />{delta>=0?"+":""}{delta}%
-          </span>
-        )}
+      <div style={{ width:40, height:40, borderRadius:11, background:C.greenWash, color:toneColors[tone],
+        display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <SvgIcon name={icon} size={21} />
       </div>
       <div>
         <div style={{ fontSize:27, fontWeight:800, letterSpacing:"-0.02em", color:C.ink, lineHeight:1 }}>{value}</div>
@@ -141,26 +131,20 @@ export default async function DashboardPage() {
   return (
     <div>
       {/* ── Section head ── */}
-      <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:18, gap:16, flexWrap:"wrap" }}>
-        <div>
-          <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>
-            {greeting}, {firstName} 👋
-          </h1>
-          <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>
-            Here&apos;s what&apos;s happening at the centre today — {dateStr}.
-          </p>
-        </div>
-        <Link href="/dashboard/students/new" className="cd-btn-primary" style={{ textDecoration:"none" }}>
-          <SvgIcon name="plus" size={17} />
-          Add student
-        </Link>
+      <div style={{ marginBottom:18 }}>
+        <h1 style={{ fontSize:23, fontWeight:800, letterSpacing:"-0.02em", color:C.ink }}>
+          {greeting}, {firstName}
+        </h1>
+        <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>
+          Here&apos;s what&apos;s happening at the centre today — {dateStr}.
+        </p>
       </div>
 
       {/* ── Stat cards ── */}
       <div className="cd-grid-stats">
-        <StatCard icon="users"  label="Total students"  value={totalStudents}        sub={`${activeStudents} active`} tone="green" delta={6} />
-        <StatCard icon="wallet" label="Revenue · month"  value={fmtXOF(revenueMonth)} tone="gold"  delta={12} />
-        <StatCard icon="check"  label="Attendance rate"  value={attendancePct + "%"}  tone="blue"  delta={2} />
+        <StatCard icon="users"  label="Total students"  value={totalStudents}        sub={`${activeStudents} active`} tone="green" />
+        <StatCard icon="wallet" label="Revenue · month"  value={fmtXOF(revenueMonth)} tone="gold" />
+        <StatCard icon="check"  label="Attendance rate"  value={attendancePct + "%"}  tone="blue" />
         <StatCard icon="clock"  label="Outstanding fees" value={fmtXOF(outstanding)}  sub="across enrolled" tone="dark" />
       </div>
 

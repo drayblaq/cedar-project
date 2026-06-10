@@ -148,6 +148,51 @@ export async function deleteTimetableSlot(id: string) {
   return { success: true };
 }
 
+export async function uploadSingleMaterial(formData: FormData): Promise<{ success?: boolean; error?: string; id?: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const title = formData.get("title") as string;
+  const material_type = (formData.get("material_type") as string) || "pdf";
+  const level_id = (formData.get("level_id") as string) || null;
+  const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
+  const is_public = formData.get("is_public") === "true";
+  const file = formData.get("file") as File | null;
+
+  if (!title || !file || file.size === 0) return { error: "Title and file are required" };
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+  const filePath = `${level_id || "general"}/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("course-materials")
+    .upload(filePath, file, { contentType: file.type, upsert: false });
+
+  if (uploadError) return { error: `Upload failed: ${uploadError.message}` };
+
+  const { data: urlData } = supabase.storage.from("course-materials").getPublicUrl(filePath);
+
+  const { data: row, error } = await supabase.from("materials").insert({
+    title,
+    material_type,
+    url: urlData.publicUrl,
+    file_path: filePath,
+    level_id,
+    week_number,
+    is_public,
+    uploaded_by: user.id,
+  }).select("id").single();
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/library");
+  revalidatePath("/staff/materials");
+  revalidatePath("/student/materials");
+  return { success: true, id: row?.id };
+}
+
 export async function createAssignment(formData: FormData) {
   const supabase = await createClient();
   const title = formData.get("title") as string;
