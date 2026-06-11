@@ -41,12 +41,15 @@ type Material = {
   url: string | null;
   folder_id: string | null;
   created_at: string;
+  teacher_only?: boolean;
   student_level_id?: string | null;
+  levels?: { name: string } | { name: string }[] | null;
 };
 
 export interface ResourceExplorerProps {
   isAdmin: boolean;
   allowedLevelIds?: string[]; // kept for API compat — not used in folder mode
+  filterTeacherOnly?: boolean; // when set, filters materials by teacher_only value
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -138,9 +141,16 @@ function FileRow({ file, isAdmin, isLast, onOpen, onDelete }: { file: Material; 
         <p style={{ fontSize: 13.5, fontWeight: 600, color: S.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.title}</p>
         <p style={{ fontSize: 11.5, color: S.muted, marginTop: 2 }}>{added}</p>
       </div>
-      {file.student_level_id && (
-        <span style={{ fontSize: 10.5, fontWeight: 700, background: S.greenLight, color: S.greenDark, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>
-          Students
+      {file.teacher_only !== undefined && (
+        <span style={{
+          fontSize: 10.5, fontWeight: 700, padding: "2px 8px", borderRadius: 20, flexShrink: 0,
+          background: file.teacher_only ? "#faf5ff" : S.greenLight,
+          color: file.teacher_only ? "#7c3aed" : S.greenDark,
+        }}>
+          {file.teacher_only ? "Teachers" : (() => {
+            const lvl = Array.isArray(file.levels) ? file.levels[0]?.name : file.levels?.name;
+            return lvl ? `Students · ${lvl}` : "Students · All";
+          })()}
         </span>
       )}
       <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
@@ -238,7 +248,7 @@ function GridFileCard({ file, isAdmin, onOpen, onDelete }: { file: Material; isA
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
+export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplorerProps) {
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
@@ -261,47 +271,55 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
   // ── Load contents ────────────────────────────────────────────────────────────
   const loadContents = useCallback(async (folderId: string | null) => {
     setLoading(true);
-    try {
-      // Subfolders
-      let fq = supabase.from("library_folders").select("*").order("sort_order").order("name");
-      if (folderId) fq = fq.eq("parent_id", folderId);
-      else fq = fq.is("parent_id", null);
-      const { data: foldersData } = await fq;
 
-      // Files
-      let mq = supabase
-        .from("materials")
-        .select("id, title, material_type, url, folder_id, created_at, student_level_id")
-        .order("title");
-      if (folderId) mq = mq.eq("folder_id", folderId);
-      else mq = mq.is("folder_id", null);
-      const { data: filesData } = await mq;
+    // Subfolders
+    let fq = supabase.from("library_folders").select("*").order("sort_order").order("name");
+    if (folderId) fq = fq.eq("parent_id", folderId);
+    else fq = fq.is("parent_id", null);
+    const { data: foldersData } = await fq;
 
-      setFolders((foldersData ?? []) as Folder[]);
-      setFiles((filesData ?? []) as Material[]);
-    } finally {
-      setLoading(false);
-    }
-  }, [supabase]);
+    // Files — explicit conditional chaining to avoid builder mutation issues
+    let mq = supabase
+      .from("materials")
+      .select("id, title, material_type, url, folder_id, created_at, teacher_only, student_level_id, levels:student_level_id(name)")
+      .order("title");
+    if (filterTeacherOnly === true)  mq = mq.eq("teacher_only", true);
+    if (filterTeacherOnly === false) mq = mq.eq("teacher_only", false);
+    if (folderId) mq = mq.eq("folder_id", folderId);
+    else          mq = mq.is("folder_id", null);
+    const { data: filesData, error } = await mq;
 
-  useEffect(() => { loadContents(null); }, [loadContents]);
+    console.log("[ResourceExplorer] loadContents:", { folderId, filterTeacherOnly, count: filesData?.length ?? 0, error: error?.message ?? null });
+
+    setFolders((foldersData ?? []) as Folder[]);
+    setFiles((filesData ?? []) as Material[]);
+    setLoading(false);
+  }, [supabase, filterTeacherOnly]);
+
+  useEffect(() => {
+    setCurrentFolder(null);
+    setBreadcrumb([]);
+    setSearch("");
+    loadContents(null);
+  }, [loadContents]);
 
   // ── Folder item counts ───────────────────────────────────────────────────────
   useEffect(() => {
     if (folders.length === 0) { setFolderCounts({}); return; }
     async function loadFolderCounts() {
       const counts: Record<string, number> = {};
-      await Promise.all(folders.map(async (folder) => {
-        const [{ count: files }, { count: subs }] = await Promise.all([
-          supabase.from("materials").select("*", { count: "exact", head: true }).eq("folder_id", folder.id),
-          supabase.from("library_folders").select("*", { count: "exact", head: true }).eq("parent_id", folder.id),
-        ]);
+      for (const folder of folders) {
+        let fq = supabase.from("materials").select("*", { count: "exact", head: true }).eq("folder_id", folder.id);
+        if (filterTeacherOnly === true)  fq = fq.eq("teacher_only", true);
+        if (filterTeacherOnly === false) fq = fq.eq("teacher_only", false);
+        const { count: files } = await fq;
+        const { count: subs } = await supabase.from("library_folders").select("*", { count: "exact", head: true }).eq("parent_id", folder.id);
         counts[folder.id] = (files ?? 0) + (subs ?? 0);
-      }));
+      }
       setFolderCounts(counts);
     }
     loadFolderCounts();
-  }, [folders, supabase]);
+  }, [folders, supabase, filterTeacherOnly]);
 
   // ── Navigation ───────────────────────────────────────────────────────────────
   function openFolder(folder: Folder) {

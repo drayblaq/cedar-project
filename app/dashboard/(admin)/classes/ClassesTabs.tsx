@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo, useTransition } from "react";
-import { createClass, assignStaffToClass, createTimetableSlot, deleteTimetableSlot, deleteMaterial, removeStaffFromClass } from "@/app/dashboard/actions/index";
-import { MaterialUploadForm } from "@/app/dashboard/staff/materials/MaterialUploadForm";
+// useTransition kept for RemoveStaffChip and DeleteSlotButton
+import { createClass, assignStaffToClass, createTimetableSlot, deleteTimetableSlot, removeStaffFromClass } from "@/app/dashboard/actions/index";
 
 const C = { ink: "#16241a", muted: "#687a6c", border: "#e6ece4", green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18", bg: "#f4f7f2" };
 const DAY_NAMES = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -32,7 +32,6 @@ const td: React.CSSProperties = { padding: "12px 14px", borderBottom: `1px solid
 type StaffAssignment = { profileId: string; name: string };
 type ClassRow = { id: string; name: string; level_id: string; levelName: string; staff: StaffAssignment[]; studentCount: number };
 type Slot = { id: string; class_id: string; className: string; day_of_week: number; start_time: string; end_time: string; room: string | null };
-type Material = { id: string; title: string; material_type: string; url: string | null; week_number: number | null; topic: string | null; levelName: string };
 
 function RemoveStaffChip({ profileId, classId, name }: { profileId: string; classId: string; name: string }) {
   const [pending, startTransition] = useTransition();
@@ -54,26 +53,14 @@ function DeleteSlotButton({ slotId }: { slotId: string }) {
   );
 }
 
-function DeleteMaterialButton({ materialId }: { materialId: string }) {
-  const [pending, startTransition] = useTransition();
-  return (
-    <button disabled={pending} onClick={() => startTransition(async () => { await deleteMaterial(materialId); })}
-      style={{ background: "rgba(201,74,58,.1)", border: "none", borderRadius: 8, padding: "5px 11px", fontSize: 12, fontWeight: 700, color: pending ? C.muted : "#b3402f", cursor: "pointer" }}>
-      {pending ? "…" : "Delete"}
-    </button>
-  );
-}
-
-export function ClassesTabs({ levels, staff, classes, timetable, materials }: {
+export function ClassesTabs({ levels, staff, classes, timetable }: {
   levels: { id: string; name: string }[];
   staff: { id: string; full_name: string | null }[];
   classes: ClassRow[];
   timetable: Slot[];
-  materials: Material[];
 }) {
-  const [tab, setTab] = useState<"classes" | "timetable" | "materials">("classes");
+  const [tab, setTab] = useState<"classes" | "timetable">("classes");
   const [showAddClass, setShowAddClass] = useState(false);
-  const [matQuery, setMatQuery] = useState("");
 
   const slotsByDay = useMemo(() => {
     const m: Record<number, Slot[]> = {};
@@ -82,15 +69,9 @@ export function ClassesTabs({ levels, staff, classes, timetable, materials }: {
   }, [timetable]);
   const activeDays = [1, 2, 3, 4, 5, 6].filter((d) => slotsByDay[d]?.length);
 
-  const filteredMaterials = useMemo(() => {
-    const q = matQuery.toLowerCase().trim();
-    return q ? materials.filter((m) => m.title.toLowerCase().includes(q)) : materials;
-  }, [materials, matQuery]);
-
   const TABS: { key: typeof tab; label: string }[] = [
     { key: "classes", label: "Classes" },
     { key: "timetable", label: "Timetable" },
-    { key: "materials", label: "Materials" },
   ];
 
   return (
@@ -229,54 +210,6 @@ export function ClassesTabs({ levels, staff, classes, timetable, materials }: {
         </div>
       )}
 
-      {/* ── MATERIALS TAB ── */}
-      {tab === "materials" && (
-        <div className="cd-grid-2-1" style={{ alignItems: "flex-start" }}>
-          <div className="cd-card" style={{ padding: 0 }}>
-            <div className="cd-table-toolbar">
-              <div className="cd-search" style={{ maxWidth: 320, flex: 1 }}>
-                <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z M21 21l-4.3-4.3"/></svg>
-                <input placeholder="Search materials…" value={matQuery} onChange={(e) => setMatQuery(e.target.value)} />
-              </div>
-            </div>
-            {!filteredMaterials.length ? (
-              <p style={{ padding: "40px 22px", textAlign: "center", color: C.muted, fontSize: 13.5 }}>
-                {materials.length ? "No materials match your search." : "No materials uploaded yet."}
-              </p>
-            ) : (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5, minWidth: 560 }}>
-                  <thead><tr><th style={th}>Title</th><th style={th}>Level</th><th style={{ ...th, textAlign: "center" }}>Week</th><th style={th}>Type</th><th style={th} /></tr></thead>
-                  <tbody>
-                    {filteredMaterials.map((m) => (
-                      <tr key={m.id} className="cd-trow">
-                        <td style={{ ...td, fontWeight: 600 }}>
-                          {m.title}
-                          {m.topic && <div style={{ fontSize: 11.5, color: C.muted, fontWeight: 400 }}>{m.topic}</div>}
-                        </td>
-                        <td style={{ ...td, color: C.muted }}>{m.levelName}</td>
-                        <td style={{ ...td, textAlign: "center", color: C.muted }}>{m.week_number ?? "—"}</td>
-                        <td style={td}><TypeBadge type={m.material_type} /></td>
-                        <td style={{ ...td, textAlign: "right" }}>
-                          <div style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-                            {m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" className="cd-mini-btn" style={{ textDecoration: "none" }}>Open</a>}
-                            <DeleteMaterialButton materialId={m.id} />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          <div className="cd-card" style={{ padding: 22, height: "fit-content" }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 16 }}>Upload material</h3>
-            <MaterialUploadForm levels={levels} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

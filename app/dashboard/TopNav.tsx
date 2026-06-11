@@ -22,8 +22,7 @@ const STAFF_NAV: NavItem[] = [
   { href: "/staff/attendance",   label: "Attendance",    iconKey: "attendance" },
   { href: "/staff/grades",       label: "Grades",        iconKey: "grades" },
   { href: "/staff/levels",       label: "English Level", iconKey: "grades" },
-  { href: "/staff/materials",    label: "Library",       iconKey: "book" },
-  { href: "/staff/resources",   label: "Resources",     iconKey: "doc" },
+  { href: "/staff/resources",    label: "Library",       iconKey: "book" },
 ];
 
 const STUDENT_NAV: NavItem[] = [

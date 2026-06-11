@@ -64,31 +64,12 @@ export default async function ClassesPage() {
     };
   });
 
-  // Materials with level name
-  const { data: matRaw } = await supabase
-    .from("materials")
-    .select("id, title, material_type, url, week_number, topic, level_id, is_public, levels(name)")
-    .order("created_at", { ascending: false });
-  const materials = (matRaw ?? []).map((m) => {
-    const lvl = Array.isArray(m.levels) ? (m.levels[0] as { name?: string })?.name : (m.levels as { name?: string } | null)?.name;
-    return {
-      id: m.id as string,
-      title: m.title as string,
-      material_type: m.material_type as string,
-      url: (m.url as string | null) ?? null,
-      week_number: (m.week_number as number | null) ?? null,
-      topic: (m.topic as string | null) ?? null,
-      levelName: m.is_public ? "All students" : (lvl ?? "—"),
-    };
-  });
-
   return (
     <ClassesTabs
       levels={(levels ?? []) as { id: string; name: string }[]}
       staff={(staffList ?? []) as { id: string; full_name: string | null }[]}
       classes={classes}
       timetable={timetable}
-      materials={materials}
     />
   );
 }

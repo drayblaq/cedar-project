@@ -172,25 +172,46 @@ export function UploadPanel({ folderId, folderName, onClose, onSuccess }: Upload
             />
           </div>
 
-          {/* Student Access */}
-          <div style={{ padding: "14px 16px", background: S.bg, borderRadius: 12, border: `1px solid ${S.border}` }}>
-            <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: S.muted, marginBottom: 10 }}>Student Access</p>
-            <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", marginBottom: visibleToStudents ? 12 : 0 }}>
-              <input
-                type="checkbox"
-                checked={visibleToStudents}
-                onChange={(e) => setVisibleToStudents(e.target.checked)}
-                style={{ width: 16, height: 16, cursor: "pointer", accentColor: S.green }}
-              />
-              <span style={{ fontSize: 13, color: S.muted }}>Make visible to students</span>
-            </label>
+          {/* Who can see these files */}
+          <div style={{ borderTop: `1px solid ${S.border}`, paddingTop: 16 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: S.muted, marginBottom: 10 }}>Who can see these files?</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {/* Teachers only */}
+              <label style={{
+                display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 14px", borderRadius: 10,
+                border: `1px solid ${!visibleToStudents ? "#e9d5ff" : S.border}`,
+                background: !visibleToStudents ? "#faf5ff" : S.surface,
+                cursor: "pointer", transition: "background .12s, border-color .12s",
+              }}>
+                <input type="radio" name="visibility" checked={!visibleToStudents} onChange={() => setVisibleToStudents(false)}
+                  style={{ marginTop: 2, accentColor: "#7c3aed", flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>Teachers only</p>
+                  <p style={{ fontSize: 11.5, color: S.muted, marginTop: 2 }}>Lesson plans — only staff can see</p>
+                </div>
+              </label>
+              {/* Visible to students */}
+              <label style={{
+                display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 14px", borderRadius: 10,
+                border: `1px solid ${visibleToStudents ? "#bbf7d0" : S.border}`,
+                background: visibleToStudents ? "#f0fdf4" : S.surface,
+                cursor: "pointer", transition: "background .12s, border-color .12s",
+              }}>
+                <input type="radio" name="visibility" checked={visibleToStudents} onChange={() => setVisibleToStudents(true)}
+                  style={{ marginTop: 2, accentColor: S.green, flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>Visible to students</p>
+                  <p style={{ fontSize: 11.5, color: S.muted, marginTop: 2 }}>Students will see this in their Library</p>
+                </div>
+              </label>
+            </div>
             {visibleToStudents && (
-              <div>
-                <p style={{ fontSize: 11.5, color: S.muted, marginBottom: 6 }}>Which level of students?</p>
+              <div style={{ marginTop: 12 }}>
+                <p style={{ fontSize: 11.5, fontWeight: 600, color: S.muted, marginBottom: 6 }}>Which students? (select level)</p>
                 <select
                   value={studentLevelId}
                   onChange={(e) => setStudentLevelId(e.target.value)}
-                  style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: `1px solid ${S.border}`, borderRadius: 8, background: S.surface, color: S.muted, outline: "none" }}
+                  style={{ width: "100%", padding: "8px 10px", fontSize: 13, border: `1px solid ${S.border}`, borderRadius: 8, background: S.surface, color: S.muted, outline: "none" }}
                 >
                   <option value="">All levels</option>
                   {levels.map((l) => (
