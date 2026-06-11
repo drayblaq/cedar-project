@@ -141,7 +141,7 @@ export function StudentLibraryExplorer({ materials }: Props) {
 
         {/* Folders */}
         {currentFolders.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 6, marginBottom: currentFiles.length > 0 ? 28 : 0 }}>
+          <div className="re-folder-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 6, marginBottom: currentFiles.length > 0 ? 28 : 0 }}>
             {currentFolders.map((folder) => {
               const [hovered, setHovered] = useState(false);
               return (

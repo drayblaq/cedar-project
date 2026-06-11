@@ -818,3 +818,78 @@ h1, h2, h3, h4, h5, h6 {
   height: 15px;
   border-radius: 2px;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS — Phase 2
+   Targets 375px–430px screens
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Prevent inputs from triggering iOS zoom (needs ≥16px font) */
+input, select, textarea {
+  font-size: max(16px, 1em);
+}
+/* Restore normal size inside tables/compact UI that opt in */
+.cd-compact input, .cd-compact select { font-size: 13px; }
+
+/* Better minimum tap targets globally */
+button, a[role="button"] { min-height: 44px; }
+/* Inline badges/chips that are decorative: override the tap-target rule */
+.cd-chip, .cd-badge { min-height: unset; }
+
+/* ── Dashboard content padding on phones ── */
+@media (max-width: 430px) {
+  .cedar-page-content { padding: 80px 12px 60px !important; }
+
+  /* Stat grids → single column */
+  .cedar-dash .cd-grid-stats,
+  .cedar-dash .cd-grid-stats-3,
+  .cedar-dash .cd-grid-stats-4 { grid-template-columns: 1fr !important; }
+
+  /* 2-column grids → stack */
+  .cedar-dash .cd-grid-2-1 { grid-template-columns: 1fr !important; }
+
+  /* Page-level outer padding for pages using inline padding: 36px 30px */
+  .cedar-dash-page { padding: 24px 14px 60px !important; }
+
+  /* Document viewer — full-screen mobile header */
+  .doc-viewer-header { padding: 8px 12px !important; }
+  .doc-viewer-title  { font-size: 13px !important; }
+  .doc-viewer-close  { padding: 6px 12px !important; font-size: 12px !important; }
+
+  /* Resource explorer toolbar — icon-only labels */
+  .re-btn-label { display: none !important; }
+  .re-toolbar { flex-wrap: wrap; gap: 6px !important; }
+
+  /* Students table — hide balance + portal columns on phones */
+  .students-col-balance { display: none !important; }
+  .students-col-portal  { display: none !important; }
+  .students-col-email   { display: none !important; }
+  .students-col-class   { display: none !important; }
+
+  /* Folder grid — 2 columns on phones */
+  .re-folder-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* ResourceExplorer file grid — 3 columns on phones */
+  .re-file-grid { grid-template-columns: repeat(3, minmax(90px, 1fr)) !important; }
+
+  /* Open → always visible on phones */
+  .re-open-btn { opacity: 1 !important; }
+
+  /* Staff attendance buttons */
+  .attend-btn { min-height: 56px !important; font-size: 15px !important; }
+
+  /* Fix wide inline paddings in pages */
+  .page-outer { padding-left: 14px !important; padding-right: 14px !important; }
+}
+
+/* ── Tablet (681–1024px) tweaks ── */
+@media (max-width: 768px) {
+  /* Students table — hide balance + portal on tablets too */
+  .students-col-balance { display: none; }
+  .students-col-portal  { display: none; }
+}
+
+/* ── Auth / login form ── */
+.auth-form input, .auth-form select {
+  font-size: 16px !important; /* prevents iOS zoom */
+}

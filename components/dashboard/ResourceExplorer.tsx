@@ -157,6 +157,7 @@ function FileRow({ file, isAdmin, isLast, onOpen, onDelete }: { file: Material; 
         {canView && (
           <button
             onClick={onOpen}
+            className="re-open-btn"
             style={{ fontSize: 12, fontWeight: 700, color: S.greenDark, padding: "5px 10px", borderRadius: 7, background: hovered ? S.greenLight : "transparent", border: "none", cursor: "pointer" }}
           >
             Open →
@@ -481,7 +482,7 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
                   <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                   </svg>
-                  New folder
+                  <span className="re-btn-label">New folder</span>
                 </button>
                 <button
                   onClick={() => setShowUpload(true)}
@@ -490,7 +491,7 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
                   <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                   </svg>
-                  Upload files
+                  <span className="re-btn-label">Upload files</span>
                 </button>
               </>
             )}
@@ -556,7 +557,7 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
 
         {/* ── Folders grid ─────────────────────────────────────────────────── */}
         {!loading && folders.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 6, marginBottom: files.length > 0 ? 28 : 0 }}>
+          <div className="re-folder-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 6, marginBottom: files.length > 0 ? 28 : 0 }}>
             {folders.map((folder) => (
               <FolderCard
                 key={folder.id}
@@ -596,7 +597,7 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
               </div>
             ) : viewMode === "grid" ? (
               /* ── Grid view ── */
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 12 }}>
+              <div className="re-file-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 12 }}>
                 {filteredFiles.map((f) => (
                   <GridFileCard
                     key={f.id}

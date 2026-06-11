@@ -227,11 +227,14 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
           <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5, minWidth:700 }}>
             <thead>
               <tr>
-                {HEADERS.map((h, i) => (
-                  <th key={h} style={{ textAlign: i >= 4 ? "center" : "left", padding:"11px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, borderBottom:`1px solid ${C.border}`, whiteSpace:"nowrap" }}>
-                    {h}
-                  </th>
-                ))}
+                {HEADERS.map((h, i) => {
+                  const cls = h === "Balance" ? "students-col-balance" : h === "Portal" ? "students-col-portal" : undefined;
+                  return (
+                    <th key={h} className={cls} style={{ textAlign: i >= 4 ? "center" : "left", padding:"11px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", color:C.muted, borderBottom:`1px solid ${C.border}`, whiteSpace:"nowrap" }}>
+                      {h}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
@@ -281,7 +284,7 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
                       </div>
                     </td>
                     {/* Balance */}
-                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
+                    <td className="students-col-balance" style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
                       {remaining <= 0 ? (
                         <Badge tone="green">Paid in full</Badge>
                       ) : totalPaid > 0 ? (
@@ -295,7 +298,7 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
                       )}
                     </td>
                     {/* Portal */}
-                    <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
+                    <td className="students-col-portal" style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, verticalAlign:"middle", textAlign:"center" }}>
                       {hasLogin ? (
                         <span style={{ display:"inline-flex", alignItems:"center", gap:4, fontSize:12, fontWeight:700, color:"#1a6b18" }}>✓ Active</span>
                       ) : s.last_invite_sent_at ? (

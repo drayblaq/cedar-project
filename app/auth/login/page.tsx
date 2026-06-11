@@ -138,7 +138,7 @@ function LoginForm() {
           )}
 
           {showAdminMagicLink && (
-            <form onSubmit={handleAdminInstant} className="mb-8 space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
+            <form onSubmit={handleAdminInstant} className="auth-form mb-8 space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
               <p className="text-sm font-semibold text-emerald-900">Admin: email only</p>
               <p className="text-xs text-emerald-800/90">
                 Enter your email address and continue — you will be sent a magic link and land on the admin area (no
@@ -170,7 +170,7 @@ function LoginForm() {
             </form>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="auth-form space-y-5">
             {!showAdminMagicLink && (
               <div className="space-y-1">
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700">

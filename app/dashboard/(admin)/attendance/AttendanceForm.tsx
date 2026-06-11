@@ -67,7 +67,7 @@ export default function AttendanceForm({
   // Status pill button
   function StatusBtn({ active, color, label, onClick }: { active: boolean; color: string; label: string; onClick: () => void }) {
     return (
-      <button type="button" onClick={onClick}
+      <button type="button" onClick={onClick} className="attend-btn"
         style={{
           cursor: "pointer", fontWeight: 700, fontSize: 13, padding: "9px 20px", borderRadius: 9, minWidth: 96,
           fontFamily: "inherit", transition: "all .12s",
