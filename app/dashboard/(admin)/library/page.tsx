@@ -10,7 +10,7 @@ export default function AdminLibraryPage() {
           Library
         </h1>
         <p style={{ fontSize: 13, color: C.muted, paddingBottom: 16 }}>
-          Upload and manage all teaching resources.
+          Upload and manage all teaching resources. Use the Upload button to add lesson plans by level and week.
         </p>
       </div>
       <ResourceExplorer isAdmin={true} />

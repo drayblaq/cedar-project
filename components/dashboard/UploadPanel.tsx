@@ -9,18 +9,15 @@ const S = {
   muted: "#64748b",
   border: "#e2e8f0",
   green: "#16a34a",
-  greenDark: "#15803d",
   greenLight: "#f0fdf4",
-  greenBorder: "#bbf7d0",
   red: "#dc2626",
   bg: "#f8fafc",
   surface: "#ffffff",
 };
 
-interface UploadPanelProps {
-  levelId: string;
-  levelName: string;
-  weekNumber: number;
+export interface UploadPanelProps {
+  folderId: string | null;
+  folderName: string;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -48,7 +45,7 @@ function cleanFileName(filename: string): string {
     .trim();
 }
 
-export function UploadPanel({ levelId, levelName, weekNumber, onClose, onSuccess }: UploadPanelProps) {
+export function UploadPanel({ folderId, folderName, onClose, onSuccess }: UploadPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -68,10 +65,7 @@ export function UploadPanel({ levelId, levelName, weekNumber, onClose, onSuccess
     setSelectedFiles((prev) => prev.filter((_, idx) => idx !== i));
   }
 
-  function handleDragOver(e: React.DragEvent) {
-    e.preventDefault();
-    setIsDragging(true);
-  }
+  function handleDragOver(e: React.DragEvent) { e.preventDefault(); setIsDragging(true); }
   function handleDragLeave() { setIsDragging(false); }
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
@@ -95,18 +89,14 @@ export function UploadPanel({ levelId, levelName, weekNumber, onClose, onSuccess
       updateProgress(file.name, 20, "uploading");
       const fd = new FormData();
       fd.append("file", file);
-      fd.append("level_id", levelId);
-      fd.append("week_number", String(weekNumber));
-      fd.append("teacher_only", "true");
       fd.append("title", cleanFileName(file.name));
+      fd.append("teacher_only", "true");
+      if (folderId) fd.append("folder_id", folderId);
 
       try {
         const res = await uploadSingleMaterial(fd);
-        if (res.error) {
-          updateProgress(file.name, 100, "error", res.error);
-        } else {
-          updateProgress(file.name, 100, "done");
-        }
+        if (res.error) updateProgress(file.name, 100, "error", res.error);
+        else updateProgress(file.name, 100, "done");
       } catch (e) {
         updateProgress(file.name, 100, "error", e instanceof Error ? e.message : "Upload failed");
       }
@@ -114,68 +104,51 @@ export function UploadPanel({ levelId, levelName, weekNumber, onClose, onSuccess
 
     setUploading(false);
     setAllDone(true);
-    setTimeout(() => {
-      onSuccess();
-      onClose();
-    }, 900);
+    setTimeout(() => { onSuccess(); onClose(); }, 900);
   }
 
   const doneCount = progress.filter((p) => p.status === "done").length;
   const errorCount = progress.filter((p) => p.status === "error").length;
+  const canUpload = !!selectedFiles.length && !uploading;
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(15,23,42,0.4)" }}
-      />
-
-      {/* Panel */}
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(15,23,42,0.4)" }} />
       <div style={{
         position: "fixed", top: 0, right: 0, bottom: 0,
         width: "min(420px, 100vw)", zIndex: 9999,
-        background: S.surface,
-        boxShadow: "-4px 0 32px rgba(0,0,0,0.15)",
+        background: S.surface, boxShadow: "-4px 0 32px rgba(0,0,0,0.15)",
         display: "flex", flexDirection: "column",
       }}>
         {/* Header */}
         <div style={{ padding: "18px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
           <div>
             <h2 style={{ fontSize: 15, fontWeight: 700, color: S.ink }}>Upload files</h2>
-            <p style={{ fontSize: 12, color: S.muted, marginTop: 3 }}>{levelName} · Week {weekNumber}</p>
+            <p style={{ fontSize: 12, color: S.muted, marginTop: 3 }}>{folderName}</p>
           </div>
-          <button
-            onClick={onClose}
-            style={{ background: "none", border: "none", cursor: "pointer", color: S.muted, fontSize: 20, lineHeight: 1, padding: "2px 4px" }}
-          >
-            ×
-          </button>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: S.muted, fontSize: 20, lineHeight: 1, padding: "2px 4px" }}>×</button>
         </div>
 
         {/* Body */}
-        <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
           {/* Drop zone */}
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
             style={{
               border: `2px dashed ${isDragging ? S.green : S.border}`,
-              borderRadius: 14,
-              padding: "32px 20px",
-              textAlign: "center",
+              borderRadius: 14, padding: "32px 20px", textAlign: "center",
               background: isDragging ? S.greenLight : S.bg,
-              transition: "border-color .15s, background .15s",
-              cursor: "pointer",
+              transition: "border-color .15s, background .15s", cursor: "pointer",
             }}
-            onClick={() => fileInputRef.current?.click()}
           >
             <div style={{ fontSize: 28, marginBottom: 8 }}>📁</div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: S.sub, marginBottom: 4 }}>Drag files here</p>
+            <p style={{ fontSize: 14, fontWeight: 600, color: S.sub, marginBottom: 2 }}>Drag files here</p>
             <p style={{ fontSize: 12, color: S.muted }}>or</p>
             <p style={{ fontSize: 13, fontWeight: 700, color: S.green, marginTop: 4 }}>Browse files</p>
-            <p style={{ fontSize: 11, color: S.muted, marginTop: 8 }}>PDF, DOC, DOCX — up to 100 MB each</p>
+            <p style={{ fontSize: 11, color: S.muted, marginTop: 6 }}>PDF, DOC, DOCX — up to 100 MB each</p>
             <input
               ref={fileInputRef}
               type="file"
@@ -205,12 +178,7 @@ export function UploadPanel({ levelId, levelName, weekNumber, onClose, onSuccess
                         <p style={{ fontSize: 12, fontWeight: 600, color: S.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</p>
                         <p style={{ fontSize: 11, color: S.muted }}>{formatSize(f.size)}</p>
                       </div>
-                      <button
-                        onClick={() => removeFile(i)}
-                        style={{ background: "none", border: "none", cursor: "pointer", color: S.muted, fontSize: 16, lineHeight: 1, padding: "2px 4px", flexShrink: 0 }}
-                      >
-                        ×
-                      </button>
+                      <button onClick={() => removeFile(i)} style={{ background: "none", border: "none", cursor: "pointer", color: S.muted, fontSize: 16, lineHeight: 1, padding: "2px 4px", flexShrink: 0 }}>×</button>
                     </div>
                   );
                 })}
@@ -219,7 +187,7 @@ export function UploadPanel({ levelId, levelName, weekNumber, onClose, onSuccess
           )}
 
           {/* Progress */}
-          {uploading || allDone ? (
+          {(uploading || allDone) && (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {progress.map((p) => (
                 <div key={p.name}>
@@ -230,41 +198,35 @@ export function UploadPanel({ levelId, levelName, weekNumber, onClose, onSuccess
                     </span>
                   </div>
                   <div style={{ height: 4, borderRadius: 4, background: S.border, overflow: "hidden" }}>
-                    <div style={{
-                      height: "100%", borderRadius: 4,
-                      width: `${p.percent}%`,
-                      background: p.status === "done" ? S.green : p.status === "error" ? S.red : "#94a3b8",
-                      transition: "width .3s",
-                    }} />
+                    <div style={{ height: "100%", borderRadius: 4, width: `${p.percent}%`, background: p.status === "done" ? S.green : p.status === "error" ? S.red : "#94a3b8", transition: "width .3s" }} />
                   </div>
                   {p.error && <p style={{ fontSize: 11, color: S.red, marginTop: 3 }}>{p.error}</p>}
                 </div>
               ))}
               {allDone && (
                 <p style={{ fontSize: 13, fontWeight: 700, color: errorCount ? S.red : S.green, textAlign: "center", marginTop: 4 }}>
-                  {errorCount ? `${errorCount} failed, ${doneCount} uploaded` : `✓ All ${doneCount} files uploaded`}
+                  {errorCount ? `${errorCount} failed, ${doneCount} uploaded` : `✓ All ${doneCount} file${doneCount !== 1 ? "s" : ""} uploaded`}
                 </p>
               )}
             </div>
-          ) : null}
+          )}
         </div>
 
         {/* Footer */}
         <div style={{ padding: "16px 20px", borderTop: `1px solid ${S.border}`, flexShrink: 0 }}>
           <button
             onClick={handleUpload}
-            disabled={!selectedFiles.length || uploading}
+            disabled={!canUpload}
             style={{
               width: "100%", padding: "11px 0", borderRadius: 10, border: "none",
-              background: !selectedFiles.length || uploading ? S.border : S.green,
-              color: !selectedFiles.length || uploading ? S.muted : "#fff",
-              fontSize: 14, fontWeight: 700, cursor: !selectedFiles.length || uploading ? "not-allowed" : "pointer",
+              background: canUpload ? S.green : S.border,
+              color: canUpload ? "#fff" : S.muted,
+              fontSize: 14, fontWeight: 700,
+              cursor: canUpload ? "pointer" : "not-allowed",
               transition: "background .15s",
             }}
           >
-            {uploading
-              ? "Uploading…"
-              : `Upload ${selectedFiles.length || ""} file${selectedFiles.length !== 1 ? "s" : ""}`}
+            {uploading ? "Uploading…" : `Upload ${selectedFiles.length || ""} file${selectedFiles.length !== 1 ? "s" : ""}`}
           </button>
         </div>
       </div>

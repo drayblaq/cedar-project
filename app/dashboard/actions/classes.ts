@@ -46,9 +46,11 @@ export async function createMaterial(formData: FormData) {
   const material_type = formData.get("material_type") as string;
   const class_id = (formData.get("class_id") as string) || null;
   const level_id = (formData.get("level_id") as string) || null;
+  const folder_id = (formData.get("folder_id") as string) || null;
   const topic = (formData.get("topic") as string) || null;
   const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
   const is_public = formData.get("is_public") === "true";
+  const teacher_only = formData.get("teacher_only") === "true";
   const file = formData.get("file") as File | null;
   const url = (formData.get("url") as string) || null;
 
@@ -60,7 +62,8 @@ export async function createMaterial(formData: FormData) {
   if (file && file.size > 0) {
     const fileExt = file.name.split(".").pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `${level_id || "general"}/${fileName}`;
+    const bucket = folder_id ? `folders/${folder_id}` : level_id ? level_id : "general";
+    const filePath = `${bucket}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from("course-materials")
@@ -85,9 +88,11 @@ export async function createMaterial(formData: FormData) {
     file_path: storedPath,
     class_id,
     level_id,
+    folder_id,
     topic,
     week_number,
     is_public,
+    teacher_only,
     uploaded_by: user.id,
   });
 
@@ -101,6 +106,48 @@ export async function createMaterial(formData: FormData) {
   return { success: true };
   } catch (e) {
     return { error: e instanceof Error ? e.message : "An unexpected error occurred" };
+  }
+}
+
+export async function createFolder(name: string, parentId: string | null) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Not authenticated" };
+    const { data, error } = await supabase
+      .from("library_folders")
+      .insert({ name: name.trim(), parent_id: parentId || null, created_by: user.id })
+      .select()
+      .single();
+    if (error) return { error: error.message };
+    revalidatePath("/admin/library");
+    return { success: true, folder: data };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to create folder" };
+  }
+}
+
+export async function deleteFolder(id: string) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.from("library_folders").delete().eq("id", id);
+    if (error) return { error: error.message };
+    revalidatePath("/admin/library");
+    return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to delete folder" };
+  }
+}
+
+export async function renameFolder(id: string, name: string) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.from("library_folders").update({ name: name.trim() }).eq("id", id);
+    if (error) return { error: error.message };
+    revalidatePath("/admin/library");
+    return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to rename folder" };
   }
 }
 
@@ -159,6 +206,7 @@ export async function uploadSingleMaterial(formData: FormData): Promise<{ succes
 
     const title = formData.get("title") as string;
     const level_id = (formData.get("level_id") as string) || null;
+    const folder_id = (formData.get("folder_id") as string) || null;
     const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
     const is_public = formData.get("is_public") === "true";
     const teacher_only = formData.get("teacher_only") === "true";
@@ -173,8 +221,9 @@ export async function uploadSingleMaterial(formData: FormData): Promise<{ succes
       ["mp3", "wav", "m4a"].includes(fileExt ?? "") ? "audio" :
       ["mp4", "mov"].includes(fileExt ?? "") ? "video" : "other";
 
+    const bucket = folder_id ? `folders/${folder_id}` : level_id ? level_id : "general";
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `${level_id || "general"}/${fileName}`;
+    const filePath = `${bucket}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from("course-materials")
@@ -190,6 +239,7 @@ export async function uploadSingleMaterial(formData: FormData): Promise<{ succes
       url: urlData.publicUrl,
       file_path: filePath,
       level_id,
+      folder_id,
       week_number,
       is_public,
       teacher_only,
