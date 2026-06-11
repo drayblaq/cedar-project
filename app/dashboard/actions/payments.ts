@@ -5,8 +5,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCallerRole } from "./_auth";
 
 export async function updatePayment(id: string, amount: number, notes: string) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+  if (isNaN(amount) || amount <= 0) return { error: "Invalid amount" };
+  if (amount > 10_000_000) return { error: "Amount too large" };
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("payments")
@@ -18,9 +25,19 @@ export async function updatePayment(id: string, amount: number, notes: string) {
 }
 
 export async function createPayment(formData: FormData) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const student_id = formData.get("student_id") as string;
+  if (!student_id) return { error: "Student is required" };
   const amount = Number(formData.get("amount"));
+  if (isNaN(amount) || amount <= 0) return { error: "Amount must be a positive number" };
+  if (amount > 10_000_000) return { error: "Amount too large" };
+
+  const paid_at_raw = (formData.get("paid_at") as string) || "";
+  if (paid_at_raw && isNaN(new Date(paid_at_raw).getTime())) return { error: "Invalid date" };
   const currency = (formData.get("currency") as string) || "FCFA";
   const paid_at = (formData.get("paid_at") as string) || new Date().toISOString();
   const notes = (formData.get("notes") as string) || null;

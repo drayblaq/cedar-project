@@ -3,8 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getCallerRole } from "./_auth";
 
 export async function createGrade(formData: FormData) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin" && role !== "staff") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const student_id = formData.get("student_id") as string;
   const academic_term_id = (formData.get("academic_term_id") as string) || null;
@@ -25,6 +30,10 @@ export async function createGrade(formData: FormData) {
 }
 
 export async function saveSkillLevel(studentId: string, skillArea: string, skillLevel: string) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin" && role !== "staff") return { error: "Unauthorized" };
+
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -47,6 +56,10 @@ export async function saveSkillLevel(studentId: string, skillArea: string, skill
 }
 
 export async function deleteGrade(id: string) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin" && role !== "staff") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const { error } = await supabase.from("grades").delete().eq("id", id);
   if (error) return { error: error.message };

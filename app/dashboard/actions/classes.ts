@@ -3,10 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getCallerRole } from "./_auth";
 
 export async function createClass(formData: FormData) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const name = formData.get("name") as string;
+  if (!name?.trim()) return { error: "Class name is required" };
   const level_id = formData.get("level_id") as string;
   const { error } = await supabase.from("classes").insert({ name, level_id });
   if (error) return { error: error.message };
@@ -16,6 +22,10 @@ export async function createClass(formData: FormData) {
 }
 
 export async function assignStaffToClass(formData: FormData) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const profile_id = formData.get("profile_id") as string;
   const class_id = formData.get("class_id") as string;
@@ -27,6 +37,10 @@ export async function assignStaffToClass(formData: FormData) {
 }
 
 export async function removeStaffFromClass(profileId: string, classId: string) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const { error } = await supabase.from("staff_classes").delete().eq("profile_id", profileId).eq("class_id", classId);
   if (error) return { error: error.message };
@@ -40,8 +54,15 @@ export async function createMaterial(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
+  const { data: profile } = await supabase.from("profiles").select("role_id").eq("id", user.id).maybeSingle();
+  if (!profile?.role_id) return { error: "Unauthorized" };
+  const { data: roleRow } = await supabase.from("roles").select("name").eq("id", profile.role_id).maybeSingle();
+  const callerRole = (roleRow as { name?: string } | null)?.name;
+  if (callerRole !== "admin" && callerRole !== "staff") return { error: "Unauthorized" };
 
   const title = formData.get("title") as string;
+  if (!title?.trim()) return { error: "Title is required" };
+  if (title.length > 500) return { error: "Title too long" };
   const description = (formData.get("description") as string) || null;
   const material_type = formData.get("material_type") as string;
   const class_id = (formData.get("class_id") as string) || null;
@@ -113,6 +134,11 @@ export async function createMaterial(formData: FormData) {
 
 export async function createFolder(name: string, parentId: string | null) {
   try {
+    if (!name?.trim()) return { error: "Folder name is required" };
+    if (name.length > 200) return { error: "Folder name too long" };
+    const role = await getCallerRole();
+    if (!role) return { error: "Not authenticated" };
+    if (role !== "admin" && role !== "staff") return { error: "Unauthorized" };
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: "Not authenticated" };
@@ -131,6 +157,9 @@ export async function createFolder(name: string, parentId: string | null) {
 
 export async function deleteFolder(id: string) {
   try {
+    const role = await getCallerRole();
+    if (!role) return { error: "Not authenticated" };
+    if (role !== "admin" && role !== "staff") return { error: "Unauthorized" };
     const supabase = await createClient();
     const { error } = await supabase.from("library_folders").delete().eq("id", id);
     if (error) return { error: error.message };
@@ -143,6 +172,10 @@ export async function deleteFolder(id: string) {
 
 export async function renameFolder(id: string, name: string) {
   try {
+    if (!name?.trim()) return { error: "Folder name is required" };
+    const role = await getCallerRole();
+    if (!role) return { error: "Not authenticated" };
+    if (role !== "admin" && role !== "staff") return { error: "Unauthorized" };
     const supabase = await createClient();
     const { error } = await supabase.from("library_folders").update({ name: name.trim() }).eq("id", id);
     if (error) return { error: error.message };
@@ -155,6 +188,9 @@ export async function renameFolder(id: string, name: string) {
 
 export async function deleteMaterial(id: string) {
   try {
+    const role = await getCallerRole();
+    if (!role) return { error: "Not authenticated" };
+    if (role !== "admin" && role !== "staff") return { error: "Unauthorized" };
     const supabase = await createClient();
     const { error } = await supabase.from("materials").delete().eq("id", id);
     if (error) return { error: error.message };
@@ -172,6 +208,10 @@ export async function deleteMaterial(id: string) {
 }
 
 export async function createTimetableSlot(formData: FormData) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const class_id = formData.get("class_id") as string;
   const day_of_week = parseInt(formData.get("day_of_week") as string);
@@ -196,6 +236,10 @@ export async function createTimetableSlot(formData: FormData) {
 }
 
 export async function deleteTimetableSlot(id: string) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const { error } = await supabase.from("timetable").delete().eq("id", id);
   if (error) return { error: error.message };
@@ -211,8 +255,15 @@ export async function uploadSingleMaterial(formData: FormData): Promise<{ succes
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: "Not authenticated" };
+    const { data: upProfile } = await supabase.from("profiles").select("role_id").eq("id", user.id).maybeSingle();
+    if (!upProfile?.role_id) return { error: "Unauthorized" };
+    const { data: upRoleRow } = await supabase.from("roles").select("name").eq("id", upProfile.role_id).maybeSingle();
+    const upRole = (upRoleRow as { name?: string } | null)?.name;
+    if (upRole !== "admin" && upRole !== "staff") return { error: "Unauthorized" };
 
     const title = formData.get("title") as string;
+    if (!title?.trim()) return { error: "Title is required" };
+    if (title.length > 500) return { error: "Title too long" };
     const level_id = (formData.get("level_id") as string) || null;
     const folder_id = (formData.get("folder_id") as string) || null;
     const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
@@ -268,8 +319,13 @@ export async function uploadSingleMaterial(formData: FormData): Promise<{ succes
 }
 
 export async function createAssignment(formData: FormData) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin" && role !== "staff") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const title = formData.get("title") as string;
+  if (!title?.trim()) return { error: "Title is required" };
   const description = (formData.get("description") as string) || null;
   const level_id = (formData.get("level_id") as string) || null;
   const class_id = (formData.get("class_id") as string) || null;

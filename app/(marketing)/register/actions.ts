@@ -80,6 +80,17 @@ export async function submitPublicRegistration(formData: FormData) {
     return { error: "DUPLICATE_EMAIL" };
   }
 
+  // Rate limit: max 3 registrations with the same phone per hour (prevents phone enumeration spam)
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count: recentByPhone } = await supabase
+    .from("students")
+    .select("*", { count: "exact", head: true })
+    .eq("phone", phone)
+    .gte("created_at", oneHourAgo);
+  if ((recentByPhone ?? 0) >= 3) {
+    return { error: "Too many submissions from this phone number. Please try again later." };
+  }
+
   const parts = full_name.split(" ").filter(Boolean);
   const first_name = parts[0] ?? full_name;
   const last_name = parts.slice(1).join(" ") || "";

@@ -4,11 +4,21 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCallerRole } from "./_auth";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function createStudent(formData: FormData) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const full_name = formData.get("full_name") as string;
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
+  if (!full_name?.trim()) return { error: "Full name is required" };
+  if (!email || !EMAIL_RE.test(email)) return { error: "Valid email address is required" };
+
   const phone = (formData.get("phone") as string) || null;
   const level_id = (formData.get("level_id") as string) || null;
   const enrollment_date = (formData.get("enrollment_date") as string) || null;
@@ -70,9 +80,15 @@ export async function createStudent(formData: FormData) {
 }
 
 export async function updateStudent(id: string, formData: FormData) {
+  const role = await getCallerRole();
+  if (!role) return { error: "Not authenticated" };
+  if (role !== "admin") return { error: "Unauthorized" };
+
   const supabase = await createClient();
   const full_name = formData.get("full_name") as string;
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
+  if (!full_name?.trim()) return { error: "Full name is required" };
+  if (!email || !EMAIL_RE.test(email)) return { error: "Valid email address is required" };
   const phone = (formData.get("phone") as string) || null;
   const level_id = (formData.get("level_id") as string) || null;
   const enrollment_date = (formData.get("enrollment_date") as string) || null;

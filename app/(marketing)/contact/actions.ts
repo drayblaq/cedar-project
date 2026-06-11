@@ -15,6 +15,25 @@ export async function submitContactForm(formData: FormData) {
     return { error: "Please fill in all required fields" };
   }
 
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!EMAIL_RE.test(email)) {
+    return { error: "Please enter a valid email address" };
+  }
+  if (message.length > 5000) {
+    return { error: "Message too long (max 5000 characters)" };
+  }
+
+  // Rate limit: max 3 messages per email per hour
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count } = await supabase
+    .from("contact_messages")
+    .select("*", { count: "exact", head: true })
+    .eq("email", email)
+    .gte("created_at", oneHourAgo);
+  if ((count ?? 0) >= 3) {
+    return { error: "Too many submissions. Please try again later." };
+  }
+
   const { error } = await supabase
     .from("contact_messages")
     .insert({ name, email, phone, message });

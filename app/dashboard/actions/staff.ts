@@ -10,6 +10,8 @@ export async function inviteStaffMember(formData: FormData) {
   const roleName = formData.get("role") as string;
 
   if (!email || !full_name || !roleName) return { error: "All fields are required" };
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!EMAIL_RE.test(email.trim())) return { error: "Invalid email address" };
 
   const supabase = await createClient();
   const adminSupabase = createAdminClient();
@@ -18,10 +20,9 @@ export async function inviteStaffMember(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
   const { data: profile } = await supabase.from("profiles").select("role_id").eq("id", user.id).single();
-  if (profile?.role_id) {
-    const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
-    if (role?.name !== "admin") return { error: "Only admins can invite staff" };
-  }
+  if (!profile?.role_id) return { error: "Only admins can invite staff" };
+  const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
+  if (role?.name !== "admin") return { error: "Only admins can invite staff" };
 
   const { data: inviteData, error: inviteError } = await adminSupabase.auth.admin.inviteUserByEmail(email, {
     data: { full_name },
@@ -50,10 +51,9 @@ export async function updateStaffRole(userId: string, roleName: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
   const { data: profile } = await supabase.from("profiles").select("role_id").eq("id", user.id).single();
-  if (profile?.role_id) {
-    const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
-    if (role?.name !== "admin") return { error: "Only admins can update roles" };
-  }
+  if (!profile?.role_id) return { error: "Only admins can update roles" };
+  const { data: callerRole } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
+  if (callerRole?.name !== "admin") return { error: "Only admins can update roles" };
 
   const { data: role } = await supabase.from("roles").select("id").eq("name", roleName).maybeSingle();
   if (!role) return { error: "Role not found" };

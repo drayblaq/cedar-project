@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getCallerRole } from "./_auth";
 
 export interface ParsedStudent {
   full_name: string;
@@ -26,6 +27,10 @@ export interface ImportResult {
 }
 
 export async function importStudents(students: ParsedStudent[]): Promise<ImportResult[]> {
+  const role = await getCallerRole();
+  if (!role) return [{ name: "(system)", status: "error", reason: "Not authenticated" }];
+  if (role !== "admin") return [{ name: "(system)", status: "error", reason: "Unauthorized" }];
+
   const supabase = await createClient();
   const results: ImportResult[] = [];
 

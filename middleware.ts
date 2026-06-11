@@ -99,7 +99,13 @@ export async function middleware(request: NextRequest) {
     const roleName = roleNameFromJoinedRoles(profile?.roles);
 
     const expectedPrefix = roleName && ROLE_HOME[roleName] ? ROLE_HOME[roleName] : null;
-    if (expectedPrefix && !pathname.startsWith(expectedPrefix)) {
+    // No recognised role — bounce back to login rather than allowing access to any portal
+    if (!expectedPrefix) {
+      const loginUrl = new URL("/auth/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    if (!pathname.startsWith(expectedPrefix)) {
       return NextResponse.redirect(new URL(expectedPrefix, request.url));
     }
 
