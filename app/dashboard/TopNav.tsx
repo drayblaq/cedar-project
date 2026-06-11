@@ -13,8 +13,8 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin/parent-links", label: "Parent Links",  iconKey: "parentLinks" },
   { href: "/admin/messages",     label: "Messages",      iconKey: "mail" },
   { href: "/admin/staff",        label: "Staff",         iconKey: "students" },
-  { href: "/admin/library",      label: "Library",       iconKey: "book" },
-  { href: "/admin/settings",     label: "Settings",      iconKey: "settings" },
+  { href: "/admin/library",      label: "Resources",  iconKey: "doc" },
+  { href: "/admin/settings",     label: "Settings",   iconKey: "settings" },
 ];
 
 const STAFF_NAV: NavItem[] = [
@@ -23,6 +23,7 @@ const STAFF_NAV: NavItem[] = [
   { href: "/staff/grades",       label: "Grades",        iconKey: "grades" },
   { href: "/staff/levels",       label: "English Level", iconKey: "grades" },
   { href: "/staff/materials",    label: "Library",       iconKey: "book" },
+  { href: "/staff/resources",   label: "Resources",     iconKey: "doc" },
 ];
 
 const STUDENT_NAV: NavItem[] = [

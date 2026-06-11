@@ -10,7 +10,9 @@ SET allowed_mime_types = ARRAY[
   'video/quicktime',
   'image/jpeg',
   'image/png',
-  'image/webp'
+  'image/webp',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 ],
 file_size_limit = 104857600
 WHERE id = 'course-materials';

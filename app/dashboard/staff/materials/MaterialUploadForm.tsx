@@ -26,16 +26,20 @@ export function MaterialUploadForm({ levels, defaultLevelId }: { levels: Level[]
     fd.set("is_public", isPublic ? "true" : "false");
     setMsg(null);
     startTransition(async () => {
-      const res = await createMaterial(fd);
-      if (res?.error) {
-        setMsg({ ok: false, text: res.error });
-      } else {
-        setMsg({ ok: true, text: "Material uploaded." });
-        formRef.current?.reset();
-        setFileName(null);
-        setIsPublic(false);
-        setType("pdf");
-        router.refresh();
+      try {
+        const res = await createMaterial(fd);
+        if (res?.error) {
+          setMsg({ ok: false, text: res.error });
+        } else {
+          setMsg({ ok: true, text: "Material uploaded." });
+          formRef.current?.reset();
+          setFileName(null);
+          setIsPublic(false);
+          setType("pdf");
+          router.refresh();
+        }
+      } catch (e) {
+        setMsg({ ok: false, text: e instanceof Error ? e.message : "Upload failed. Please try again." });
       }
     });
   }

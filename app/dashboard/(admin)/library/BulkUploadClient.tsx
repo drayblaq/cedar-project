@@ -24,15 +24,18 @@ type FileEntry = {
   level_id: string;
   week_number: string;
   is_public: boolean;
+  teacher_only: boolean;
   status: "pending" | "uploading" | "done" | "error";
   error?: string;
 };
 
 function guessType(file: File): string {
-  if (file.type === "application/pdf") return "pdf";
-  if (file.type.startsWith("audio/")) return "audio";
-  if (file.type.startsWith("video/")) return "video";
-  return "document";
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+  if (ext === "pdf") return "pdf";
+  if (["doc", "docx"].includes(ext)) return "document";
+  if (["mp3", "wav", "m4a"].includes(ext)) return "audio";
+  if (["mp4", "mov"].includes(ext)) return "video";
+  return "other";
 }
 
 export function BulkUploadClient({ levels }: { levels: Level[] }) {
@@ -41,6 +44,7 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
   const [globalLevel, setGlobalLevel] = useState("");
   const [globalWeek, setGlobalWeek] = useState("");
   const [globalPublic, setGlobalPublic] = useState(false);
+  const [globalTeacherOnly, setGlobalTeacherOnly] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [uploadDone, setUploadDone] = useState(false);
 
@@ -53,6 +57,7 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
       level_id: globalLevel,
       week_number: globalWeek,
       is_public: globalPublic,
+      teacher_only: globalTeacherOnly,
       status: "pending",
     }));
     setEntries((prev) => [...prev, ...newEntries]);
@@ -77,6 +82,7 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
           level_id: globalLevel || e.level_id,
           week_number: globalWeek || e.week_number,
           is_public: globalPublic,
+          teacher_only: globalTeacherOnly,
         }))
         .concat(prev.filter((e) => e.status !== "pending"))
     );
@@ -91,10 +97,10 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
       const fd = new FormData();
       fd.set("title", entry.title || entry.file.name);
       fd.set("file", entry.file);
-      fd.set("material_type", guessType(entry.file));
       if (entry.level_id) fd.set("level_id", entry.level_id);
       if (entry.week_number) fd.set("week_number", entry.week_number);
       fd.set("is_public", String(entry.is_public));
+      fd.set("teacher_only", String(entry.teacher_only));
 
       await new Promise<void>((resolve) => {
         startTransition(async () => {
@@ -150,12 +156,12 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
       >
         <div style={{ fontSize: 32, marginBottom: 8 }}>📁</div>
         <p style={{ fontWeight: 700, color: C.ink, fontSize: 15 }}>Click or drag files here</p>
-        <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>PDF, MP3, MP4, WAV — up to 100 MB each</p>
+        <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>PDF, DOCX, MP3, MP4, WAV — up to 100 MB each</p>
         <input
           ref={fileInputRef}
           type="file"
           multiple
-          accept=".pdf,.mp3,.mp4,.wav,.m4a,.doc,.docx"
+          accept=".pdf,.doc,.docx,.mp3,.mp4,.wav,.m4a,.mov"
           style={{ display: "none" }}
           onChange={(e) => handleFiles(e.target.files)}
         />
@@ -185,6 +191,10 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
             <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: C.ink, cursor: "pointer" }}>
               <input type="checkbox" checked={globalPublic} onChange={(e) => setGlobalPublic(e.target.checked)} />
               Public
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: C.ink, cursor: "pointer" }}>
+              <input type="checkbox" checked={globalTeacherOnly} onChange={(e) => setGlobalTeacherOnly(e.target.checked)} />
+              Teacher only
             </label>
             <button
               onClick={applyGlobalToAll}
@@ -269,6 +279,17 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
                     onChange={(e) => updateEntry(entry.id, { is_public: e.target.checked })}
                   />
                   Public
+                </label>
+
+                {/* Teacher only toggle */}
+                <label style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#7e22ce", cursor: "pointer", flexShrink: 0 }}>
+                  <input
+                    type="checkbox"
+                    checked={entry.teacher_only}
+                    disabled={entry.status !== "pending"}
+                    onChange={(e) => updateEntry(entry.id, { teacher_only: e.target.checked })}
+                  />
+                  Teacher only
                 </label>
 
                 {/* File size */}

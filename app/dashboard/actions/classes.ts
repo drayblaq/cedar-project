@@ -36,6 +36,7 @@ export async function removeStaffFromClass(profileId: string, classId: string) {
 }
 
 export async function createMaterial(formData: FormData) {
+  try {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
@@ -56,7 +57,6 @@ export async function createMaterial(formData: FormData) {
   let fileUrl: string | null = url;
   let storedPath: string | null = null;
 
-  // Handle file upload to Supabase Storage
   if (file && file.size > 0) {
     const fileExt = file.name.split(".").pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -99,6 +99,9 @@ export async function createMaterial(formData: FormData) {
   revalidatePath("/student");
   revalidatePath("/student/materials");
   return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "An unexpected error occurred" };
+  }
 }
 
 export async function deleteMaterial(id: string) {
@@ -149,48 +152,59 @@ export async function deleteTimetableSlot(id: string) {
 }
 
 export async function uploadSingleMaterial(formData: FormData): Promise<{ success?: boolean; error?: string; id?: string }> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Not authenticated" };
 
-  const title = formData.get("title") as string;
-  const material_type = (formData.get("material_type") as string) || "pdf";
-  const level_id = (formData.get("level_id") as string) || null;
-  const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
-  const is_public = formData.get("is_public") === "true";
-  const file = formData.get("file") as File | null;
+    const title = formData.get("title") as string;
+    const level_id = (formData.get("level_id") as string) || null;
+    const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
+    const is_public = formData.get("is_public") === "true";
+    const teacher_only = formData.get("teacher_only") === "true";
+    const file = formData.get("file") as File | null;
 
-  if (!title || !file || file.size === 0) return { error: "Title and file are required" };
+    if (!title || !file || file.size === 0) return { error: "Title and file are required" };
 
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-  const filePath = `${level_id || "general"}/${fileName}`;
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
+    const material_type =
+      fileExt === "pdf" ? "pdf" :
+      ["doc", "docx"].includes(fileExt ?? "") ? "document" :
+      ["mp3", "wav", "m4a"].includes(fileExt ?? "") ? "audio" :
+      ["mp4", "mov"].includes(fileExt ?? "") ? "video" : "other";
 
-  const { error: uploadError } = await supabase.storage
-    .from("course-materials")
-    .upload(filePath, file, { contentType: file.type, upsert: false });
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${level_id || "general"}/${fileName}`;
 
-  if (uploadError) return { error: `Upload failed: ${uploadError.message}` };
+    const { error: uploadError } = await supabase.storage
+      .from("course-materials")
+      .upload(filePath, file, { contentType: file.type, upsert: false });
 
-  const { data: urlData } = supabase.storage.from("course-materials").getPublicUrl(filePath);
+    if (uploadError) return { error: `Upload failed: ${uploadError.message}` };
 
-  const { data: row, error } = await supabase.from("materials").insert({
-    title,
-    material_type,
-    url: urlData.publicUrl,
-    file_path: filePath,
-    level_id,
-    week_number,
-    is_public,
-    uploaded_by: user.id,
-  }).select("id").single();
+    const { data: urlData } = supabase.storage.from("course-materials").getPublicUrl(filePath);
 
-  if (error) return { error: error.message };
+    const { data: row, error } = await supabase.from("materials").insert({
+      title,
+      material_type,
+      url: urlData.publicUrl,
+      file_path: filePath,
+      level_id,
+      week_number,
+      is_public,
+      teacher_only,
+      uploaded_by: user.id,
+    }).select("id").single();
 
-  revalidatePath("/admin/library");
-  revalidatePath("/staff/materials");
-  revalidatePath("/student/materials");
-  return { success: true, id: row?.id };
+    if (error) return { error: error.message };
+
+    revalidatePath("/admin/library");
+    revalidatePath("/staff/materials");
+    revalidatePath("/student/materials");
+    return { success: true, id: row?.id };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "An unexpected error occurred" };
+  }
 }
 
 export async function createAssignment(formData: FormData) {
