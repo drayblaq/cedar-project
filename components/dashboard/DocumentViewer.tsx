@@ -39,7 +39,7 @@ export function DocumentViewer({ material, onClose }: Props) {
 
   const isPdf = material.material_type === "pdf";
   const src = isPdf
-    ? material.url
+    ? `https://docs.google.com/viewer?url=${encodeURIComponent(material.url)}&embedded=true`
     : `https://docs.google.com/gview?url=${encodeURIComponent(material.url)}&embedded=true`;
 
   return (
@@ -75,12 +75,16 @@ export function DocumentViewer({ material, onClose }: Props) {
       </div>
 
       {/* Iframe */}
-      <div style={{ flex: 1, background: S.bg, overflow: "hidden" }}>
+      <div style={{ flex: 1, background: S.bg, overflow: "hidden", position: "relative" }}>
+        {/* Loading backdrop — iframe renders on top once loaded */}
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <p style={{ fontSize: 13, color: S.muted }}>Loading document…</p>
+        </div>
         <iframe
           src={src}
-          style={{ width: "100%", height: "100%", border: "none", display: "block" }}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
           title={material.title}
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          allow="autoplay"
         />
       </div>
     </div>

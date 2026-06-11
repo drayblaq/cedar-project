@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { deleteMaterial, createFolder, deleteFolder } from "@/app/dashboard/actions/classes";
 import { DocumentViewer, type ViewerDoc } from "./DocumentViewer";
@@ -41,6 +41,7 @@ type Material = {
   url: string | null;
   folder_id: string | null;
   created_at: string;
+  student_level_id?: string | null;
 };
 
 export interface ResourceExplorerProps {
@@ -67,15 +68,16 @@ function TypeChip({ type }: { type: string }) {
   );
 }
 
-function FolderCard({ folder, isAdmin, onClick, onDelete }: { folder: Folder; isAdmin: boolean; onClick: () => void; onDelete: () => void }) {
+function FolderCard({ folder, count, isAdmin, onClick, onDelete }: { folder: Folder; count?: number; isAdmin: boolean; onClick: () => void; onDelete: () => void }) {
   const [hovered, setHovered] = useState(false);
+  const [deleteBtnHovered, setDeleteBtnHovered] = useState(false);
   return (
-    <div style={{ position: "relative" }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+    <div style={{ position: "relative" }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setDeleteBtnHovered(false); }}>
       <button
         onClick={onClick}
         style={{
-          width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-          padding: "16px 8px", borderRadius: 14,
+          width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+          padding: "16px 8px 12px", borderRadius: 14,
           border: `1px solid ${hovered ? S.amberBorder : "transparent"}`,
           background: hovered ? S.amberLight : "transparent",
           cursor: "pointer", textAlign: "center",
@@ -86,16 +88,25 @@ function FolderCard({ folder, isAdmin, onClick, onDelete }: { folder: Folder; is
         <span style={{ fontSize: 12, fontWeight: 600, color: hovered ? "#92400e" : S.ink, lineHeight: 1.3, wordBreak: "break-word" }}>
           {folder.name}
         </span>
+        <span style={{ fontSize: 10.5, color: S.muted }}>
+          {count === undefined ? "…" : `${count} item${count !== 1 ? "s" : ""}`}
+        </span>
       </button>
       {isAdmin && hovered && (
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          onMouseEnter={() => setDeleteBtnHovered(true)}
+          onMouseLeave={() => setDeleteBtnHovered(false)}
           style={{
             position: "absolute", top: 6, right: 6,
-            width: 20, height: 20, borderRadius: 6,
-            background: "#fee2e2", border: "none", color: S.red,
-            fontSize: 13, lineHeight: 1, cursor: "pointer",
+            width: 22, height: 22, borderRadius: 7,
+            background: deleteBtnHovered ? S.red : "#fee2e2",
+            border: `1px solid ${deleteBtnHovered ? S.red : "#fca5a5"}`,
+            color: deleteBtnHovered ? "#fff" : S.red,
+            fontSize: 14, lineHeight: 1, cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "background .1s, color .1s, border-color .1s",
+            boxShadow: deleteBtnHovered ? "0 2px 8px rgba(220,38,38,.3)" : "none",
           }}
           title="Delete folder"
         >
@@ -127,6 +138,11 @@ function FileRow({ file, isAdmin, isLast, onOpen, onDelete }: { file: Material; 
         <p style={{ fontSize: 13.5, fontWeight: 600, color: S.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.title}</p>
         <p style={{ fontSize: 11.5, color: S.muted, marginTop: 2 }}>{added}</p>
       </div>
+      {file.student_level_id && (
+        <span style={{ fontSize: 10.5, fontWeight: 700, background: S.greenLight, color: S.greenDark, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>
+          Students
+        </span>
+      )}
       <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
         {canView && (
           <button
@@ -153,6 +169,7 @@ function FileRow({ file, isAdmin, isLast, onOpen, onDelete }: { file: Material; 
 
 function GridFileCard({ file, isAdmin, onOpen, onDelete }: { file: Material; isAdmin: boolean; onOpen: () => void; onDelete: () => void }) {
   const [hovered, setHovered] = useState(false);
+  const [deleteBtnHovered, setDeleteBtnHovered] = useState(false);
   const canView = !!file.url && (file.material_type === "pdf" || file.material_type === "document");
   const isPdf = file.material_type === "pdf";
   const added = new Date(file.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
@@ -198,7 +215,18 @@ function GridFileCard({ file, isAdmin, onOpen, onDelete }: { file: Material; isA
       {isAdmin && hovered && (
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          style={{ position: "absolute", top: 7, right: 7, width: 20, height: 20, borderRadius: 6, background: "#fee2e2", border: "none", color: S.red, fontSize: 13, lineHeight: 1, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onMouseEnter={() => setDeleteBtnHovered(true)}
+          onMouseLeave={() => setDeleteBtnHovered(false)}
+          style={{
+            position: "absolute", top: 7, right: 7, width: 22, height: 22, borderRadius: 7,
+            background: deleteBtnHovered ? S.red : "#fee2e2",
+            border: `1px solid ${deleteBtnHovered ? S.red : "#fca5a5"}`,
+            color: deleteBtnHovered ? "#fff" : S.red,
+            fontSize: 14, lineHeight: 1, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "background .1s, color .1s, border-color .1s",
+            boxShadow: deleteBtnHovered ? "0 2px 8px rgba(220,38,38,.3)" : "none",
+          }}
           title="Delete file"
         >
           ×
@@ -211,7 +239,8 @@ function GridFileCard({ file, isAdmin, onOpen, onDelete }: { file: Material; isA
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
-  const supabase = createClient();
+  const supabaseRef = useRef(createClient());
+  const supabase = supabaseRef.current;
 
   const [currentFolder, setCurrentFolder] = useState<Folder | null>(null);
   const [breadcrumb, setBreadcrumb] = useState<Folder[]>([]);
@@ -225,6 +254,7 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  const [folderCounts, setFolderCounts] = useState<Record<string, number>>({});
   const [viewingDoc, setViewingDoc] = useState<ViewerDoc | null>(null);
   const [search, setSearch] = useState("");
 
@@ -241,8 +271,7 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
       // Files
       let mq = supabase
         .from("materials")
-        .select("id, title, material_type, url, folder_id, created_at")
-        .eq("teacher_only", true)
+        .select("id, title, material_type, url, folder_id, created_at, student_level_id")
         .order("title");
       if (folderId) mq = mq.eq("folder_id", folderId);
       else mq = mq.is("folder_id", null);
@@ -256,6 +285,23 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
   }, [supabase]);
 
   useEffect(() => { loadContents(null); }, [loadContents]);
+
+  // ── Folder item counts ───────────────────────────────────────────────────────
+  useEffect(() => {
+    if (folders.length === 0) { setFolderCounts({}); return; }
+    async function loadFolderCounts() {
+      const counts: Record<string, number> = {};
+      await Promise.all(folders.map(async (folder) => {
+        const [{ count: files }, { count: subs }] = await Promise.all([
+          supabase.from("materials").select("*", { count: "exact", head: true }).eq("folder_id", folder.id),
+          supabase.from("library_folders").select("*", { count: "exact", head: true }).eq("parent_id", folder.id),
+        ]);
+        counts[folder.id] = (files ?? 0) + (subs ?? 0);
+      }));
+      setFolderCounts(counts);
+    }
+    loadFolderCounts();
+  }, [folders, supabase]);
 
   // ── Navigation ───────────────────────────────────────────────────────────────
   function openFolder(folder: Folder) {
@@ -296,14 +342,30 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
   }
 
   async function handleDeleteFolder(folder: Folder) {
-    if (!confirm(`Delete folder "${folder.name}" and all its contents? This cannot be undone.`)) return;
-    await deleteFolder(folder.id);
-    loadContents(currentFolder?.id ?? null);
+    const [{ count: fileCount }, { count: subCount }] = await Promise.all([
+      supabase.from("materials").select("*", { count: "exact", head: true }).eq("folder_id", folder.id),
+      supabase.from("library_folders").select("*", { count: "exact", head: true }).eq("parent_id", folder.id),
+    ]);
+    const total = (fileCount ?? 0) + (subCount ?? 0);
+    let message = `Delete folder "${folder.name}"?\n\nThis cannot be undone.`;
+    if (total > 0) {
+      const parts: string[] = [];
+      if (fileCount && fileCount > 0) parts.push(`${fileCount} file${fileCount > 1 ? "s" : ""}`);
+      if (subCount && subCount > 0) parts.push(`${subCount} subfolder${subCount > 1 ? "s" : ""}`);
+      message = `Delete folder "${folder.name}"?\n\nThis folder contains ${parts.join(" and ")}. All contents will be permanently deleted.\n\nThis cannot be undone.`;
+    }
+    if (!confirm(message)) return;
+    const result = await deleteFolder(folder.id);
+    if (result.success) {
+      loadContents(currentFolder?.id ?? null);
+    } else {
+      alert("Failed to delete folder: " + result.error);
+    }
   }
 
   // ── File delete ───────────────────────────────────────────────────────────────
-  async function handleDeleteFile(fileId: string) {
-    if (!confirm("Delete this file? This cannot be undone.")) return;
+  async function handleDeleteFile(fileId: string, title: string) {
+    if (!confirm(`Delete "${title}"?\n\nThis file will be permanently removed and cannot be recovered.`)) return;
     await deleteMaterial(fileId);
     loadContents(currentFolder?.id ?? null);
   }
@@ -343,7 +405,7 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
             Library
           </button>
           {breadcrumb.map((f, i) => (
-            <span key={f.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ color: "#cbd5e1" }}>/</span>
               <button
                 onClick={() => navigateToBreadcrumb(f, i)}
@@ -481,6 +543,7 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
               <FolderCard
                 key={folder.id}
                 folder={folder}
+                count={folderCounts[folder.id]}
                 isAdmin={isAdmin}
                 onClick={() => openFolder(folder)}
                 onDelete={() => handleDeleteFolder(folder)}
@@ -522,7 +585,7 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
                     file={f}
                     isAdmin={isAdmin}
                     onOpen={() => f.url && setViewingDoc({ title: f.title, url: f.url, material_type: f.material_type })}
-                    onDelete={() => handleDeleteFile(f.id)}
+                    onDelete={() => handleDeleteFile(f.id, f.title)}
                   />
                 ))}
               </div>
@@ -536,7 +599,7 @@ export function ResourceExplorer({ isAdmin }: ResourceExplorerProps) {
                     isAdmin={isAdmin}
                     isLast={i === filteredFiles.length - 1}
                     onOpen={() => f.url && setViewingDoc({ title: f.title, url: f.url, material_type: f.material_type })}
-                    onDelete={() => handleDeleteFile(f.id)}
+                    onDelete={() => handleDeleteFile(f.id, f.title)}
                   />
                 ))}
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { uploadSingleMaterial } from "@/app/dashboard/actions/classes";
 
 const S = {
@@ -52,6 +53,16 @@ export function UploadPanel({ folderId, folderName, onClose, onSuccess }: Upload
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<ProgressEntry[]>([]);
   const [allDone, setAllDone] = useState(false);
+  const [visibleToStudents, setVisibleToStudents] = useState(false);
+  const [studentLevelId, setStudentLevelId] = useState("");
+  const [levels, setLevels] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.from("levels").select("id, name").order("sort_order").then(({ data }) => {
+      if (data) setLevels(data as { id: string; name: string }[]);
+    });
+  }, []);
 
   function addFiles(fileList: FileList | null) {
     if (!fileList) return;
@@ -90,8 +101,9 @@ export function UploadPanel({ folderId, folderName, onClose, onSuccess }: Upload
       const fd = new FormData();
       fd.append("file", file);
       fd.append("title", cleanFileName(file.name));
-      fd.append("teacher_only", "true");
+      fd.append("teacher_only", visibleToStudents ? "false" : "true");
       if (folderId) fd.append("folder_id", folderId);
+      if (visibleToStudents && studentLevelId) fd.append("student_level_id", studentLevelId);
 
       try {
         const res = await uploadSingleMaterial(fd);
@@ -158,6 +170,35 @@ export function UploadPanel({ folderId, folderName, onClose, onSuccess }: Upload
               onChange={(e) => addFiles(e.target.files)}
               onClick={(e) => e.stopPropagation()}
             />
+          </div>
+
+          {/* Student Access */}
+          <div style={{ padding: "14px 16px", background: S.bg, borderRadius: 12, border: `1px solid ${S.border}` }}>
+            <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: S.muted, marginBottom: 10 }}>Student Access</p>
+            <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", marginBottom: visibleToStudents ? 12 : 0 }}>
+              <input
+                type="checkbox"
+                checked={visibleToStudents}
+                onChange={(e) => setVisibleToStudents(e.target.checked)}
+                style={{ width: 16, height: 16, cursor: "pointer", accentColor: S.green }}
+              />
+              <span style={{ fontSize: 13, color: S.muted }}>Make visible to students</span>
+            </label>
+            {visibleToStudents && (
+              <div>
+                <p style={{ fontSize: 11.5, color: S.muted, marginBottom: 6 }}>Which level of students?</p>
+                <select
+                  value={studentLevelId}
+                  onChange={(e) => setStudentLevelId(e.target.value)}
+                  style={{ width: "100%", padding: "7px 10px", fontSize: 13, border: `1px solid ${S.border}`, borderRadius: 8, background: S.surface, color: S.muted, outline: "none" }}
+                >
+                  <option value="">All levels</option>
+                  {levels.map((l) => (
+                    <option key={l.id} value={l.id}>{l.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Selected files */}

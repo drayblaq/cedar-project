@@ -51,6 +51,7 @@ export async function createMaterial(formData: FormData) {
   const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
   const is_public = formData.get("is_public") === "true";
   const teacher_only = formData.get("teacher_only") === "true";
+  const student_level_id = (formData.get("student_level_id") as string) || null;
   const file = formData.get("file") as File | null;
   const url = (formData.get("url") as string) || null;
 
@@ -93,6 +94,7 @@ export async function createMaterial(formData: FormData) {
     week_number,
     is_public,
     teacher_only,
+    student_level_id: student_level_id || null,
     uploaded_by: user.id,
   });
 
@@ -152,15 +154,21 @@ export async function renameFolder(id: string, name: string) {
 }
 
 export async function deleteMaterial(id: string) {
-  const supabase = await createClient();
-  const { error } = await supabase.from("materials").delete().eq("id", id);
-  if (error) return { error: error.message };
-  revalidatePath("/admin/classes");
-  revalidatePath("/staff");
-  revalidatePath("/staff/materials");
-  revalidatePath("/student");
-  revalidatePath("/student/materials");
-  return { success: true };
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.from("materials").delete().eq("id", id);
+    if (error) return { error: error.message };
+    revalidatePath("/admin/classes");
+    revalidatePath("/admin/library");
+    revalidatePath("/staff");
+    revalidatePath("/staff/materials");
+    revalidatePath("/staff/resources");
+    revalidatePath("/student");
+    revalidatePath("/student/materials");
+    return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to delete material" };
+  }
 }
 
 export async function createTimetableSlot(formData: FormData) {
@@ -210,6 +218,7 @@ export async function uploadSingleMaterial(formData: FormData): Promise<{ succes
     const week_number = formData.get("week_number") ? parseInt(formData.get("week_number") as string) : null;
     const is_public = formData.get("is_public") === "true";
     const teacher_only = formData.get("teacher_only") === "true";
+    const student_level_id = (formData.get("student_level_id") as string) || null;
     const file = formData.get("file") as File | null;
 
     if (!title || !file || file.size === 0) return { error: "Title and file are required" };
@@ -243,6 +252,7 @@ export async function uploadSingleMaterial(formData: FormData): Promise<{ succes
       week_number,
       is_public,
       teacher_only,
+      student_level_id: student_level_id || null,
       uploaded_by: user.id,
     }).select("id").single();
 
