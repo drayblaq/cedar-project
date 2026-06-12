@@ -146,11 +146,11 @@ export default function HomePage() {
             <span style={{ color: "var(--green)" }}>{tr.title3}</span>
           </h1>
           <p className="animate-slide-up delay-300" style={{ marginTop: 24, fontSize: "1.1rem", lineHeight: 1.75, color: "#1a3a1a", fontWeight: 500, maxWidth: 440 }}>{tr.sub}</p>
-          <div className="animate-slide-up delay-400" style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 44, flexWrap: "wrap" }}>
-            <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
+          <div className="animate-slide-up delay-400" style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 32, flexWrap: "wrap" }}>
+            <Link href="/register" className="w-full xs:w-auto" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "15px 28px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.apply} →
             </Link>
-            <Link href="/courses" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--green-dark)", fontWeight: 600, fontSize: "0.95rem", textDecoration: "none", padding: "16px 24px", borderRadius: 12, border: "2px solid rgba(46,168,42,0.3)" }}>
+            <Link href="/courses" className="w-full xs:w-auto" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--green-dark)", fontWeight: 600, fontSize: "0.95rem", textDecoration: "none", padding: "15px 22px", borderRadius: 12, border: "2px solid rgba(46,168,42,0.3)" }}>
               {tr.explore}
             </Link>
           </div>
@@ -179,7 +179,7 @@ export default function HomePage() {
       {/* ── ABOUT ── */}
       <section className="bg-[var(--white)] px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
-          <div className="reveal-left relative mx-auto h-[340px] w-full max-w-lg sm:h-[440px] lg:mx-0 lg:h-[580px] lg:max-w-none">
+          <div className="reveal-left relative mx-auto h-[260px] w-full max-w-lg sm:h-[380px] md:h-[440px] lg:mx-0 lg:h-[540px] lg:max-w-none">
             <div style={{ position: "absolute", top: 0, left: 0, width: "65%", height: "76%", borderRadius: 24, overflow: "hidden", boxShadow: "0 32px 80px rgba(46,168,42,0.15)" }}>
               <Image src="/happy-black-females-student-during-a-class-in-lecture-hall-looking-at-camera.webp" alt="Students learning at Cedar" fill style={{ objectFit: "cover" }} />
             </div>

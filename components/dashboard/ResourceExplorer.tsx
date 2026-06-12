@@ -44,6 +44,7 @@ type Material = {
   teacher_only?: boolean;
   student_level_id?: string | null;
   levels?: { name: string } | { name: string }[] | null;
+  questionCount?: number;
 };
 
 export interface ResourceExplorerProps {
@@ -120,7 +121,7 @@ function FolderCard({ folder, count, isAdmin, onClick, onDelete }: { folder: Fol
   );
 }
 
-function FileRow({ file, isAdmin, isLast, onOpen, onDelete }: { file: Material; isAdmin: boolean; isLast?: boolean; onOpen: () => void; onDelete: () => void }) {
+function FileRow({ file, isAdmin, isLast, onOpen, onDelete }: { file: Material; isAdmin: boolean; isLast?: boolean; onOpen: () => void; onDelete: () => void; }) {
   const [hovered, setHovered] = useState(false);
   const added = new Date(file.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   const canView = !!file.url && (file.material_type === "pdf" || file.material_type === "document");
@@ -154,6 +155,21 @@ function FileRow({ file, isAdmin, isLast, onOpen, onDelete }: { file: Material; 
         </span>
       )}
       <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+        {isAdmin && (
+          <a
+            href={`/admin/library/questions/${file.id}`}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              fontSize: 11.5, fontWeight: 700, color: "#7c3aed", padding: "4px 9px", borderRadius: 7,
+              background: hovered ? "#faf5ff" : "transparent",
+              border: `1px solid ${hovered ? "#ddd6fe" : "transparent"}`,
+              textDecoration: "none", transition: "background .1s, border-color .1s",
+              opacity: hovered ? 1 : 0.6,
+            }}
+          >
+            Quiz {file.questionCount !== undefined ? `(${file.questionCount})` : ""}
+          </a>
+        )}
         {canView && (
           <button
             onClick={onOpen}
@@ -266,6 +282,7 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const [folderCounts, setFolderCounts] = useState<Record<string, number>>({});
+  const [questionCounts, setQuestionCounts] = useState<Record<string, number>>({});
   const [viewingDoc, setViewingDoc] = useState<ViewerDoc | null>(null);
   const [search, setSearch] = useState("");
 
@@ -294,6 +311,22 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
 
     setFolders((foldersData ?? []) as Folder[]);
     setFiles((filesData ?? []) as Material[]);
+
+    // Fetch quiz question counts for admin quiz buttons
+    if (isAdmin && filesData && filesData.length > 0) {
+      const ids = (filesData as Material[]).map((f) => f.id);
+      const { data: qRows } = await supabase
+        .from("quiz_questions")
+        .select("material_id")
+        .in("material_id", ids);
+      const qc: Record<string, number> = {};
+      for (const row of qRows ?? []) {
+        const r = row as { material_id: string };
+        qc[r.material_id] = (qc[r.material_id] ?? 0) + 1;
+      }
+      setQuestionCounts(qc);
+    }
+
     setLoading(false);
   }, [supabase, filterTeacherOnly]);
 
@@ -614,7 +647,7 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
                 {filteredFiles.map((f, i) => (
                   <FileRow
                     key={f.id}
-                    file={f}
+                    file={{ ...f, questionCount: questionCounts[f.id] }}
                     isAdmin={isAdmin}
                     isLast={i === filteredFiles.length - 1}
                     onOpen={() => f.url && setViewingDoc({ title: f.title, url: f.url, material_type: f.material_type })}

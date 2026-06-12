@@ -11,3 +11,4 @@ export * from "./notifications";
 export * from "./messages";
 export * from "./import";
 export * from "./staff";
+export * from "./quiz";

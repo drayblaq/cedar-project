@@ -92,12 +92,12 @@ export default function MarketingContact() {
                 ].map(({ name, label, type, placeholder }) => (
                   <div key={name} style={{ marginBottom: 20 }}>
                     <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 8 }}>{label}</label>
-                    <input name={name} type={type} placeholder={placeholder} required={!label.includes("optional")} style={{ width: "100%", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 12, padding: "14px 16px", color: "var(--text)", fontSize: "0.95rem", fontFamily: "var(--font-inter)", outline: "none" }} />
+                    <input name={name} type={type} placeholder={placeholder} required={!label.includes("optional")} style={{ width: "100%", boxSizing: "border-box", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 12, padding: "14px 16px", color: "var(--text)", fontSize: "0.95rem", fontFamily: "var(--font-inter)", outline: "none" }} />
                   </div>
                 ))}
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 8 }}>Message</label>
-                  <textarea name="message" rows={5} placeholder="How can we help you?" required style={{ width: "100%", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 12, padding: "14px 16px", color: "var(--text)", fontSize: "0.95rem", fontFamily: "var(--font-inter)", outline: "none", resize: "vertical" }} />
+                  <textarea name="message" rows={5} placeholder="How can we help you?" required style={{ width: "100%", boxSizing: "border-box", background: "var(--mint)", border: "1.5px solid var(--mint-deep)", borderRadius: 12, padding: "14px 16px", color: "var(--text)", fontSize: "0.95rem", fontFamily: "var(--font-inter)", outline: "none", resize: "vertical" }} />
                 </div>
                 {error && (
                   <p style={{ marginBottom: 14, fontSize: "0.875rem", fontWeight: 600, color: "#b3402f" }}>{error}</p>

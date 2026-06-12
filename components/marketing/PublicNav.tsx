@@ -125,7 +125,7 @@ export function PublicNav() {
       {/* Mobile menu */}
       {menuOpen && (
         <div
-          className="fixed top-[76px] left-0 right-0 z-40 flex flex-col gap-1 px-6 pb-8 pt-4"
+          className="fixed top-[72px] sm:top-[76px] left-0 right-0 z-40 flex flex-col gap-1 px-6 pb-8 pt-4"
           style={{ background: "var(--white)", borderBottom: "2px solid rgba(46,168,42,0.15)", boxShadow: "0 8px 32px rgba(46,168,42,0.12)" }}
         >
           {navLinks.map((link) => (

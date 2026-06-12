@@ -61,10 +61,8 @@ export async function TopNav() {
     roleName = roleRow?.name ?? "user";
   }
 
-  const userName =
-    (profile as { full_name?: string | null } | null)?.full_name?.trim() ||
-    user.email?.split("@")[0] ||
-    "User";
+  const fullName = (profile as { full_name?: string | null } | null)?.full_name?.trim() || "";
+  const userName = fullName.split(" ")[0] || user.email?.split("@")[0] || "User";
 
   const navItems =
     roleName === "admin"   ? ADMIN_NAV   :

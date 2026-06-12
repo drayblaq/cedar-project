@@ -94,6 +94,18 @@ h1, h2, h3, h4, h5, h6 {
   --accent: #14b8a6;
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Public site mobile fixes ─────────────────────────────────────────────── */
+@media (max-width: 479px) {
+  /* Make hero CTA links truly full-width on very small phones */
+  .hero-cta-wrap { flex-direction: column; }
+  .hero-cta-wrap a { width: 100%; }
+}
+
 /* Animations — marketing redesign */
 @keyframes slideUp {
   from {

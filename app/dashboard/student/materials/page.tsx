@@ -35,6 +35,21 @@ export default async function StudentMaterialsPage() {
   }
 
   const { data: materialsRaw } = await materialsQuery;
+  const materialIds = (materialsRaw ?? []).map((m: { id: string }) => m.id);
+
+  // Fetch this student's quiz attempt scores for badge display
+  const attempts: Record<string, number> = {};
+  if (student && materialIds.length > 0) {
+    const { data: attemptsRaw } = await supabase
+      .from("quiz_attempts")
+      .select("material_id, score")
+      .eq("student_id", student.id)
+      .in("material_id", materialIds);
+    for (const a of attemptsRaw ?? []) {
+      attempts[(a as { material_id: string; score: number }).material_id] =
+        (a as { material_id: string; score: number }).score;
+    }
+  }
 
   return (
     <div>
@@ -46,7 +61,10 @@ export default async function StudentMaterialsPage() {
           {levelName ? `Level ${levelName} · ` : ""}Your learning materials
         </p>
       </div>
-      <StudentLibraryExplorer materials={(materialsRaw ?? []) as Parameters<typeof StudentLibraryExplorer>[0]["materials"]} />
+      <StudentLibraryExplorer
+        materials={(materialsRaw ?? []) as Parameters<typeof StudentLibraryExplorer>[0]["materials"]}
+        attempts={attempts}
+      />
     </div>
   );
 }
