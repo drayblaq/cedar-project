@@ -101,6 +101,15 @@ export function PublicNav() {
             </span>
           </button>
 
+          {/* Login link */}
+          <a
+            href={`${process.env.NEXT_PUBLIC_PORTAL_URL || "https://portal.cedartrainingcenter.com"}/auth/login`}
+            className="ml-2 px-4 py-2 rounded-xl font-semibold text-sm no-underline transition-colors"
+            style={{ color: "var(--green-dark)", border: "1.5px solid rgba(46,168,42,0.3)", fontFamily: "var(--font-syne)" }}
+          >
+            {lang === "en" ? "Login" : "Connexion"}
+          </a>
+
           <Link
             href="/register"
             className="ml-2 px-5 py-2 rounded-xl font-bold text-sm text-white transition-all no-underline"
@@ -153,6 +162,14 @@ export function PublicNav() {
           >
             {lang === "en" ? "Passer en Français" : "Switch to English"}
           </button>
+          <a
+            href={`${process.env.NEXT_PUBLIC_PORTAL_URL || "https://portal.cedartrainingcenter.com"}/auth/login`}
+            onClick={() => setMenuOpen(false)}
+            className="py-3 font-semibold text-sm no-underline border-b"
+            style={{ color: "var(--green)", borderColor: "rgba(46,168,42,0.1)", display: "block" }}
+          >
+            {lang === "en" ? "Login" : "Connexion"}
+          </a>
           <Link
             href="/register"
             onClick={() => setMenuOpen(false)}

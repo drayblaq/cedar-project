@@ -258,12 +258,12 @@ export function TopNavClient({ items, userName, userRole, notifications = [], un
       <header className="cedar-topnav">
         <div className="cedar-topnav-inner">
           {/* Logo */}
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 11, textDecoration: "none", flexShrink: 0 }}>
+          <a href={process.env.NEXT_PUBLIC_MARKETING_URL || "https://cedartrainingcenter.com"} style={{ display: "flex", alignItems: "center", gap: 11, textDecoration: "none", flexShrink: 0 }}>
             <Image src="/logo.png" alt="Cedar" width={30} height={30} style={{ objectFit: "contain" }} />
             <span style={{ fontWeight: 800, fontSize: 15, lineHeight: 1.05, letterSpacing: "-0.01em", color: "#16241a" }}>
               Cedar <span style={{ color: "#2ea82a" }}>Training</span> Center
             </span>
-          </Link>
+          </a>
 
           {/* Horizontal nav — primary tabs + "More" overflow (hidden on mobile) */}
           <nav className="cedar-topnav-nav" aria-label="Main navigation">

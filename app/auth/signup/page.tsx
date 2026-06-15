@@ -22,12 +22,12 @@ export default function SignupPage() {
             >
               Sign in
             </Link>
-            <Link
-              href="/"
+            <a
+              href={process.env.NEXT_PUBLIC_MARKETING_URL || "https://cedartrainingcenter.com"}
               className="text-sm font-medium text-slate-600 hover:text-slate-900"
             >
               Back to website
-            </Link>
+            </a>
           </div>
         </div>
       </div>

@@ -7,7 +7,9 @@ export async function GET(request: NextRequest) {
   let next = url.searchParams.get("next") ?? "/admin";
   if (!next.startsWith("/") || next.startsWith("//")) next = "/admin";
 
-  const redirectTarget = new URL(next, url.origin);
+  // Use portal subdomain as the redirect base so cookies land on the right domain
+  const portalBase = process.env.NEXT_PUBLIC_PORTAL_URL || url.origin;
+  const redirectTarget = new URL(next, portalBase);
   const response = NextResponse.redirect(redirectTarget);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

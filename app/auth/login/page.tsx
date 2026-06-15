@@ -214,9 +214,9 @@ function LoginForm() {
           Don&apos;t have an account? Contact Cedar Training Center to register.
         </p>
         <div style={{ textAlign: "center", marginTop: 12 }}>
-          <Link href="/" style={{ fontSize: "0.75rem", color: "#94a3b8", textDecoration: "none" }}>
+          <a href={process.env.NEXT_PUBLIC_MARKETING_URL || "https://cedartrainingcenter.com"} style={{ fontSize: "0.75rem", color: "#94a3b8", textDecoration: "none" }}>
             ← Back to website
-          </Link>
+          </a>
         </div>
       </div>
     </div>

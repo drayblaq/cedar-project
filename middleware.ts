@@ -8,6 +8,9 @@ const ROLE_HOME: Record<string, string> = {
   parent: "/parent",
 };
 
+const MARKETING_URL = process.env.NEXT_PUBLIC_MARKETING_URL || "https://cedartrainingcenter.com";
+const PORTAL_URL    = process.env.NEXT_PUBLIC_PORTAL_URL    || "https://portal.cedartrainingcenter.com";
+
 function roleNameFromJoinedRoles(roles: unknown): string | undefined {
   if (roles == null) return undefined;
   if (Array.isArray(roles)) {
@@ -24,10 +27,10 @@ function roleNameFromJoinedRoles(roles: unknown): string | undefined {
 function mapLegacyDashboardPath(pathname: string): string {
   if (pathname === "/dashboard" || pathname === "/dashboard/") return "/admin";
   if (pathname.startsWith("/dashboard/student")) return pathname.replace("/dashboard/student", "/student");
-  if (pathname.startsWith("/dashboard/parent")) return pathname.replace("/dashboard/parent", "/parent");
-  if (pathname.startsWith("/dashboard/staff")) return pathname.replace("/dashboard/staff", "/staff");
-  if (pathname.startsWith("/dashboard/admin")) return pathname.replace("/dashboard/admin", "/admin");
-  if (pathname.startsWith("/dashboard")) return pathname.replace("/dashboard", "/admin");
+  if (pathname.startsWith("/dashboard/parent"))  return pathname.replace("/dashboard/parent",  "/parent");
+  if (pathname.startsWith("/dashboard/staff"))   return pathname.replace("/dashboard/staff",   "/staff");
+  if (pathname.startsWith("/dashboard/admin"))   return pathname.replace("/dashboard/admin",   "/admin");
+  if (pathname.startsWith("/dashboard"))         return pathname.replace("/dashboard",         "/admin");
   return pathname;
 }
 
@@ -36,6 +39,57 @@ export async function middleware(request: NextRequest) {
     request: { headers: request.headers },
   });
 
+  const hostname = request.headers.get("host") || "";
+  const pathname = request.nextUrl.pathname;
+
+  // ── Subdomain detection ────────────────────────────────────────────────────
+  const isPortalSubdomain =
+    hostname.startsWith("portal.") ||
+    hostname.startsWith("portal-");          // handles preview deployments like portal-xyz.vercel.app
+
+  const isLocalDev =
+    hostname.startsWith("localhost") ||
+    hostname.startsWith("127.0.0.1") ||
+    hostname.includes(".vercel.app") && !hostname.startsWith("portal");
+
+  const isMarketingDomain = !isPortalSubdomain;
+
+  const marketingPaths = ["/", "/about", "/courses", "/contact", "/register"];
+  const isMarketingPath =
+    marketingPaths.some((p) => pathname === p || pathname.startsWith(p + "/"));
+
+  const isPortalPath =
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/student") ||
+    pathname.startsWith("/staff") ||
+    pathname.startsWith("/parent") ||
+    pathname.startsWith("/dashboard");
+
+  // Skip subdomain cross-redirects in local dev to avoid infinite loops
+  if (!isLocalDev) {
+    // Portal subdomain visiting a marketing page → redirect to marketing domain
+    if (isPortalSubdomain && isMarketingPath && pathname !== "/") {
+      return NextResponse.redirect(new URL(pathname, MARKETING_URL));
+    }
+
+    // Portal subdomain root "/" → redirect to login
+    if (isPortalSubdomain && pathname === "/") {
+      return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
+
+    // Main domain trying to access portal pages → redirect to portal subdomain
+    if (isMarketingDomain && isPortalPath) {
+      return NextResponse.redirect(new URL(pathname, PORTAL_URL));
+    }
+  }
+
+  // ── Legacy /dashboard redirect ─────────────────────────────────────────────
+  if (pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL(mapLegacyDashboardPath(pathname), request.url));
+  }
+
+  // ── Supabase auth session refresh ─────────────────────────────────────────
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -55,11 +109,7 @@ export async function middleware(request: NextRequest) {
 
   await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-  if (pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL(mapLegacyDashboardPath(pathname), request.url));
-  }
-
+  // ── Role-based auth checks (portal paths only) ────────────────────────────
   const protectedArea =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/staff") ||
@@ -99,7 +149,6 @@ export async function middleware(request: NextRequest) {
     const roleName = roleNameFromJoinedRoles(profile?.roles);
 
     const expectedPrefix = roleName && ROLE_HOME[roleName] ? ROLE_HOME[roleName] : null;
-    // No recognised role — bounce back to login rather than allowing access to any portal
     if (!expectedPrefix) {
       const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("next", pathname);
