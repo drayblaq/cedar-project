@@ -4,8 +4,12 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+  const type = url.searchParams.get("type");
   let next = url.searchParams.get("next") ?? "/admin";
   if (!next.startsWith("/") || next.startsWith("//")) next = "/admin";
+
+  // Invite and recovery links should land on set-password page, not dashboard
+  if (type === "invite" || type === "recovery") next = "/auth/reset-password";
 
   // Use portal subdomain as the redirect base so cookies land on the right domain
   const portalBase = process.env.NEXT_PUBLIC_PORTAL_URL || url.origin;
