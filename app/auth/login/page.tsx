@@ -26,28 +26,31 @@ function EyeIcon() {
 
 function AuthLeftPanel() {
   return (
-    <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-12" style={{ background: "linear-gradient(135deg, #15803d 0%, #16a34a 50%, #166534 100%)" }}>
-      {/* Floating shapes */}
-      <div style={{ position: "absolute", top: 80, left: 40, width: 120, height: 120, background: "rgba(255,255,255,0.08)", borderRadius: 28, transform: "rotate(12deg)", animation: "float 6s ease-in-out infinite" }} />
-      <div style={{ position: "absolute", bottom: 120, right: 60, width: 88, height: 88, background: "rgba(255,255,255,0.08)", borderRadius: 20, transform: "rotate(-12deg)", animation: "float 8s ease-in-out infinite reverse" }} />
-      <div style={{ position: "absolute", top: "45%", right: 32, width: 60, height: 60, background: "rgba(255,255,255,0.08)", borderRadius: "50%", animation: "float 7s ease-in-out infinite" }} />
-      {/* Floating English words */}
-      <span style={{ position: "absolute", top: 64, right: 96, color: "rgba(255,255,255,0.18)", fontSize: "2.5rem", fontWeight: 800, transform: "rotate(6deg)", userSelect: "none" }}>A1</span>
-      <span style={{ position: "absolute", bottom: 96, left: 64, color: "rgba(255,255,255,0.18)", fontSize: "2.5rem", fontWeight: 800, transform: "rotate(-6deg)", userSelect: "none" }}>B2</span>
-      <span style={{ position: "absolute", top: "30%", left: 32, color: "rgba(255,255,255,0.12)", fontSize: "1.75rem", fontWeight: 800, transform: "rotate(10deg)", userSelect: "none" }}>Hello!</span>
-      <span style={{ position: "absolute", bottom: "30%", right: "22%", color: "rgba(255,255,255,0.12)", fontSize: "1.4rem", fontWeight: 800, transform: "rotate(-8deg)", userSelect: "none" }}>Bonjour</span>
+    <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-700 via-green-600 to-green-800 relative overflow-hidden items-center justify-center p-12">
+      {/* Floating decorative shapes */}
+      <div className="animate-float absolute top-20 left-10 w-28 h-28 bg-white/10 rounded-3xl rotate-12" />
+      <div className="animate-float-delayed absolute bottom-28 right-14 w-20 h-20 bg-white/10 rounded-2xl -rotate-12" />
+      <div className="animate-float absolute top-[45%] right-8 w-14 h-14 bg-white/10 rounded-full" />
+      <div className="animate-float-delayed absolute top-1/3 left-6 w-10 h-10 bg-white/8 rounded-xl rotate-6" />
+
+      {/* Floating text accents */}
+      <span className="absolute top-16 right-24 text-white/20 text-4xl font-black rotate-6 select-none">A1</span>
+      <span className="absolute bottom-24 left-16 text-white/20 text-4xl font-black -rotate-6 select-none">B2</span>
+      <span className="absolute top-[30%] left-8 text-white/15 text-2xl font-black rotate-12 select-none">Hello!</span>
+      <span className="absolute bottom-[30%] right-[20%] text-white/15 text-xl font-black -rotate-8 select-none">Bonjour</span>
+
       {/* Main content */}
-      <div style={{ position: "relative", zIndex: 10, textAlign: "center", maxWidth: 320 }}>
+      <div className="relative z-10 text-center max-w-xs">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Cedar" style={{ height: 64, margin: "0 auto 20px", display: "block", filter: "brightness(0) invert(1)" }} />
-        <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#ffffff", marginBottom: 12, letterSpacing: "-0.02em" }}>Cedar Training Center</h1>
-        <p style={{ fontSize: "0.9rem", color: "rgba(220,252,231,0.9)", lineHeight: 1.7 }}>
+        <img src="/logo.png" alt="Cedar" className="h-16 mx-auto mb-5 brightness-0 invert" />
+        <h1 className="text-3xl font-black text-white mb-3 tracking-tight">Cedar Training Center</h1>
+        <p className="text-sm text-green-100/90 leading-relaxed">
           Your journey to English fluency starts here. Access your courses, track your progress, and learn at your own pace.
         </p>
-        {/* CEFR levels */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 32 }}>
+        {/* CEFR level badges */}
+        <div className="flex items-center justify-center gap-2 mt-8">
           {["A1","A2","B1","B2","C1","C2"].map((level) => (
-            <div key={level} style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "0.7rem", fontWeight: 800 }}>
+            <div key={level} className="w-10 h-10 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center text-white text-xs font-black">
               {level}
             </div>
           ))}
@@ -87,7 +90,6 @@ function LoginForm() {
         return;
       }
       window.history.replaceState({}, "", window.location.pathname + window.location.search);
-      // Invite and recovery links should land on the set-password page
       const type = params.get("type");
       if (type === "invite" || type === "recovery") {
         if (!cancelled) router.replace("/auth/reset-password");
@@ -116,75 +118,101 @@ function LoginForm() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex" }}>
+    <div className="min-h-screen flex">
       <AuthLeftPanel />
 
       {/* Right side — form */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc", padding: "40px 24px" }}>
-        <div style={{ width: "100%", maxWidth: 420 }}>
+      <div className="flex-1 flex items-center justify-center bg-gray-50 px-6 py-10">
+        <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="lg:hidden" style={{ textAlign: "center", marginBottom: 32 }}>
+          <div className="lg:hidden text-center mb-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Cedar Training Center" style={{ height: 52, margin: "0 auto 12px", display: "block", objectFit: "contain" }} />
+            <img src="/logo.png" alt="Cedar Training Center" className="h-14 mx-auto mb-3 object-contain" />
           </div>
 
-          <div style={{ marginBottom: 28 }}>
-            <h1 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#0f172a", margin: "0 0 6px", letterSpacing: "-0.02em" }}>Welcome back</h1>
-            <p style={{ fontSize: "0.875rem", color: "#64748b", margin: 0 }}>Sign in to continue your learning journey</p>
+          <div className="mb-7">
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1.5">Welcome back</h1>
+            <p className="text-sm text-gray-500">Sign in to continue your learning journey</p>
           </div>
 
-          <div style={{ background: "#ffffff", borderRadius: 20, border: "1px solid #e2e8f0", padding: "32px 28px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-            <form onSubmit={handleSubmit} className="auth-form" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, color: "#111827", marginBottom: 6 }}>Email address</label>
-                <input type="email" name="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email"
-                  style={{ width: "100%", boxSizing: "border-box", border: "1.5px solid #e2e8f0", borderRadius: 12, padding: "12px 14px", fontSize: "0.9rem", fontWeight: 500, color: "#111827", background: "#fff", outline: "none", fontFamily: "inherit" }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = G; }} onBlur={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; }} />
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email address</label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 font-semibold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                />
               </div>
 
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                  <label style={{ fontSize: "0.8rem", fontWeight: 700, color: "#111827" }}>Password</label>
-                  <a href="/auth/forgot-password" style={{ fontSize: "0.75rem", fontWeight: 600, color: G, textDecoration: "none" }}>Forgot password?</a>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-semibold text-gray-700">Password</label>
+                  <a href="/auth/forgot-password" className="text-xs font-semibold text-green-600 hover:text-green-700 transition-colors">
+                    Forgot password?
+                  </a>
                 </div>
-                <div style={{ position: "relative" }}>
-                  <input type={showPassword ? "text" : "password"} name="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" autoComplete="current-password"
-                    style={{ width: "100%", boxSizing: "border-box", border: "1.5px solid #e2e8f0", borderRadius: 12, padding: "12px 44px 12px 14px", fontSize: "0.9rem", fontWeight: 500, color: "#111827", background: "#fff", outline: "none", fontFamily: "inherit" }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = G; }} onBlur={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; }} />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}
-                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 4, display: "flex" }}>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-11 text-sm text-gray-900 font-semibold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                  >
                     {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                   </button>
                 </div>
               </div>
 
               {error && (
-                <div style={{ display: "flex", gap: 8, background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, padding: "10px 12px" }}>
-                  <svg style={{ width: 16, height: 16, flexShrink: 0, marginTop: 2, color: "#dc2626" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex gap-2 bg-red-50 border border-red-100 rounded-xl p-3">
+                  <svg className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span style={{ fontSize: "0.85rem", color: "#b91c1c", lineHeight: 1.5 }}>{error}</span>
+                  <span className="text-sm text-red-700 font-medium">{error}</span>
                 </div>
               )}
 
-              <button type="submit" disabled={loading}
-                style={{ width: "100%", background: G, color: "#fff", border: "none", borderRadius: 12, padding: "13px 20px", fontSize: "0.9rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.75 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontFamily: "inherit", boxShadow: "0 4px 14px rgba(22,163,74,0.25)" }}>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg shadow-green-600/20 hover:shadow-xl hover:shadow-green-600/25 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+              >
                 {loading ? (
-                  <><svg style={{ width: 16, height: 16, animation: "spin 1s linear infinite" }} fill="none" viewBox="0 0 24 24">
-                    <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>Signing in…</>
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Signing in…
+                  </>
                 ) : "Sign in"}
               </button>
             </form>
           </div>
 
-          <p style={{ textAlign: "center", fontSize: "0.8rem", color: "#64748b", marginTop: 20 }}>
+          <p className="text-center text-sm text-gray-500 mt-5">
             Don&apos;t have an account?{" "}
-            <a href={`${MARKETING_URL}/register`} style={{ color: G, fontWeight: 600, textDecoration: "none" }}>Register here</a>
+            <a href={`${MARKETING_URL}/register`} className="text-green-600 font-semibold hover:text-green-700 transition-colors">Register here</a>
           </p>
-          <div style={{ textAlign: "center", marginTop: 10 }}>
-            <a href={MARKETING_URL} style={{ fontSize: "0.75rem", color: "#94a3b8", textDecoration: "none" }}>← Back to website</a>
+          <div className="text-center mt-2.5">
+            <a href={MARKETING_URL} className="text-xs text-gray-400 hover:text-gray-500 transition-colors">← Back to website</a>
           </div>
         </div>
       </div>
@@ -195,15 +223,13 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc" }}>
-        <div style={{ width: "100%", maxWidth: 420, padding: "0 24px" }}>
-          <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #e2e8f0", padding: "32px 28px" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div style={{ height: 10, borderRadius: 6, background: "#f1f5f9" }} />
-              <div style={{ height: 44, borderRadius: 12, background: "#f1f5f9" }} />
-              <div style={{ height: 44, borderRadius: 12, background: "#f1f5f9" }} />
-              <div style={{ height: 48, borderRadius: 12, background: "#f1f5f9" }} />
-            </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-full max-w-md px-6">
+          <div className="bg-white rounded-2xl border border-gray-100 p-8 space-y-4">
+            <div className="h-2.5 rounded-full bg-gray-100 w-1/2" />
+            <div className="h-11 rounded-xl bg-gray-100" />
+            <div className="h-11 rounded-xl bg-gray-100" />
+            <div className="h-12 rounded-xl bg-gray-100" />
           </div>
         </div>
       </div>
