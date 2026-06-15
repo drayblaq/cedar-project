@@ -17,11 +17,14 @@ export function ResendInviteButton({ studentId, lastInviteSentAt }: Props) {
     setState("loading");
     setErrorText(null);
     const result = await inviteStudentLogin(studentId);
+    console.log("[ResendInviteButton] result:", result);
     if (result.success) {
       setState("success");
       setTimeout(() => setState("idle"), 4000);
     } else {
-      setErrorText(result.error ?? "Failed to send invite");
+      const msg = result.error ?? "Failed to send invite";
+      console.error("[ResendInviteButton] error:", msg);
+      setErrorText(msg);
       setState("error");
       setTimeout(() => setState("idle"), 4000);
     }

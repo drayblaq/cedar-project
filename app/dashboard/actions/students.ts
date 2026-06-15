@@ -189,11 +189,11 @@ export async function inviteStudentLogin(studentId: string) {
 
   const { data: student } = await supabase
     .from("students")
-    .select("id, email, user_id")
+    .select("id, email, full_name, user_id")
     .eq("id", studentId)
     .single();
   if (!student) return { success: false, error: "Student not found" };
-  if (student.user_id) return { success: false, error: "This student already has a portal login" };
+  if (!student.email) return { success: false, error: "Student has no email address" };
 
   const { data: payments } = await supabase
     .from("payments")
@@ -202,27 +202,53 @@ export async function inviteStudentLogin(studentId: string) {
     .limit(1);
   if (!payments?.length) return { success: false, error: "Student must have at least one payment before receiving a login" };
 
+  // Always use portal subdomain so the redirect URL is in Supabase's allowed list
+  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL || "https://portal.cedartrainingcenter.com";
+  const redirectTo = `${portalUrl}/auth/login`;
+
+  console.log("[invite] studentId:", studentId, "email:", student.email, "user_id:", student.user_id, "redirectTo:", redirectTo);
+
   try {
     const admin = createAdminClient();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-    const redirectTo = `${siteUrl}/auth/login`;
 
-    const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(student.email, { redirectTo });
-    if (inviteError) {
-      // If already invited (not yet accepted), fall back to a magic link so the resend works
-      const msg = inviteError.message.toLowerCase();
-      const alreadyExists = msg.includes("already") || msg.includes("registered") || msg.includes("exists");
-      if (!alreadyExists) return { success: false, error: inviteError.message };
-
-      const { error: linkError } = await admin.auth.admin.generateLink({
+    if (student.user_id) {
+      // Student already has an account — send a magic link so they can log back in
+      const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
         type: "magiclink",
         email: student.email,
         options: { redirectTo },
       });
+      console.log("[invite] generateLink result:", JSON.stringify({ data: linkData, error: linkError }, null, 2));
       if (linkError) return { success: false, error: linkError.message };
+
+      // generateLink creates the URL but doesn't send the email —
+      // send it via Supabase's built-in recovery email which DOES trigger Resend
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(student.email, { redirectTo });
+      console.log("[invite] resetPasswordForEmail error:", resetError);
+      if (resetError) return { success: false, error: resetError.message };
+    } else {
+      // New user — send invite email (triggers Resend via Supabase)
+      const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(student.email, {
+        redirectTo,
+        data: { full_name: student.full_name },
+      });
+      console.log("[invite] inviteUserByEmail result:", JSON.stringify({ data: inviteData, error: inviteError }, null, 2));
+
+      if (inviteError) {
+        const msg = inviteError.message.toLowerCase();
+        const alreadyExists = msg.includes("already") || msg.includes("registered") || msg.includes("exists");
+        if (!alreadyExists) return { success: false, error: inviteError.message };
+
+        // User was invited before but never accepted — resend via password reset
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(student.email, { redirectTo });
+        console.log("[invite] resend resetPasswordForEmail error:", resetError);
+        if (resetError) return { success: false, error: resetError.message };
+      }
     }
   } catch (e) {
-    return { success: false, error: e instanceof Error ? e.message : "Failed to send invite" };
+    const msg = e instanceof Error ? e.message : "Failed to send invite";
+    console.error("[invite] caught exception:", msg);
+    return { success: false, error: msg };
   }
 
   await supabase
