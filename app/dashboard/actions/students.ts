@@ -213,19 +213,12 @@ export async function inviteStudentLogin(studentId: string) {
 
     if (student.user_id) {
       // Student already has an account — send a magic link so they can log back in
-      const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
-        type: "magiclink",
+      const { error: otpError } = await supabase.auth.signInWithOtp({
         email: student.email,
-        options: { redirectTo },
+        options: { shouldCreateUser: false, emailRedirectTo: redirectTo },
       });
-      console.log("[invite] generateLink result:", JSON.stringify({ data: linkData, error: linkError }, null, 2));
-      if (linkError) return { success: false, error: linkError.message };
-
-      // generateLink creates the URL but doesn't send the email —
-      // send it via Supabase's built-in recovery email which DOES trigger Resend
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(student.email, { redirectTo });
-      console.log("[invite] resetPasswordForEmail error:", resetError);
-      if (resetError) return { success: false, error: resetError.message };
+      console.log("[invite] signInWithOtp error:", otpError);
+      if (otpError) return { success: false, error: otpError.message };
     } else {
       // New user — send invite email (triggers Resend via Supabase)
       const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(student.email, {
@@ -239,10 +232,13 @@ export async function inviteStudentLogin(studentId: string) {
         const alreadyExists = msg.includes("already") || msg.includes("registered") || msg.includes("exists");
         if (!alreadyExists) return { success: false, error: inviteError.message };
 
-        // User was invited before but never accepted — resend via password reset
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(student.email, { redirectTo });
-        console.log("[invite] resend resetPasswordForEmail error:", resetError);
-        if (resetError) return { success: false, error: resetError.message };
+        // User was invited before but never accepted — resend magic link
+        const { error: otpError } = await supabase.auth.signInWithOtp({
+          email: student.email,
+          options: { shouldCreateUser: false, emailRedirectTo: redirectTo },
+        });
+        console.log("[invite] resend signInWithOtp error:", otpError);
+        if (otpError) return { success: false, error: otpError.message };
       }
     }
   } catch (e) {
