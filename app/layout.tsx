@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: "Cedar Training Center | English in Cotonou, Benin",
   description: "English language training from beginner to advanced. Cedar Training Center, Cotonou, Benin.",
   icons: {
-    icon: "/logo.png",
+    icon: [{ url: "/icon.png", type: "image/png" }],
     apple: "/logo.png",
   },
 };
