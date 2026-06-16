@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { friendlyError } from "@/lib/friendlyErrors";
 
 const G = "#16a34a";
 const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || "https://portal.cedartrainingcenter.com";
@@ -50,7 +51,7 @@ export default function ForgotPasswordPage() {
       redirectTo: `${PORTAL_URL}/auth/reset-password`,
     });
     setLoading(false);
-    if (resetError) { setError(resetError.message); return; }
+    if (resetError) { setError(friendlyError(resetError.message)); return; }
     setSent(true);
   }
 
@@ -104,6 +105,7 @@ export default function ForgotPasswordPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span style={{ fontSize: "0.85rem", color: "#b91c1c", lineHeight: 1.5 }}>{error}</span>
+
                   </div>
                 )}
 

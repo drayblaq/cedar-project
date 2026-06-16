@@ -4,15 +4,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { getPostLoginRedirect } from "@/app/auth/actions";
+import { PasswordInput } from "@/components/PasswordInput";
+import { friendlyError } from "@/lib/friendlyErrors";
 
 const G = "#16a34a";
 
 function AuthLeftPanel() {
   return (
     <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-12" style={{ background: "linear-gradient(135deg, #15803d 0%, #16a34a 50%, #166534 100%)" }}>
-      <div style={{ position: "absolute", top: 80, left: 40, width: 120, height: 120, background: "rgba(255,255,255,0.08)", borderRadius: 28, transform: "rotate(12deg)", animation: "float 6s ease-in-out infinite" }} />
-      <div style={{ position: "absolute", bottom: 120, right: 60, width: 88, height: 88, background: "rgba(255,255,255,0.08)", borderRadius: 20, transform: "rotate(-12deg)", animation: "float 8s ease-in-out infinite reverse" }} />
-      <div style={{ position: "absolute", top: "45%", right: 32, width: 60, height: 60, background: "rgba(255,255,255,0.08)", borderRadius: "50%", animation: "float 7s ease-in-out infinite" }} />
+      <div style={{ position: "absolute", top: 80, left: 40, width: 120, height: 120, background: "rgba(255,255,255,0.08)", borderRadius: 28, transform: "rotate(12deg)" }} />
+      <div style={{ position: "absolute", bottom: 120, right: 60, width: 88, height: 88, background: "rgba(255,255,255,0.08)", borderRadius: 20, transform: "rotate(-12deg)" }} />
+      <div style={{ position: "absolute", top: "45%", right: 32, width: 60, height: 60, background: "rgba(255,255,255,0.08)", borderRadius: "50%" }} />
       <span style={{ position: "absolute", top: 64, right: 96, color: "rgba(255,255,255,0.18)", fontSize: "2.5rem", fontWeight: 800, transform: "rotate(6deg)", userSelect: "none" }}>A1</span>
       <span style={{ position: "absolute", bottom: 96, left: 64, color: "rgba(255,255,255,0.18)", fontSize: "2.5rem", fontWeight: 800, transform: "rotate(-6deg)", userSelect: "none" }}>B2</span>
       <span style={{ position: "absolute", top: "30%", left: 32, color: "rgba(255,255,255,0.12)", fontSize: "1.75rem", fontWeight: 800, transform: "rotate(10deg)", userSelect: "none" }}>Hello!</span>
@@ -48,15 +50,15 @@ export default function ResetPasswordPage() {
     e.preventDefault();
     setError(null);
 
-    if (password.length < 6) { setError("Password must be at least 6 characters"); return; }
-    if (password !== confirmPassword) { setError("Passwords do not match"); return; }
+    if (password.length < 6) { setError("Your password must be at least 6 characters long."); return; }
+    if (password !== confirmPassword) { setError("Passwords do not match. Please try again."); return; }
 
     setLoading(true);
     const supabase = createClient();
     const { error: updateError } = await supabase.auth.updateUser({ password });
     setLoading(false);
 
-    if (updateError) { setError(updateError.message); return; }
+    if (updateError) { setError(friendlyError(updateError.message)); return; }
 
     setDone(true);
     const destination = await getPostLoginRedirect("");
@@ -67,14 +69,16 @@ export default function ResetPasswordPage() {
     <div style={{ minHeight: "100vh", display: "flex" }}>
       <AuthLeftPanel />
 
+      {/* Mobile hero */}
+      <div className="lg:hidden bg-gradient-to-br from-green-700 via-green-600 to-green-800 px-6 pt-10 pb-8 text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Cedar Training Center" className="h-14 mx-auto mb-3 brightness-0 invert object-contain" />
+        <h2 className="text-xl font-black text-white tracking-tight">Cedar Training Center</h2>
+        <p className="text-sm text-green-100/80 mt-1">Create your secure password</p>
+      </div>
+
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc", padding: "40px 24px" }}>
         <div style={{ width: "100%", maxWidth: 420 }}>
-          {/* Mobile logo */}
-          <div className="lg:hidden" style={{ textAlign: "center", marginBottom: 32 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Cedar Training Center" style={{ height: 52, margin: "0 auto 12px", display: "block", objectFit: "contain" }} />
-          </div>
-
           <div style={{ marginBottom: 28 }}>
             <h1 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#0f172a", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
               {done ? "Password set!" : "Set your password"}
@@ -98,16 +102,27 @@ export default function ResetPasswordPage() {
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 <div>
                   <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, color: "#111827", marginBottom: 6 }}>New password</label>
-                  <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" autoComplete="new-password"
-                    style={{ width: "100%", boxSizing: "border-box", border: "1.5px solid #e2e8f0", borderRadius: 12, padding: "12px 14px", fontSize: "0.9rem", fontWeight: 500, color: "#111827", background: "#fff", outline: "none", fontFamily: "inherit" }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = G; }} onBlur={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; }} />
+                  <PasswordInput
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="At least 6 characters"
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                  />
                 </div>
 
                 <div>
                   <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, color: "#111827", marginBottom: 6 }}>Confirm password</label>
-                  <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repeat your password" autoComplete="new-password"
-                    style={{ width: "100%", boxSizing: "border-box", border: "1.5px solid #e2e8f0", borderRadius: 12, padding: "12px 14px", fontSize: "0.9rem", fontWeight: 500, color: "#111827", background: "#fff", outline: "none", fontFamily: "inherit" }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = G; }} onBlur={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; }} />
+                  <PasswordInput
+                    name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Repeat your password"
+                    required
+                    autoComplete="new-password"
+                  />
                 </div>
 
                 {error && (

@@ -4,42 +4,22 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { getPostLoginRedirect } from "@/app/auth/actions";
+import { PasswordInput } from "@/components/PasswordInput";
+import { friendlyError } from "@/lib/friendlyErrors";
 
 const MARKETING_URL = process.env.NEXT_PUBLIC_MARKETING_URL || "https://cedartrainingcenter.com";
-const G = "#16a34a";
-
-function EyeOffIcon() {
-  return (
-    <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.29 3.29m0 0a10.05 10.05 0 015.416-2.583m4.058.46a10.05 10.05 0 013.91 3.55 9.97 9.97 0 01-1.564 3.029m-4.057.461l-3.29-3.29" />
-    </svg>
-  );
-}
-function EyeIcon() {
-  return (
-    <svg width={18} height={18} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-    </svg>
-  );
-}
 
 function AuthLeftPanel() {
   return (
     <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-700 via-green-600 to-green-800 relative overflow-hidden items-center justify-center p-12">
-      {/* Floating decorative shapes */}
       <div className="animate-float absolute top-20 left-10 w-28 h-28 bg-white/10 rounded-3xl rotate-12" />
       <div className="animate-float-delayed absolute bottom-28 right-14 w-20 h-20 bg-white/10 rounded-2xl -rotate-12" />
       <div className="animate-float absolute top-[45%] right-8 w-14 h-14 bg-white/10 rounded-full" />
       <div className="animate-float-delayed absolute top-1/3 left-6 w-10 h-10 bg-white/8 rounded-xl rotate-6" />
-
-      {/* Floating text accents */}
       <span className="absolute top-16 right-24 text-white/20 text-4xl font-black rotate-6 select-none">A1</span>
       <span className="absolute bottom-24 left-16 text-white/20 text-4xl font-black -rotate-6 select-none">B2</span>
       <span className="absolute top-[30%] left-8 text-white/15 text-2xl font-black rotate-12 select-none">Hello!</span>
       <span className="absolute bottom-[30%] right-[20%] text-white/15 text-xl font-black -rotate-8 select-none">Bonjour</span>
-
-      {/* Main content */}
       <div className="relative z-10 text-center max-w-xs">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="Cedar" className="h-16 mx-auto mb-5 brightness-0 invert" />
@@ -47,7 +27,6 @@ function AuthLeftPanel() {
         <p className="text-sm text-green-100/90 leading-relaxed">
           Your journey to English fluency starts here. Access your courses, track your progress, and learn at your own pace.
         </p>
-        {/* CEFR level badges */}
         <div className="flex items-center justify-center gap-2 mt-8">
           {["A1","A2","B1","B2","C1","C2"].map((level) => (
             <div key={level} className="w-10 h-10 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center text-white text-xs font-black">
@@ -65,14 +44,14 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const rawNext = searchParams.get("next") || "";
   const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
+  const urlError = searchParams.get("error");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(urlError ?? null);
 
-  // Handle magic-link / invite / recovery tokens in URL hash
+  // Handle magic-link / invite / recovery tokens in URL hash (implicit flow fallback)
   useEffect(() => {
     const hash = window.location.hash;
     if (!hash.startsWith("#")) return;
@@ -86,7 +65,7 @@ function LoginForm() {
       const supabase = createClient();
       const { error: sessionError } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
       if (sessionError) {
-        if (!cancelled) setError(sessionError.message);
+        if (!cancelled) setError(friendlyError(sessionError.message));
         return;
       }
       window.history.replaceState({}, "", window.location.pathname + window.location.search);
@@ -108,7 +87,7 @@ function LoginForm() {
     setError(null);
     const supabase = createClient();
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-    if (authError) { setLoading(false); setError(authError.message); return; }
+    if (authError) { setLoading(false); setError(friendlyError(authError.message)); return; }
     if (!authData.session?.user) { setLoading(false); setError("Login failed. Please try again."); return; }
     router.refresh();
     const path = await getPostLoginRedirect(next);
@@ -129,7 +108,7 @@ function LoginForm() {
         <p className="text-sm text-green-100/80 mt-1">Your journey to English fluency</p>
       </div>
 
-      {/* Right side — form */}
+      {/* Form side */}
       <div className="flex-1 flex items-center justify-center bg-gray-50 px-6 py-10">
         <div className="w-full max-w-md">
           <div className="mb-7">
@@ -149,7 +128,7 @@ function LoginForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   autoComplete="email"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 font-semibold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 font-medium placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 />
               </div>
 
@@ -160,26 +139,14 @@ function LoginForm() {
                     Forgot password?
                   </a>
                 </div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    autoComplete="current-password"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-11 text-sm text-gray-900 font-semibold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
-                  >
-                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                  </button>
-                </div>
+                <PasswordInput
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  autoComplete="current-password"
+                />
               </div>
 
               {error && (
