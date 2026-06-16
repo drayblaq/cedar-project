@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { getPostLoginRedirect } from "@/app/auth/actions";
 
 const G = "#16a34a";
 
@@ -58,8 +59,8 @@ export default function ResetPasswordPage() {
     if (updateError) { setError(updateError.message); return; }
 
     setDone(true);
-    // Give user a moment to see the success message, then let middleware route them
-    setTimeout(() => router.push("/"), 1800);
+    const destination = await getPostLoginRedirect("");
+    setTimeout(() => router.push(destination), 1800);
   }
 
   return (

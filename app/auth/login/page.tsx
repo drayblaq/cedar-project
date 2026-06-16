@@ -118,18 +118,20 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <AuthLeftPanel />
+
+      {/* Mobile hero banner */}
+      <div className="lg:hidden bg-gradient-to-br from-green-700 via-green-600 to-green-800 px-6 pt-10 pb-8 text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Cedar Training Center" className="h-14 mx-auto mb-3 brightness-0 invert object-contain" />
+        <h2 className="text-xl font-black text-white tracking-tight">Cedar Training Center</h2>
+        <p className="text-sm text-green-100/80 mt-1">Your journey to English fluency</p>
+      </div>
 
       {/* Right side — form */}
       <div className="flex-1 flex items-center justify-center bg-gray-50 px-6 py-10">
         <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="lg:hidden text-center mb-8">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Cedar Training Center" className="h-14 mx-auto mb-3 object-contain" />
-          </div>
-
           <div className="mb-7">
             <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1.5">Welcome back</h1>
             <p className="text-sm text-gray-500">Sign in to continue your learning journey</p>
