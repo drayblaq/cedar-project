@@ -45,6 +45,14 @@ export default async function ClassesPage() {
     };
   });
 
+  // Students (for class panel roster)
+  const { data: studentsRaw } = await supabase.from("students").select("id, full_name, class_id").eq("status", "active").order("full_name");
+  const students = (studentsRaw ?? []).map((s) => ({
+    id: s.id as string,
+    full_name: s.full_name as string,
+    class_id: (s.class_id as string | null) ?? null,
+  }));
+
   // Timetable with class name
   const { data: ttRaw } = await supabase
     .from("timetable")
@@ -70,6 +78,7 @@ export default async function ClassesPage() {
       staff={(staffList ?? []) as { id: string; full_name: string | null }[]}
       classes={classes}
       timetable={timetable}
+      students={students}
     />
   );
 }

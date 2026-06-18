@@ -250,6 +250,17 @@ export async function deleteTimetableSlot(id: string) {
   return { success: true };
 }
 
+export async function assignStudentToClass(studentId: string, classId: string | null) {
+  const role = await getCallerRole();
+  if (!role || role !== "admin") return { error: "Unauthorized" };
+  const supabase = await createClient();
+  const { error } = await supabase.from("students").update({ class_id: classId }).eq("id", studentId);
+  if (error) return { error: error.message };
+  revalidatePath("/admin/classes");
+  revalidatePath("/admin/students");
+  return { success: true };
+}
+
 export async function uploadSingleMaterial(formData: FormData): Promise<{ success?: boolean; error?: string; id?: string }> {
   try {
     const supabase = await createClient();

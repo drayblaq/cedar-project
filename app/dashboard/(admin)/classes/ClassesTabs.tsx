@@ -1,37 +1,26 @@
 "use client";
 
 import { useState, useMemo, useTransition } from "react";
-// useTransition kept for RemoveStaffChip and DeleteSlotButton
-import { createClass, assignStaffToClass, createTimetableSlot, deleteTimetableSlot, removeStaffFromClass } from "@/app/dashboard/actions/index";
+import {
+  createClass,
+  assignStaffToClass,
+  removeStaffFromClass,
+  createTimetableSlot,
+  deleteTimetableSlot,
+  assignStudentToClass,
+} from "@/app/dashboard/actions/index";
 
-const C = { ink: "#16241a", muted: "#687a6c", border: "#e6ece4", green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18", bg: "#f4f7f2" };
+const C = {
+  ink: "#16241a", muted: "#687a6c", border: "#e6ece4",
+  green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18", bg: "#f4f7f2",
+};
 const DAY_NAMES = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 function fmtTime(t: string) { return t.slice(0, 5); }
-
-const TYPE_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
-  pdf:      { bg: "#fef2f2", fg: "#b91c1c", label: "PDF" },
-  link:     { bg: "#eff6ff", fg: "#1d4ed8", label: "Link" },
-  video:    { bg: "#f5f3ff", fg: "#7c3aed", label: "Video" },
-  document: { bg: "#f9fafb", fg: "#374151", label: "Document" },
-  other:    { bg: "#f8fafc", fg: "#475569", label: "Other" },
-};
-
-function LevelPill({ level }: { level: string }) {
-  const order: Record<string, number> = { A1:0,A2:1,B1:2,B2:3,C1:4,C2:5,Beginner:0,Elementary:1,"Pre-Intermediate":2,Intermediate:3,"Upper-Intermediate":4,Advanced:5 };
-  const hue = 95 + (order[level] ?? 0) * 6;
-  return <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", minWidth:30, height:22, padding:"0 8px", borderRadius:6, fontSize:11.5, fontWeight:800, background:`oklch(0.93 0.06 ${hue})`, color:`oklch(0.40 0.10 ${hue})` }}>{level}</span>;
-}
-function TypeBadge({ type }: { type: string }) {
-  const s = TYPE_STYLE[type] ?? TYPE_STYLE.other;
-  return <span style={{ display:"inline-flex", background:s.bg, color:s.fg, fontSize:11, fontWeight:700, padding:"2px 9px", borderRadius:6 }}>{s.label}</span>;
-}
-
-const th: React.CSSProperties = { textAlign: "left", padding: "11px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted, borderBottom: `1px solid ${C.border}`, whiteSpace: "nowrap" };
-const td: React.CSSProperties = { padding: "12px 14px", borderBottom: `1px solid ${C.border}`, color: C.ink, verticalAlign: "middle" };
 
 type StaffAssignment = { profileId: string; name: string };
 type ClassRow = { id: string; name: string; level_id: string; levelName: string; staff: StaffAssignment[]; studentCount: number };
 type Slot = { id: string; class_id: string; className: string; day_of_week: number; start_time: string; end_time: string; room: string | null };
+type StudentRow = { id: string; full_name: string; class_id: string | null };
 
 function RemoveStaffChip({ profileId, classId, name }: { profileId: string; classId: string; name: string }) {
   const [pending, startTransition] = useTransition();
@@ -53,14 +42,144 @@ function DeleteSlotButton({ slotId }: { slotId: string }) {
   );
 }
 
-export function ClassesTabs({ levels, staff, classes, timetable }: {
+function StudentRosterRow({ student, onRemove }: { student: StudentRow; onRemove: () => void }) {
+  const [pending, startTransition] = useTransition();
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", background: "#f8fafc", borderRadius: 9, marginBottom: 6 }}>
+      <span style={{ fontSize: 13.5, fontWeight: 600, color: C.ink }}>{student.full_name}</span>
+      <button
+        disabled={pending}
+        onClick={() => startTransition(async () => { await assignStudentToClass(student.id, null); onRemove(); })}
+        style={{ fontSize: 12, fontWeight: 700, color: pending ? C.muted : "#dc2626", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}
+      >
+        {pending ? "…" : "Remove"}
+      </button>
+    </div>
+  );
+}
+
+function ClassPanel({ cls, staff, allStudents, onClose }: {
+  cls: ClassRow;
+  staff: { id: string; full_name: string | null }[];
+  allStudents: StudentRow[];
+  onClose: () => void;
+}) {
+  const [addPending, startAddTransition] = useTransition();
+  const [selectedStudentId, setSelectedStudentId] = useState("");
+  const [roster, setRoster] = useState<StudentRow[]>(() => allStudents.filter((s) => s.class_id === cls.id));
+  const unassigned = allStudents.filter((s) => s.class_id === null || s.class_id === cls.id ? false : true).concat(
+    allStudents.filter((s) => s.class_id === null)
+  );
+
+  function handleAdd() {
+    if (!selectedStudentId) return;
+    startAddTransition(async () => {
+      await assignStudentToClass(selectedStudentId, cls.id);
+      const student = allStudents.find((s) => s.id === selectedStudentId);
+      if (student) setRoster((prev) => [...prev, { ...student, class_id: cls.id }]);
+      setSelectedStudentId("");
+    });
+  }
+
+  function handleRemove(studentId: string) {
+    setRoster((prev) => prev.filter((s) => s.id !== studentId));
+  }
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 40 }}
+      />
+      {/* Panel */}
+      <div style={{
+        position: "fixed", inset: "0 0 0 auto", width: "100%", maxWidth: 480,
+        background: "#fff", zIndex: 50, overflowY: "auto",
+        boxShadow: "-4px 0 32px rgba(0,0,0,0.12)",
+        display: "flex", flexDirection: "column",
+      }}>
+        {/* Header */}
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
+          <div>
+            <h2 style={{ fontSize: 17, fontWeight: 800, color: C.ink, margin: 0 }}>{cls.name}</h2>
+            <p style={{ fontSize: 12.5, color: C.muted, margin: "3px 0 0" }}>{cls.levelName} · {roster.length} students enrolled</p>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: C.muted, fontSize: 20, lineHeight: 1, padding: "2px 4px", fontFamily: "inherit" }}>✕</button>
+        </div>
+
+        <div style={{ padding: "20px 24px", flex: 1 }}>
+          {/* Teacher assignment */}
+          <div style={{ marginBottom: 28 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, marginBottom: 10 }}>Assigned Teachers</p>
+            {cls.staff.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+                {cls.staff.map((s) => (
+                  <RemoveStaffChip key={s.profileId} profileId={s.profileId} classId={cls.id} name={s.name} />
+                ))}
+              </div>
+            )}
+            <form action={assignStaffToClass as unknown as (fd: FormData) => Promise<void>} style={{ display: "flex", gap: 8 }}>
+              <input type="hidden" name="class_id" value={cls.id} />
+              <select name="profile_id" required defaultValue=""
+                style={{ flex: 1, border: `1px solid ${C.border}`, borderRadius: 9, padding: "9px 12px", fontSize: 13, color: C.ink, background: "#f9fafb", fontFamily: "inherit" }}>
+                <option value="" disabled>Add a teacher…</option>
+                {staff.map((s) => <option key={s.id} value={s.id}>{s.full_name || s.id.slice(0, 8)}</option>)}
+              </select>
+              <button type="submit" className="cd-btn-ghost" style={{ height: 40, whiteSpace: "nowrap" }}>Assign</button>
+            </form>
+          </div>
+
+          {/* Student roster */}
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, marginBottom: 10 }}>Students in this class</p>
+
+            {roster.length === 0 && (
+              <p style={{ fontSize: 13, color: C.muted, marginBottom: 12, fontStyle: "italic" }}>No students assigned yet.</p>
+            )}
+
+            {roster.map((s) => (
+              <StudentRosterRow key={s.id} student={s} onRemove={() => handleRemove(s.id)} />
+            ))}
+
+            {/* Add student */}
+            {unassigned.length > 0 && (
+              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                <select
+                  value={selectedStudentId}
+                  onChange={(e) => setSelectedStudentId(e.target.value)}
+                  style={{ flex: 1, border: `1px solid ${C.border}`, borderRadius: 9, padding: "9px 12px", fontSize: 13, color: C.ink, background: "#f9fafb", fontFamily: "inherit" }}
+                >
+                  <option value="">Add a student…</option>
+                  {unassigned.map((s) => <option key={s.id} value={s.id}>{s.full_name}</option>)}
+                </select>
+                <button
+                  disabled={!selectedStudentId || addPending}
+                  onClick={handleAdd}
+                  className="cd-btn-primary"
+                  style={{ height: 40, whiteSpace: "nowrap", opacity: !selectedStudentId || addPending ? 0.5 : 1 }}
+                >
+                  {addPending ? "…" : "Add"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function ClassesTabs({ levels, staff, classes, timetable, students }: {
   levels: { id: string; name: string }[];
   staff: { id: string; full_name: string | null }[];
   classes: ClassRow[];
   timetable: Slot[];
+  students: StudentRow[];
 }) {
   const [tab, setTab] = useState<"classes" | "timetable">("classes");
   const [showAddClass, setShowAddClass] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<ClassRow | null>(null);
 
   const slotsByDay = useMemo(() => {
     const m: Record<number, Slot[]> = {};
@@ -78,7 +197,7 @@ export function ClassesTabs({ levels, staff, classes, timetable }: {
     <div style={{ padding: "30px 30px 60px" }}>
       <div style={{ marginBottom: 18 }}>
         <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>Classes</h1>
-        <p style={{ fontSize: 13.5, color: C.muted, marginTop: 4 }}>Manage classes, schedules and learning materials.</p>
+        <p style={{ fontSize: 13.5, color: C.muted, marginTop: 4 }}>Manage classes, schedules and student assignments.</p>
       </div>
 
       {/* Tab bar */}
@@ -99,14 +218,14 @@ export function ClassesTabs({ levels, staff, classes, timetable }: {
       {/* ── CLASSES TAB ── */}
       {tab === "classes" && (
         <div>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 14 }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 18 }}>
             <button onClick={() => setShowAddClass((v) => !v)} className="cd-btn-primary">
               {showAddClass ? "Close" : "+ Add class"}
             </button>
           </div>
 
           {showAddClass && (
-            <div className="cd-card" style={{ padding: 22, marginBottom: 18 }}>
+            <div className="cd-card" style={{ padding: 22, marginBottom: 22 }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 16 }}>New class</h3>
               <form action={createClass as unknown as (fd: FormData) => Promise<void>} style={{ display: "grid", gridTemplateColumns: "2fr 1fr auto", gap: 12, alignItems: "end" }}>
                 <label className="cd-fld"><span>Class name</span><input name="name" type="text" required placeholder="e.g. General English — B1 Morning" /></label>
@@ -115,51 +234,51 @@ export function ClassesTabs({ levels, staff, classes, timetable }: {
                 </label>
                 <button type="submit" className="cd-btn-primary" style={{ height: 42 }}>Create</button>
               </form>
-
-              <div style={{ borderTop: `1px solid ${C.border}`, marginTop: 18, paddingTop: 16 }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 12 }}>Assign staff to a class</h3>
-                <form action={assignStaffToClass as unknown as (fd: FormData) => Promise<void>} style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 12, alignItems: "end" }}>
-                  <label className="cd-fld"><span>Staff</span>
-                    <select name="profile_id" required defaultValue=""><option value="" disabled>Select staff…</option>{staff.map((s) => <option key={s.id} value={s.id}>{s.full_name || s.id.slice(0, 8)}</option>)}</select>
-                  </label>
-                  <label className="cd-fld"><span>Class</span>
-                    <select name="class_id" required defaultValue=""><option value="" disabled>Select class…</option>{classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
-                  </label>
-                  <button type="submit" className="cd-btn-ghost" style={{ height: 42 }}>Assign</button>
-                </form>
-              </div>
             </div>
           )}
 
-          <div className="cd-card" style={{ padding: 0 }}>
-            {!classes.length ? (
-              <p style={{ padding: "40px 22px", textAlign: "center", color: C.muted, fontSize: 13.5 }}>No classes yet. Use “Add class” to create your first one.</p>
-            ) : (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5, minWidth: 560 }}>
-                  <thead><tr><th style={th}>Class</th><th style={th}>Level</th><th style={th}>Assigned staff</th><th style={{ ...th, textAlign: "center" }}>Students</th></tr></thead>
-                  <tbody>
-                    {classes.map((c) => (
-                      <tr key={c.id} className="cd-trow">
-                        <td style={{ ...td, fontWeight: 700 }}>{c.name}</td>
-                        <td style={td}><LevelPill level={c.levelName} /></td>
-                        <td style={{ ...td, color: c.staff.length ? C.ink : C.muted }}>
-                          {c.staff.length ? (
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                              {c.staff.map((s) => (
-                                <RemoveStaffChip key={s.profileId} profileId={s.profileId} classId={c.id} name={s.name} />
-                              ))}
-                            </div>
-                          ) : "Unassigned"}
-                        </td>
-                        <td style={{ ...td, textAlign: "center", fontWeight: 700 }}>{c.studentCount}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+          {/* Card grid */}
+          {!classes.length ? (
+            <div className="cd-card" style={{ padding: "48px 24px", textAlign: "center" }}>
+              <p style={{ color: C.muted, fontSize: 13.5 }}>No classes yet. Use &quot;Add class&quot; to create your first one.</p>
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
+              {classes.map((cls) => {
+                const enrolled = students.filter((s) => s.class_id === cls.id).length;
+                const teacherName = cls.staff[0]?.name ?? "Unassigned";
+                const ttSlots = timetable.filter((s) => s.class_id === cls.id);
+                const scheduleSummary = ttSlots.length
+                  ? ttSlots.map((s) => `${DAY_NAMES[s.day_of_week]} ${fmtTime(s.start_time)}`).join(", ")
+                  : "No schedule set";
+                return (
+                  <button
+                    key={cls.id}
+                    onClick={() => setSelectedClass(cls)}
+                    style={{
+                      background: "#fff", border: `1px solid ${C.border}`, borderRadius: 14,
+                      padding: "18px 20px", textAlign: "left", cursor: "pointer",
+                      transition: "border-color .15s, box-shadow .15s", fontFamily: "inherit",
+                      boxShadow: "0 1px 3px rgba(0,0,0,.04)",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#86efac"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(46,168,42,.10)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,.04)"; }}
+                  >
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 10 }}>
+                      <span style={{ fontSize: 14.5, fontWeight: 800, color: C.ink, lineHeight: 1.3, marginRight: 10 }}>{cls.name}</span>
+                      <span style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 700, background: C.greenWash, color: C.greenDark, padding: "3px 9px", borderRadius: 20 }}>
+                        {enrolled} students
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 12.5, color: C.muted, margin: "0 0 4px" }}>
+                      Teacher: <span style={{ color: cls.staff.length ? C.ink : C.muted, fontWeight: cls.staff.length ? 600 : 400 }}>{teacherName}{cls.staff.length > 1 ? ` +${cls.staff.length - 1}` : ""}</span>
+                    </p>
+                    <p style={{ fontSize: 11.5, color: "#94a3b8", margin: 0 }}>{scheduleSummary}</p>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -210,6 +329,15 @@ export function ClassesTabs({ levels, staff, classes, timetable }: {
         </div>
       )}
 
+      {/* Class detail panel */}
+      {selectedClass && (
+        <ClassPanel
+          cls={selectedClass}
+          staff={staff}
+          allStudents={students}
+          onClose={() => setSelectedClass(null)}
+        />
+      )}
     </div>
   );
 }
