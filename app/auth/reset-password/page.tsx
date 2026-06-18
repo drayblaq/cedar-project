@@ -68,7 +68,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex" }}>
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <AuthLeftPanel />
 
       {/* Mobile hero */}
@@ -81,8 +81,8 @@ export default function ResetPasswordPage() {
         <p className="text-xs text-green-100/80 mt-0.5">Create your secure password</p>
       </div>
 
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc", padding: "40px 24px" }}>
-        <div style={{ width: "100%", maxWidth: 420 }}>
+      <div className="flex-1 flex items-center justify-center bg-slate-50 px-4 py-8 sm:px-6 sm:py-12">
+        <div className="w-full max-w-md">
           <div style={{ marginBottom: 28 }}>
             <h1 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#0f172a", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
               {done ? "Password set!" : "Set your password"}

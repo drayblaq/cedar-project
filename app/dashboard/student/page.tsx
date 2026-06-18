@@ -135,7 +135,7 @@ export default async function StudentDashboardPage() {
     : "Enrolled";
 
   return (
-    <div style={{ padding: "36px 30px 70px", background: S.bg, minHeight: "100%" }}>
+    <div className="cedar-dash-page" style={{ padding: "36px 30px 70px", background: S.bg, minHeight: "100%" }}>
       {/* ── Welcome header ───────────────────────────────── */}
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
@@ -190,7 +190,7 @@ export default async function StudentDashboardPage() {
       </div>
 
       {/* ── Quick access ──────────────────────────────────── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+      <div className="cd-quick-access" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
         <Link href="/student/materials" style={{
           background: S.green, color: "#fff", borderRadius: 16, padding: "16px 18px",
           display: "flex", alignItems: "center", gap: 14, textDecoration: "none", boxShadow: S.card,

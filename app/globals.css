@@ -901,3 +901,17 @@ button, a[role="button"] { min-height: 44px; }
 .auth-form input, .auth-form select {
   font-size: 16px !important; /* prevents iOS zoom */
 }
+
+/* Prevent iOS zoom on ALL portal inputs/selects (< 16px triggers zoom) */
+input, select, textarea { font-size: 16px; }
+
+/* Quick-access 2-col → 1-col on phones */
+@media (max-width: 430px) {
+  .cd-quick-access { grid-template-columns: 1fr !important; }
+}
+
+/* Drawer tap targets — minimum 44px touch area */
+.cedar-drawer-item { min-height: 44px; padding: 12px; }
+
+/* Drawer always full-height; close button large enough to tap */
+.cedar-drawer-close { min-height: 44px; min-width: 44px; }

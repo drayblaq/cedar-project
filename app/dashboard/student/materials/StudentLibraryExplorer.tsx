@@ -125,7 +125,7 @@ function FileRow({ file, isLast, attemptScore, onOpen }: {
       </div>
       {attemptScore !== undefined && <ScoreBadge score={attemptScore} />}
       {canView && (
-        <span style={{
+        <span className="re-open-btn" style={{
           fontSize: 12, fontWeight: 700, color: S.greenDark,
           opacity: hovered ? 1 : 0, transition: "opacity .12s",
           flexShrink: 0,
@@ -241,7 +241,7 @@ export function StudentLibraryExplorer({ materials, attempts = {} }: Props) {
   }
 
   return (
-    <div style={{ padding: "24px 28px 48px", background: S.bg, minHeight: "100%" }}>
+    <div className="cedar-dash-page" style={{ padding: "24px 28px 48px", background: S.bg, minHeight: "100%" }}>
       {/* Loading overlay */}
       {lessonLoading && (
         <div style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
