@@ -104,7 +104,7 @@ async function tryFinalizeEnrollmentAfterPayment(supabase: SupabaseClient, stude
         (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
       const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
         student.email,
-        { redirectTo: `${siteUrl}/auth/login` }
+        { redirectTo: `${siteUrl}/auth/callback` }
       );
       if (inviteError) return;
       authUserId = inviteData.user?.id ?? null;

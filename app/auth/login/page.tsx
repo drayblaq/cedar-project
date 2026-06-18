@@ -10,6 +10,7 @@ import { friendlyError } from "@/lib/friendlyErrors";
 const MARKETING_URL = process.env.NEXT_PUBLIC_MARKETING_URL || "https://cedartrainingcenter.com";
 
 function AuthLeftPanel() {
+  
   return (
     <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-700 via-green-600 to-green-800 relative overflow-hidden items-center justify-center p-12">
       <div className="animate-float absolute top-20 left-10 w-28 h-28 bg-white/10 rounded-3xl rotate-12" />
@@ -21,8 +22,10 @@ function AuthLeftPanel() {
       <span className="absolute top-[30%] left-8 text-white/15 text-2xl font-black rotate-12 select-none">Hello!</span>
       <span className="absolute bottom-[30%] right-[20%] text-white/15 text-xl font-black -rotate-8 select-none">Bonjour</span>
       <div className="relative z-10 text-center max-w-xs">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Cedar" className="h-16 mx-auto mb-5 brightness-0 invert" />
+        <div className="inline-block bg-white rounded-2xl p-3 shadow-lg mb-5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Cedar" className="h-12 w-12 object-contain rounded-xl block" />
+        </div>
         <h1 className="text-3xl font-black text-white mb-3 tracking-tight">Cedar Training Center</h1>
         <p className="text-sm text-green-100/90 leading-relaxed">
           Your journey to English fluency starts here. Access your courses, track your progress, and learn at your own pace.
@@ -37,6 +40,7 @@ function AuthLeftPanel() {
       </div>
     </div>
   );
+  
 }
 
 function LoginForm() {
@@ -50,6 +54,16 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(urlError ?? null);
+
+    useEffect(() => {
+    // Check if Supabase sent us an invite/recovery session via hash fragment
+    const hash = window.location.hash
+    if (hash.includes('type=invite') || hash.includes('type=recovery')) {
+      // Redirect to set-password, carrying the hash along so Supabase's
+      // client library can still read it there and create the session
+      router.replace('/auth/reset-password' + hash)
+    }
+  }, [])
 
   // Handle magic-link / invite / recovery tokens in URL hash (implicit flow fallback)
   useEffect(() => {
@@ -101,22 +115,25 @@ function LoginForm() {
       <AuthLeftPanel />
 
       {/* Mobile hero banner */}
-      <div className="lg:hidden bg-gradient-to-br from-green-700 via-green-600 to-green-800 px-6 pt-10 pb-8 text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Cedar Training Center" className="h-14 mx-auto mb-3 brightness-0 invert object-contain" />
-        <h2 className="text-xl font-black text-white tracking-tight">Cedar Training Center</h2>
-        <p className="text-sm text-green-100/80 mt-1">Your journey to English fluency</p>
+      <div className="lg:hidden bg-gradient-to-br from-green-700 via-green-600 to-green-800 px-6 pt-8 pb-7 text-center">
+        {/* White badge so green logo stays visible on green background */}
+        <div className="inline-block bg-white rounded-2xl p-2.5 shadow-lg mb-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Cedar Training Center" className="h-10 w-10 object-contain rounded-xl block" />
+        </div>
+        <h2 className="text-lg font-black text-white tracking-tight">Cedar Training Center</h2>
+        <p className="text-xs text-green-100/80 mt-0.5">Your journey to English fluency</p>
       </div>
 
       {/* Form side */}
-      <div className="flex-1 flex items-center justify-center bg-gray-50 px-6 py-10">
+      <div className="flex-1 flex items-center justify-center bg-gray-50 px-4 py-8 sm:px-6 sm:py-10">
         <div className="w-full max-w-md">
-          <div className="mb-7">
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1.5">Welcome back</h1>
+          <div className="mb-5 sm:mb-7">
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight mb-1">Welcome back</h1>
             <p className="text-sm text-gray-500">Sign in to continue your learning journey</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Email address</label>

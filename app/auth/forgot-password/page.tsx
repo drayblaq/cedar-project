@@ -18,8 +18,10 @@ function AuthLeftPanel() {
       <span style={{ position: "absolute", top: "30%", left: 32, color: "rgba(255,255,255,0.12)", fontSize: "1.75rem", fontWeight: 800, transform: "rotate(10deg)", userSelect: "none" }}>Hello!</span>
       <span style={{ position: "absolute", bottom: "30%", right: "22%", color: "rgba(255,255,255,0.12)", fontSize: "1.4rem", fontWeight: 800, transform: "rotate(-8deg)", userSelect: "none" }}>Bonjour</span>
       <div style={{ position: "relative", zIndex: 10, textAlign: "center", maxWidth: 320 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Cedar" style={{ height: 64, margin: "0 auto 20px", display: "block", filter: "brightness(0) invert(1)" }} />
+        <div style={{ display: "inline-block", background: "#ffffff", borderRadius: 16, padding: 12, boxShadow: "0 2px 16px rgba(0,0,0,0.10)", marginBottom: 20 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Cedar" style={{ height: 48, width: 48, display: "block", borderRadius: 10, objectFit: "contain" }} />
+        </div>
         <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#ffffff", marginBottom: 12, letterSpacing: "-0.02em" }}>Cedar Training Center</h1>
         <p style={{ fontSize: "0.9rem", color: "rgba(220,252,231,0.9)", lineHeight: 1.7 }}>
           No worries — we&apos;ll send a reset link to your email address so you can get back to learning.
@@ -48,7 +50,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     const supabase = createClient();
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${PORTAL_URL}/auth/reset-password`,
+      redirectTo: `${PORTAL_URL}/auth/callback`,
     });
     setLoading(false);
     if (resetError) { setError(friendlyError(resetError.message)); return; }
@@ -62,9 +64,11 @@ export default function ForgotPasswordPage() {
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc", padding: "40px 24px" }}>
         <div style={{ width: "100%", maxWidth: 420 }}>
           {/* Mobile logo */}
-          <div className="lg:hidden" style={{ textAlign: "center", marginBottom: 32 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Cedar Training Center" style={{ height: 52, margin: "0 auto 12px", display: "block", objectFit: "contain" }} />
+          <div className="lg:hidden" style={{ textAlign: "center", marginBottom: 24 }}>
+            <div style={{ display: "inline-block", background: "#ffffff", borderRadius: 16, padding: 10, boxShadow: "0 2px 12px rgba(0,0,0,0.10)", marginBottom: 12 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Cedar Training Center" style={{ height: 44, width: 44, display: "block", objectFit: "contain", borderRadius: 10 }} />
+            </div>
           </div>
 
           <div style={{ marginBottom: 28 }}>

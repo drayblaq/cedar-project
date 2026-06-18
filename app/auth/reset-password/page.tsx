@@ -20,8 +20,10 @@ function AuthLeftPanel() {
       <span style={{ position: "absolute", top: "30%", left: 32, color: "rgba(255,255,255,0.12)", fontSize: "1.75rem", fontWeight: 800, transform: "rotate(10deg)", userSelect: "none" }}>Hello!</span>
       <span style={{ position: "absolute", bottom: "30%", right: "22%", color: "rgba(255,255,255,0.12)", fontSize: "1.4rem", fontWeight: 800, transform: "rotate(-8deg)", userSelect: "none" }}>Bonjour</span>
       <div style={{ position: "relative", zIndex: 10, textAlign: "center", maxWidth: 320 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Cedar" style={{ height: 64, margin: "0 auto 20px", display: "block", filter: "brightness(0) invert(1)" }} />
+        <div style={{ display: "inline-block", background: "#ffffff", borderRadius: 16, padding: 12, boxShadow: "0 2px 16px rgba(0,0,0,0.10)", marginBottom: 20 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Cedar" style={{ height: 48, width: 48, display: "block", borderRadius: 10, objectFit: "contain" }} />
+        </div>
         <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#ffffff", marginBottom: 12, letterSpacing: "-0.02em" }}>Cedar Training Center</h1>
         <p style={{ fontSize: "0.9rem", color: "rgba(220,252,231,0.9)", lineHeight: 1.7 }}>
           Create a secure password to protect your Cedar account and access your learning dashboard.
@@ -70,11 +72,13 @@ export default function ResetPasswordPage() {
       <AuthLeftPanel />
 
       {/* Mobile hero */}
-      <div className="lg:hidden bg-gradient-to-br from-green-700 via-green-600 to-green-800 px-6 pt-10 pb-8 text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="Cedar Training Center" className="h-14 mx-auto mb-3 brightness-0 invert object-contain" />
-        <h2 className="text-xl font-black text-white tracking-tight">Cedar Training Center</h2>
-        <p className="text-sm text-green-100/80 mt-1">Create your secure password</p>
+      <div className="lg:hidden bg-gradient-to-br from-green-700 via-green-600 to-green-800 px-6 pt-8 pb-7 text-center">
+        <div className="inline-block bg-white rounded-2xl p-2.5 shadow-lg mb-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Cedar Training Center" className="h-10 w-10 object-contain rounded-xl block" />
+        </div>
+        <h2 className="text-lg font-black text-white tracking-tight">Cedar Training Center</h2>
+        <p className="text-xs text-green-100/80 mt-0.5">Create your secure password</p>
       </div>
 
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc", padding: "40px 24px" }}>

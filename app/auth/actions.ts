@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { ROLE_HOME } from '@/lib/roleHome'
 
 function siteUrl(): string {
   // In local dev always use localhost so magic links redirect back here.
@@ -76,13 +77,6 @@ export async function redirectAdminInstant(
 
   redirect(actionLink);
 }
-
-const ROLE_HOME = {
-  admin: "/admin",
-  staff: "/staff",
-  student: "/student",
-  parent: "/parent",
-} as const;
 
 /**
  * After password sign-in, use the server session to pick the dashboard URL.

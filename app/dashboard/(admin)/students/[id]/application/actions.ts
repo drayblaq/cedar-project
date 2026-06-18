@@ -46,7 +46,7 @@ export async function createMomoPayment(formData: FormData) {
         (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
       const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(
         student.email,
-        { redirectTo: `${siteUrl}/auth/login` }
+        { redirectTo: `${siteUrl}/auth/callback` }
       );
       if (!inviteErr) authUserId = inviteData?.user?.id ?? null;
     } catch {

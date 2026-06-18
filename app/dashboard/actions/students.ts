@@ -204,7 +204,7 @@ export async function inviteStudentLogin(studentId: string) {
 
   // Always use portal subdomain so the redirect URL is in Supabase's allowed list
   const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL || "https://portal.cedartrainingcenter.com";
-  const redirectTo = `${portalUrl}/auth/login`;
+  const redirectTo = `${portalUrl}/auth/callback`;
 
   console.log("[invite] studentId:", studentId, "email:", student.email, "user_id:", student.user_id, "redirectTo:", redirectTo);
 

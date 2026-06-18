@@ -24,7 +24,9 @@ export async function inviteStaffMember(formData: FormData) {
   const { data: role } = await supabase.from("roles").select("name").eq("id", profile.role_id).single();
   if (role?.name !== "admin") return { error: "Only admins can invite staff" };
 
+  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL || "https://portal.cedartrainingcenter.com";
   const { data: inviteData, error: inviteError } = await adminSupabase.auth.admin.inviteUserByEmail(email, {
+    redirectTo: `${portalUrl}/auth/callback`,
     data: { full_name },
   });
 

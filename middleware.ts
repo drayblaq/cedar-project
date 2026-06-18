@@ -1,12 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-
-const ROLE_HOME: Record<string, string> = {
-  admin: "/admin",
-  staff: "/staff",
-  student: "/student",
-  parent: "/parent",
-};
+import { ROLE_HOME } from '@/lib/roleHome'
 
 const MARKETING_URL = process.env.NEXT_PUBLIC_MARKETING_URL || "https://cedartrainingcenter.com";
 const PORTAL_URL    = process.env.NEXT_PUBLIC_PORTAL_URL    || "https://portal.cedartrainingcenter.com";
