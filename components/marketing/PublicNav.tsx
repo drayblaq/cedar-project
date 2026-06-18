@@ -45,8 +45,7 @@ export function PublicNav() {
         <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 no-underline sm:gap-3">
           <Image src="/logo.png" alt="Cedar Training Center" width={44} height={44} className="object-contain sm:h-[52px] sm:w-[52px]" priority />
           <span
-            className="hidden min-[400px]:block"
-            style={{ fontFamily: "var(--font-syne)", fontWeight: 800, fontSize: "0.95rem", color: "var(--green-dark)", lineHeight: 1.15 }}
+            style={{ fontFamily: "var(--font-syne)", fontWeight: 900, fontSize: "0.88rem", color: "var(--green-dark)", lineHeight: 1.15 }}
           >
             Cedar <span style={{ color: "var(--green)" }}>Training</span>
             <br />Center

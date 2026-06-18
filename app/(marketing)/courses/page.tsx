@@ -14,12 +14,6 @@ const programs = [
     title: "General English",
     titleFr: "Anglais général",
     desc: "Build core English skills across reading, writing, speaking and listening. Progress from Beginner to Advanced with structured, communicative lessons.",
-    details: [
-      { labelKey: "duration", value: "3 months per level" },
-      { labelKey: "schedule", value: "Morning / Evening sessions" },
-      { labelKey: "level",    value: "Beginner → Advanced" },
-      { labelKey: "goal",     value: "Confident everyday communication" },
-    ],
     reverse: false,
   },
   {
@@ -29,12 +23,6 @@ const programs = [
     title: "Business English",
     titleFr: "Anglais professionnel",
     desc: "Master professional communication for meetings, emails, presentations and negotiations. Designed for working professionals and those seeking international careers.",
-    details: [
-      { labelKey: "duration", value: "2 months intensive" },
-      { labelKey: "schedule", value: "Weekday evenings + Saturday" },
-      { labelKey: "for",      value: "Working professionals & job seekers" },
-      { labelKey: "goal",     value: "Professional & workplace English" },
-    ],
     reverse: true,
   },
   {
@@ -44,12 +32,6 @@ const programs = [
     title: "International test preparation: TOEIC, TOEFL, IELTS",
     titleFr: "Préparation aux tests internationaux : TOEIC, TOEFL, IELTS",
     desc: "Targeted preparation for international certification exams with proven strategies, full practice tests and expert feedback to maximize your score.",
-    details: [
-      { labelKey: "duration", value: "6–8 weeks per exam" },
-      { labelKey: "schedule", value: "Flexible — weekdays or weekends" },
-      { labelKey: "includes", value: "Practice tests, score strategies, expert feedback" },
-      { labelKey: "goal",     value: "Target band / score achievement" },
-    ],
     reverse: false,
   },
   {
@@ -59,12 +41,6 @@ const programs = [
     title: "Communication and conversation workshops",
     titleFr: "Ateliers de communication et de conversation",
     desc: "Interactive sessions focused on improving speaking fluency, active listening and real-world communication confidence.",
-    details: [
-      { labelKey: "duration", value: "1–4 weeks" },
-      { labelKey: "schedule", value: "Small groups, immersive format" },
-      { labelKey: "includes", value: "Conversation, pronunciation, active listening" },
-      { labelKey: "goal",     value: "Fluency and communication confidence" },
-    ],
     reverse: true,
   },
   {
@@ -74,12 +50,6 @@ const programs = [
     title: "Personalised courses and intensive programs",
     titleFr: "Cours personnalisés et programmes intensifs",
     desc: "Custom fast-track programs built around your specific goals, timeline and availability. The fastest path from your current level to your target.",
-    details: [
-      { labelKey: "duration", value: "Flexible — 1 week to 3 months" },
-      { labelKey: "schedule", value: "One-to-one or small group" },
-      { labelKey: "includes", value: "Custom curriculum, individual coaching" },
-      { labelKey: "goal",     value: "Rapid progress tailored to your needs" },
-    ],
     reverse: false,
   },
 ];
@@ -110,7 +80,7 @@ export default async function CoursesPage() {
       {/* Program rows */}
       <div className="bg-[var(--white)] px-4 py-12 sm:px-8 sm:py-16 lg:px-12">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 sm:gap-10">
-          {programs.map(({ slug, img, levelBadge, title, desc, details, reverse }) => (
+          {programs.map(({ slug, img, levelBadge, title, desc, reverse }) => (
             <div
               key={slug}
               className={`grid grid-cols-1 overflow-hidden rounded-3xl border-[1.5px] border-[var(--mint-deep)] shadow-[0_8px_40px_rgba(46,168,42,0.1)] md:gap-0 ${reverse ? "md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]" : "md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]"}`}
@@ -128,15 +98,7 @@ export default async function CoursesPage() {
                 <h3 className="mt-4 text-xl font-extrabold leading-tight text-[var(--green-deep)] sm:text-2xl lg:text-[2rem]" style={{ fontFamily: "var(--font-inter)" }}>
                   {title}
                 </h3>
-                <p className="mt-3 text-[0.95rem] leading-relaxed font-medium" style={{ color: "#1f2d1e" }}>{desc}</p>
-                <dl className="mt-4 mb-6 flex flex-wrap gap-2">
-                  {details.map(({ labelKey, value }) => (
-                    <div key={labelKey} className="flex items-center gap-1.5 rounded-full border border-[var(--mint-deep)] bg-[var(--mint)] px-3 py-1 text-xs">
-                      <span className="font-bold text-[var(--green-dark)]">{t(labelKey as "duration" | "schedule" | "level" | "goal" | "for" | "includes")}:</span>
-                      <span className="text-[var(--text-muted)]">{value}</span>
-                    </div>
-                  ))}
-                </dl>
+                <p className="mt-3 mb-6 text-[0.95rem] leading-relaxed font-medium" style={{ color: "#1f2d1e" }}>{desc}</p>
                 <a href={`/register?program=${slug}`} className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--green)] px-5 py-3 text-sm font-bold text-white no-underline" style={{ fontFamily: "var(--font-inter)" }}>
                   {t("enroll")} →
                 </a>

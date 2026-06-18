@@ -44,9 +44,11 @@ export function PublicFooter() {
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 md:grid-cols-2 md:gap-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-14">
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-            <Image src="/logo.png" alt="Cedar Training Center" width={52} height={52} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+            <div style={{ background: "#ffffff", borderRadius: 14, padding: 8, flexShrink: 0, boxShadow: "0 2px 12px rgba(0,0,0,0.18)" }}>
+              <Image src="/logo.png" alt="Cedar Training Center" width={44} height={44} style={{ objectFit: "contain", display: "block" }} />
+            </div>
             <span style={{ fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "1.05rem", color: "white", lineHeight: 1.2 }}>
-              Cedar <span style={{ color: "var(--green)" }}>Training</span><br />Center
+              Cedar <span style={{ color: "#4ade80" }}>Training</span><br />Center
             </span>
           </div>
           <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.8, maxWidth: 300 }}>{t.desc}</p>
