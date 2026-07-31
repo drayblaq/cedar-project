@@ -12,7 +12,7 @@ export function NavLinks({ items }: { items: NavItem[] }) {
 
   function isActive(href: string) {
     // Exact match for root portal pages, prefix match for sub-pages
-    if (href === "/admin" || href === "/student" || href === "/staff" || href === "/parent") {
+    if (href === "/admin" || href === "/student" || href === "/staff") {
       return pathname === href;
     }
     return pathname.startsWith(href);

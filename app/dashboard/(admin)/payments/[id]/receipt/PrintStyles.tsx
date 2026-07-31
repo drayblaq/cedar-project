@@ -4,6 +4,9 @@ export default function PrintStyles() {
   return (
     <style>{`
       @media print {
+        nav { display: none !important; }
+        .no-print { display: none !important; }
+        body { background: white; }
         body > * { visibility: hidden; }
         #receipt, #receipt * { visibility: visible; }
         #receipt {

@@ -231,7 +231,6 @@ export async function createTimetableSlot(formData: FormData) {
   revalidatePath("/admin/classes");
   revalidatePath("/staff");
   revalidatePath("/student");
-  revalidatePath("/parent");
   return { success: true };
 }
 
@@ -246,7 +245,6 @@ export async function deleteTimetableSlot(id: string) {
   revalidatePath("/admin/classes");
   revalidatePath("/staff");
   revalidatePath("/student");
-  revalidatePath("/parent");
   return { success: true };
 }
 

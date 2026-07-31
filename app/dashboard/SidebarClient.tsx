@@ -73,7 +73,7 @@ export function SidebarClient({ items, userName, userRole }: Props) {
   }
 
   function isActive(href: string) {
-    const roots = ["/admin", "/student", "/staff", "/parent"];
+    const roots = ["/admin", "/student", "/staff"];
     if (roots.includes(href)) return pathname === href;
     return pathname.startsWith(href);
   }

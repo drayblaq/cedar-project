@@ -93,7 +93,7 @@ function ClassPanel({ cls, staff, allStudents, onClose }: {
         style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 40 }}
       />
       {/* Panel */}
-      <div style={{
+      <div className="cedar-slide-panel" style={{
         position: "fixed", inset: "0 0 0 auto", width: "100%", maxWidth: 480,
         background: "#fff", zIndex: 50, overflowY: "auto",
         boxShadow: "-4px 0 32px rgba(0,0,0,0.12)",
@@ -243,7 +243,7 @@ export function ClassesTabs({ levels, staff, classes, timetable, students }: {
               <p style={{ color: C.muted, fontSize: 13.5 }}>No classes yet. Use &quot;Add class&quot; to create your first one.</p>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
+            <div className="cedar-classes-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
               {classes.map((cls) => {
                 const enrolled = students.filter((s) => s.class_id === cls.id).length;
                 const teacherName = cls.staff[0]?.name ?? "Unassigned";

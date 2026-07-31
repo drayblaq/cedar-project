@@ -5,22 +5,18 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin",              label: "Overview",      iconKey: "overview" },
   { href: "/admin/students",     label: "Students",      iconKey: "students" },
   { href: "/admin/payments",     label: "Payments",      iconKey: "payments" },
-  { href: "/admin/attendance",   label: "Attendance",    iconKey: "attendance" },
-  { href: "/admin/grades",       label: "English Level",    iconKey: "grades" },
+  { href: "/admin/grades",       label: "English Level", iconKey: "grades" },
   { href: "/admin/classes",      label: "Classes",       iconKey: "classes" },
   { href: "/admin/announcements",label: "Announcements", iconKey: "announcements" },
   { href: "/admin/calendar",     label: "Calendar",      iconKey: "calendar" },
-  { href: "/admin/parent-links", label: "Parent Links",  iconKey: "parentLinks" },
   { href: "/admin/messages",     label: "Messages",      iconKey: "mail" },
   { href: "/admin/staff",        label: "Staff",         iconKey: "students" },
-  { href: "/admin/library",      label: "Library",    iconKey: "book" },
-  { href: "/admin/settings",     label: "Settings",   iconKey: "settings" },
+  { href: "/admin/library",      label: "Library",       iconKey: "book" },
+  { href: "/admin/settings",     label: "Settings",      iconKey: "settings" },
 ];
 
 const STAFF_NAV: NavItem[] = [
   { href: "/staff",              label: "My Classes",    iconKey: "myClasses" },
-  { href: "/staff/attendance",   label: "Attendance",    iconKey: "attendance" },
-  { href: "/staff/grades",       label: "Grades",        iconKey: "grades" },
   { href: "/staff/levels",       label: "English Level", iconKey: "grades" },
   { href: "/staff/resources",    label: "Library",       iconKey: "book" },
 ];
@@ -31,13 +27,6 @@ const STUDENT_NAV: NavItem[] = [
   { href: "/student/materials",     label: "Library",        iconKey: "book" },
   { href: "/student/announcements", label: "Announcements",  iconKey: "announcements" },
   { href: "/student/calendar",      label: "Calendar",       iconKey: "calendar" },
-];
-
-const PARENT_NAV: NavItem[] = [
-  { href: "/parent",               label: "Overview",       iconKey: "overview" },
-  { href: "/parent/attendance",    label: "Attendance",     iconKey: "attendance" },
-  { href: "/parent/payments",      label: "Payments",       iconKey: "payments" },
-  { href: "/parent/announcements", label: "Announcements",  iconKey: "announcements" },
 ];
 
 export async function TopNav() {
@@ -68,7 +57,6 @@ export async function TopNav() {
     roleName === "admin"   ? ADMIN_NAV   :
     roleName === "staff"   ? STAFF_NAV   :
     roleName === "student" ? STUDENT_NAV :
-    roleName === "parent"  ? PARENT_NAV  :
     [];
 
   // Admin notifications (e.g. new registrations, messages, payments)

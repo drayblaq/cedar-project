@@ -25,19 +25,7 @@ export default function AdminLibraryPage() {
         </p>
       </div>
 
-      {/* How it works */}
-      <div style={{ padding: "20px 28px 0" }}>
-        <div style={{ background: C.blueLight, border: `1px solid ${C.blueBorder}`, borderRadius: 14, padding: "16px 20px" }}>
-          <h3 style={{ fontSize: 13, fontWeight: 700, color: C.blue, marginBottom: 12 }}>How the Library works</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
-            <Step n={1} text="Create folders matching your lesson structure (e.g. A1-A2 → Week 1)" />
-            <Step n={2} text='Upload files inside a folder. "Teachers only" = lesson plans only staff can see.' />
-            <Step n={3} text='Check "Visible to students" and pick their level to share materials with students.' />
-          </div>
-        </div>
-      </div>
-
-      <ResourceExplorer isAdmin={true} />
+<ResourceExplorer isAdmin={true} />
     </div>
   );
 }

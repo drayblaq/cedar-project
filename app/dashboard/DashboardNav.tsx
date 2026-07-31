@@ -5,12 +5,10 @@ const ADMIN_NAV = [
   { href: "/admin",              label: "Overview" },
   { href: "/admin/students",     label: "Students" },
   { href: "/admin/payments",     label: "Payments" },
-  { href: "/admin/attendance",   label: "Attendance" },
-  { href: "/admin/grades",       label: "Grades" },
+  { href: "/admin/grades",       label: "English Level" },
   { href: "/admin/announcements",label: "Announcements" },
   { href: "/admin/calendar",     label: "Calendar" },
   { href: "/admin/classes",      label: "Classes" },
-  { href: "/admin/parent-links", label: "Parent links" },
 ];
 
 export async function DashboardNav() {
@@ -39,21 +37,17 @@ export async function DashboardNav() {
   const items =
     roleName === "staff"
       ? [
-          { href: "/staff",            label: "My classes" },
-          { href: "/staff/attendance", label: "Attendance" },
+          { href: "/staff",           label: "My classes" },
+          { href: "/staff/levels",    label: "English Level" },
+          { href: "/staff/resources", label: "Library" },
         ]
       : roleName === "student"
       ? [
           { href: "/student",               label: "My progress" },
-          { href: "/student/grades",        label: "Grades" },
-          { href: "/student/attendance",    label: "Attendance" },
+          { href: "/student/grades",        label: "My level" },
+          { href: "/student/materials",     label: "Library" },
           { href: "/student/announcements", label: "Announcements" },
           { href: "/student/calendar",      label: "Calendar" },
-        ]
-      : roleName === "parent"
-      ? [
-          { href: "/parent",               label: "My children" },
-          { href: "/parent/announcements", label: "Announcements" },
         ]
       : [];
 

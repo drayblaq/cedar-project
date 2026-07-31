@@ -21,7 +21,6 @@ function roleNameFromJoinedRoles(roles: unknown): string | undefined {
 function mapLegacyDashboardPath(pathname: string): string {
   if (pathname === "/dashboard" || pathname === "/dashboard/") return "/admin";
   if (pathname.startsWith("/dashboard/student")) return pathname.replace("/dashboard/student", "/student");
-  if (pathname.startsWith("/dashboard/parent"))  return pathname.replace("/dashboard/parent",  "/parent");
   if (pathname.startsWith("/dashboard/staff"))   return pathname.replace("/dashboard/staff",   "/staff");
   if (pathname.startsWith("/dashboard/admin"))   return pathname.replace("/dashboard/admin",   "/admin");
   if (pathname.startsWith("/dashboard"))         return pathname.replace("/dashboard",         "/admin");
@@ -57,7 +56,6 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/admin") ||
     pathname.startsWith("/student") ||
     pathname.startsWith("/staff") ||
-    pathname.startsWith("/parent") ||
     pathname.startsWith("/dashboard");
 
   // Skip subdomain cross-redirects in local dev to avoid infinite loops
@@ -107,8 +105,7 @@ export async function middleware(request: NextRequest) {
   const protectedArea =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/staff") ||
-    pathname.startsWith("/student") ||
-    pathname.startsWith("/parent");
+    pathname.startsWith("/student");
 
   if (protectedArea || pathname === "/auth/login") {
     const {
@@ -167,5 +164,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*", "/staff/:path*", "/student/:path*", "/parent/:path*", "/auth/login"],
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/staff/:path*", "/student/:path*", "/auth/login"],
 };

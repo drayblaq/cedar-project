@@ -77,16 +77,21 @@ export default async function ReceiptPage({
         id="receipt"
         className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-10 shadow-xl print:shadow-none print:rounded-none print:border-0 print:max-w-full print:p-8"
       >
-        {/* Header */}
+        {/* Header with logo */}
+        <div className="text-center mb-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="Cedar Training Center"
+            className="h-16 w-16 mx-auto mb-3 rounded-xl"
+          />
+          <h1 className="text-xl font-bold text-gray-900">Cedar Training Center</h1>
+          <p className="text-sm text-gray-500">Gbédjromédé, Cotonou, Bénin</p>
+          <p className="text-xs text-gray-400">+229 01 96 19 64 40 · trainingcentercedar@gmail.com</p>
+        </div>
         <div className="text-center">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600">
             Official Payment Receipt
-          </p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900">
-            Cedar Training Center
-          </h1>
-          <p className="mt-1 text-sm text-slate-400 italic">
-            Excellence in English Language Training
           </p>
         </div>
 

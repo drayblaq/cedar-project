@@ -87,7 +87,7 @@ function StudentPanel({ student, onClose, onSaved }: { student: Row; onClose: ()
   return (
     <>
       <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 40 }} />
-      <div style={{
+      <div className="cedar-slide-panel" style={{
         position: "fixed", inset: "0 0 0 auto", width: "100%", maxWidth: 440,
         background: "#fff", zIndex: 50, overflowY: "auto",
         boxShadow: "-4px 0 32px rgba(0,0,0,0.12)",
@@ -222,7 +222,7 @@ export function SkillMatrix({ rows }: { rows: Row[] }) {
             </div>
 
             {/* Skill badges */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div className="cedar-skill-badges" style={{ display: "flex", alignItems: "center", gap: 6 }}>
               {SKILLS.map((s) => <SkillBadge key={s.key} level={r.levels[s.key]} />)}
               <span style={{ marginLeft: 4, fontSize: 11, color: C.muted }}>›</span>
             </div>

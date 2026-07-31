@@ -915,3 +915,31 @@ input, select, textarea { font-size: 16px; }
 
 /* Drawer always full-height; close button large enough to tap */
 .cedar-drawer-close { min-height: 44px; min-width: 44px; }
+
+/* ── Mobile (≤480px) slide-in panels — full width ── */
+@media (max-width: 480px) {
+  .cedar-slide-panel {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  /* Classes card grid — 1 column */
+  .cedar-classes-grid {
+    grid-template-columns: 1fr !important;
+  }
+  /* English Level skill badges — allow wrap */
+  .cedar-skill-badges {
+    gap: 3px !important;
+  }
+  /* Library folder grid — max 2 columns */
+  .cedar-folder-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  /* Student dashboard stat cards — 1 column on very small screens */
+  .cedar-stat-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  /* Prevent horizontal scroll on root containers */
+  .cedar-dash-page {
+    overflow-x: hidden !important;
+  }
+}
