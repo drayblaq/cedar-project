@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
 
   const isMarketingDomain = !isPortalSubdomain;
 
-  const marketingPaths = ["/", "/about", "/courses", "/contact", "/register"];
+  const marketingPaths = ["/", "/about", "/courses", "/contact"];
   const isMarketingPath =
     marketingPaths.some((p) => pathname === p || pathname.startsWith(p + "/"));
 

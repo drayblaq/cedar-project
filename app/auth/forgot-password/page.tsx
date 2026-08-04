@@ -24,7 +24,7 @@ function AuthLeftPanel() {
         </div>
         <h1 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#ffffff", marginBottom: 12, letterSpacing: "-0.02em" }}>Cedar Training Center</h1>
         <p style={{ fontSize: "0.9rem", color: "rgba(220,252,231,0.9)", lineHeight: 1.7 }}>
-          No worries — we&apos;ll send a reset link to your email address so you can get back to learning.
+          No worries, we&apos;ll send a reset link to your email address so you can get back to learning.
         </p>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 32 }}>
           {["A1","A2","B1","B2","C1","C2"].map((level) => (

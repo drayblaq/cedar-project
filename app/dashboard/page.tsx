@@ -136,7 +136,7 @@ export default async function DashboardPage() {
           {greeting}, {firstName}
         </h1>
         <p style={{ fontSize:13.5, color:C.muted, marginTop:4 }}>
-          Here&apos;s what&apos;s happening at the centre today — {dateStr}.
+          Here&apos;s what&apos;s happening at the centre today, {dateStr}.
         </p>
       </div>
 

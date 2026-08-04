@@ -9,9 +9,9 @@ import { setLocale } from "@/app/actions/locale";
 
 type Lang = "en" | "fr";
 
-const navLabels: Record<Lang, { home: string; about: string; programs: string; contact: string; apply: string }> = {
-  en: { home: "Home", about: "About", programs: "Programs", contact: "Contact", apply: "Apply Now →" },
-  fr: { home: "Accueil", about: "À propos", programs: "Programmes", contact: "Contact", apply: "Candidater →" },
+const navLabels: Record<Lang, { home: string; about: string; programs: string; contact: string }> = {
+  en: { home: "Home", about: "About", programs: "Programs", contact: "Contact" },
+  fr: { home: "Accueil", about: "À propos", programs: "Programmes", contact: "Contact" },
 };
 
 export function PublicNav() {
@@ -100,22 +100,6 @@ export function PublicNav() {
             </span>
           </button>
 
-          {/* Login link */}
-          <a
-            href={`${process.env.NEXT_PUBLIC_PORTAL_URL || "https://portal.cedartrainingcenter.com"}/auth/login`}
-            className="ml-2 px-4 py-2 rounded-xl font-semibold text-sm no-underline transition-colors"
-            style={{ color: "var(--green-dark)", border: "1.5px solid rgba(46,168,42,0.3)", fontFamily: "var(--font-syne)" }}
-          >
-            {lang === "en" ? "Login" : "Connexion"}
-          </a>
-
-          <Link
-            href="/register"
-            className="ml-2 px-5 py-2 rounded-xl font-bold text-sm text-white transition-all no-underline"
-            style={{ background: "var(--green)", boxShadow: "0 4px 20px rgba(46,168,42,0.3)", fontFamily: "var(--font-syne)" }}
-          >
-            {t.apply}
-          </Link>
         </div>
 
         {/* Hamburger */}
@@ -161,22 +145,6 @@ export function PublicNav() {
           >
             {lang === "en" ? "Passer en Français" : "Switch to English"}
           </button>
-          <a
-            href={`${process.env.NEXT_PUBLIC_PORTAL_URL || "https://portal.cedartrainingcenter.com"}/auth/login`}
-            onClick={() => setMenuOpen(false)}
-            className="py-3 font-semibold text-sm no-underline border-b"
-            style={{ color: "var(--green)", borderColor: "rgba(46,168,42,0.1)", display: "block" }}
-          >
-            {lang === "en" ? "Login" : "Connexion"}
-          </a>
-          <Link
-            href="/register"
-            onClick={() => setMenuOpen(false)}
-            className="mt-2 text-center py-3 rounded-xl font-bold text-white no-underline"
-            style={{ background: "var(--green)", fontFamily: "var(--font-syne)" }}
-          >
-            {t.apply}
-          </Link>
         </div>
       )}
     </>

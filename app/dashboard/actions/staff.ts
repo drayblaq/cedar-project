@@ -30,7 +30,10 @@ export async function inviteStaffMember(formData: FormData) {
     data: { full_name },
   });
 
-  if (inviteError) return { error: inviteError.message };
+  if (inviteError) {
+    console.error("[inviteStaffMember] Supabase error:", inviteError.message, inviteError);
+    return { error: `Email delivery failed: ${inviteError.message}` };
+  }
 
   const { data: roleRow } = await supabase.from("roles").select("id").eq("name", roleName).maybeSingle();
 
@@ -43,7 +46,7 @@ export async function inviteStaffMember(formData: FormData) {
   }
 
   revalidatePath("/admin/staff");
-  return { success: true, message: `Invitation sent to ${email} — they will receive an email to set their password.` };
+  return { success: true, message: `Invitation sent to ${email}. They will receive an email to set their password.` };
 }
 
 export async function updateStaffRole(userId: string, roleName: string) {

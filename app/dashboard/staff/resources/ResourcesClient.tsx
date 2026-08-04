@@ -275,7 +275,7 @@ export function ResourcesClient({ materials }: Props) {
           <div style={{ marginBottom: 20 }}>
             <h2 style={{ fontSize: 18, fontWeight: 800, color: C.ink, letterSpacing: "-0.01em" }}>
               {activeLevelData?.name ?? "Resources"}
-              {selectedWeek !== "all" && ` — Week ${selectedWeek}`}
+              {selectedWeek !== "all" && ` / Week ${selectedWeek}`}
             </h2>
             <p style={{ fontSize: 13, color: C.muted, marginTop: 3 }}>
               {filtered.length} {filtered.length === 1 ? "document" : "documents"}

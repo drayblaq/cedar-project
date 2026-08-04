@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Programs | Cedar Training Center",
-  description: "English programs at Cedar Training Center — General, Business, IELTS, TOEFL, TOEIC and intensive tracks.",
+  description: "English programs at Cedar Training Center: General, Business, IELTS, TOEFL, TOEIC and intensive tracks.",
 };
 
 const programs = [
@@ -57,7 +57,8 @@ const programs = [
 const levels = ["A1 Beginner", "A2 Elementary", "B1 Pre-Intermediate", "B2 Intermediate", "C1 Upper-Intermediate", "C2 Advanced"];
 
 export default async function CoursesPage() {
-  const t = await getTranslations("programs");
+  const locale = await getLocale();
+  const lang = locale === "fr" ? "fr" : "en";
 
   return (
     <div>
@@ -72,7 +73,7 @@ export default async function CoursesPage() {
             Training tracks<br /><em style={{ fontStyle: "normal", color: "var(--green)" }}>built for results</em>
           </h1>
           <p style={{ marginTop: 24, fontSize: "1rem", color: "#1f2d1e", fontWeight: 500, maxWidth: 520, lineHeight: 1.78 }}>
-            From total beginner to international certification — we have a program for every goal.
+            From total beginner to international certification, we have a program for every goal.
           </p>
         </div>
       </div>
@@ -99,8 +100,8 @@ export default async function CoursesPage() {
                   {title}
                 </h3>
                 <p className="mt-3 mb-6 text-[0.95rem] leading-relaxed font-medium" style={{ color: "#1f2d1e" }}>{desc}</p>
-                <a href={`/register?program=${slug}`} className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--green)] px-5 py-3 text-sm font-bold text-white no-underline" style={{ fontFamily: "var(--font-inter)" }}>
-                  {t("enroll")} →
+                <a href="/contact" className="inline-flex items-center gap-2 rounded-[10px] bg-[var(--green)] px-5 py-3 text-sm font-bold text-white no-underline" style={{ fontFamily: "var(--font-inter)" }}>
+                  {lang === "en" ? "Contact us" : "Nous contacter"} →
                 </a>
               </div>
             </div>

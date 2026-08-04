@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About | Cedar Training Center",
-  description: "Learn about Cedar Training Center — English language training in Cotonou, Bénin.",
+  description: "Learn about Cedar Training Center: English language training in Cotonou, Bénin.",
 };
 
 const cards = [
@@ -101,8 +101,8 @@ export default function AboutPage() {
                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "clamp(1.6rem,3vw,3.2rem)", fontWeight: 800, color: "white", lineHeight: 1.1, maxWidth: 420 }}>
                   Learning English opens<br /><span style={{ color: "var(--green)" }}>every door.</span>
                 </p>
-                <a href="/register" style={{ marginTop: 28, display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
-                  Apply now →
+                <a href="/contact" style={{ marginTop: 28, display: "inline-flex", alignItems: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "16px 32px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
+                  Get in touch →
                 </a>
               </div>
             </div>

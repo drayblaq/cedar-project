@@ -66,6 +66,9 @@ export default function MarketingContact() {
             Get in touch<br /><em style={{ fontStyle: "normal", color: "var(--green)" }}>with Cedar</em>
           </h1>
           <p style={{ marginTop: 20, fontSize: "1rem", color: "#1f2d1e", fontWeight: 500, maxWidth: 480, lineHeight: 1.78 }}>
+            Interested in joining Cedar Training Center? Get in touch with us and we will guide you through the enrollment process.
+          </p>
+          <p style={{ marginTop: 12, fontSize: "0.9rem", color: "#4a6741", fontWeight: 500, maxWidth: 480, lineHeight: 1.78 }}>
             Call, email or visit us in Cotonou. We reply within 24 hours.
           </p>
         </div>

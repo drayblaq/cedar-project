@@ -12,7 +12,7 @@ const t = {
     eyebrow: "English Training · Cotonou, Bénin",
     title1: "Learn English at", title3: "CTC",
     sub: "Supporting every learner in acquiring English to succeed in their studies, career and international environment.",
-    apply: "Apply Now", explore: "Explore Programs",
+    apply: "Get in touch", explore: "View programs",
     whoWeAre: "Who We Are",
     aboutT: "A centre", aboutA: "dedicated", aboutT2: "to your success",
     aboutLead: "Cedar Training Center is dedicated to English language teaching. We help learners develop their language skills to succeed in their studies, career and integration in an international environment.",
@@ -27,7 +27,7 @@ const t = {
     p3t: "International test preparation: TOEIC, TOEFL, IELTS", p3p: "Targeted preparation with proven strategies, practice tests and expert feedback.", p3tag: "All certifications", p3lv: "Exam Prep",
     p4t: "Communication and conversation workshops", p4p: "Interactive sessions focused on improving speaking fluency and active listening.", p4tag: "Speaking", p4lv: "Workshops",
     p5t: "Personalised courses and intensive programs", p5p: "Fast-track programs built around your goals, timeline and schedule.", p5tag: "Custom track", p5lv: "Intensive",
-    ctaCardT: "Pricing & Registration", ctaCardP: "Take our placement test and start at the exact right level for you.", ctaCardBtn: "Apply Now →",
+    ctaCardT: "Pricing", ctaCardP: "Ready to start? Get in touch and we will guide you through the enrollment process.", ctaCardBtn: "Contact us →",
     priceMonthly: "50,000 CFA", priceMonthlySub: "per month",
     priceSemi: "250,000 CFA", priceSemiSub: "for 6 months",
     whyCedar: "Why Cedar?", whyT: "The training centre", whyA: "built for you",
@@ -37,7 +37,7 @@ const t = {
     f3t: "Flexible schedules adapted to your needs", f3p: "Morning, afternoon and evening classes to fit work and school.",
     f4t: "Personalised support and modern resources", f4p: "Individual coaching, practice materials and ongoing feedback to track your progress.",
     ctaL1: "Start your journey", ctaL2: "in English.", ctaL3: "Today.",
-    ctaApply: "Apply Now →", ctaContact: "Have questions? Contact us →",
+    ctaApply: "Get in touch →", ctaContact: "Have questions? Contact us →",
     findUs: "Find Us", locT1: "We are in", locA: "Cotonou,", locT2: "Bénin",
     contactUs: "Contact us",
     address: "Gbédjromédé, Rue avant l'école Nagueze en venant du carrefour 16 ampoules, Immeubles Ola Fitness, Entrée Auto tours.",
@@ -49,7 +49,7 @@ const t = {
     eyebrow: "Formation en anglais · Cotonou, Bénin",
     title1: "Apprendre l'anglais", title3: " au CTC",
     sub: "Accompagner chaque apprenant dans l'acquisition de l'anglais afin de favoriser son intégration et sa réussite dans un environnement international.",
-    apply: "Candidater", explore: "Voir les programmes",
+    apply: "Nous contacter", explore: "Voir les programmes",
     whoWeAre: "Qui sommes-nous",
     aboutT: "Un centre", aboutA: "dédié", aboutT2: "à votre réussite",
     aboutLead: "Le Centre de Formation est dédié à l'enseignement de l'anglais. Nous accompagnons les apprenants à développer leurs compétences linguistiques pour réussir leurs études, leur carrière et leur intégration dans un environnement international.",
@@ -64,7 +64,7 @@ const t = {
     p3t: "Préparation aux tests internationaux : TOEIC, TOEFL, IELTS", p3p: "Préparation ciblée avec stratégies éprouvées et tests blancs.", p3tag: "Toutes certifications", p3lv: "Certification",
     p4t: "Ateliers de communication et de conversation", p4p: "Sessions interactives pour améliorer la fluidité et la compréhension orale.", p4tag: "Oral", p4lv: "Ateliers",
     p5t: "Cours personnalisés et programmes intensifs", p5p: "Programme sur mesure selon vos objectifs, votre rythme et vos disponibilités.", p5tag: "Parcours personnalisé", p5lv: "Intensif",
-    ctaCardT: "Tarifs & Inscription", ctaCardP: "Passez notre test de niveau et rejoignez le programme idéal pour vous.", ctaCardBtn: "Candidater →",
+    ctaCardT: "Tarifs", ctaCardP: "Prêt(e) à commencer ? Contactez-nous et nous vous guiderons dans le processus d'inscription.", ctaCardBtn: "Nous contacter →",
     priceMonthly: "50 000 CFA", priceMonthlySub: "par mois",
     priceSemi: "250 000 CFA", priceSemiSub: "pour 6 mois",
     whyCedar: "Pourquoi Cedar ?", whyT: "Le centre de formation", whyA: "fait pour vous",
@@ -74,7 +74,7 @@ const t = {
     f3t: "Horaires flexibles et adaptés aux besoins", f3p: "Cours matin, après-midi et soir pour s'adapter à votre emploi du temps.",
     f4t: "Suivi personnalisé et ressources modernes", f4p: "Coaching individuel, supports pédagogiques et retours réguliers pour suivre vos progrès.",
     ctaL1: "Commencez votre parcours", ctaL2: "en anglais.", ctaL3: "Aujourd'hui.",
-    ctaApply: "Candidater →", ctaContact: "Des questions ? Contactez-nous →",
+    ctaApply: "Nous contacter →", ctaContact: "Des questions ? Contactez-nous →",
     findUs: "Nous trouver", locT1: "Nous sommes à", locA: "Cotonou,", locT2: "Bénin",
     contactUs: "Nous contacter",
     address: "Gbédjromédé, Rue avant l'école Nagueze, Immeubles Ola Fitness, Entrée Auto tours, Cotonou, Bénin.",
@@ -147,7 +147,7 @@ export default function HomePage() {
           </h1>
           <p className="animate-slide-up delay-300" style={{ marginTop: 24, fontSize: "1.1rem", lineHeight: 1.75, color: "#1a3a1a", fontWeight: 500, maxWidth: 440 }}>{tr.sub}</p>
           <div className="animate-slide-up delay-400" style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 32, flexWrap: "wrap" }}>
-            <Link href="/register" className="w-full xs:w-auto" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "15px 28px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
+            <Link href="/contact" className="w-full xs:w-auto" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, background: "var(--green)", color: "white", fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "0.95rem", padding: "15px 28px", borderRadius: 12, textDecoration: "none", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.apply} →
             </Link>
             <Link href="/courses" className="w-full xs:w-auto" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--green-dark)", fontWeight: 600, fontSize: "0.95rem", textDecoration: "none", padding: "15px 22px", borderRadius: 12, border: "2px solid rgba(46,168,42,0.3)" }}>
@@ -254,7 +254,7 @@ export default function HomePage() {
                 <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "white", fontFamily: "var(--font-inter)" }}>{tr.priceSemi}</div>
                 <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "rgba(255,255,255,0.9)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{tr.priceSemiSub}</div>
               </div>
-              <Link href="/register" style={{ display: "inline-flex", width: "100%", justifyContent: "center", alignItems: "center", gap: 10, background: "white", color: "var(--green-dark)", fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "0.9rem", padding: "14px 26px", borderRadius: 10, textDecoration: "none" }}>
+              <Link href="/contact" style={{ display: "inline-flex", width: "100%", justifyContent: "center", alignItems: "center", gap: 10, background: "white", color: "var(--green-dark)", fontFamily: "var(--font-inter)", fontWeight: 800, fontSize: "0.9rem", padding: "14px 26px", borderRadius: 10, textDecoration: "none" }}>
                 {tr.ctaCardBtn}
               </Link>
             </div>
@@ -299,7 +299,7 @@ export default function HomePage() {
             {tr.ctaL1}<br /><span style={{ color: "var(--green)" }}>{tr.ctaL2}</span><br /><span style={{ opacity: 0.4 }}>{tr.ctaL3}</span>
           </h2>
           <div className="flex w-full shrink-0 flex-col items-stretch gap-3 sm:items-start lg:w-auto lg:items-start">
-            <Link href="/register" className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-8 py-4 text-center text-base font-bold text-white no-underline sm:w-auto sm:whitespace-nowrap" style={{ background: "var(--green)", fontFamily: "var(--font-inter)", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
+            <Link href="/contact" className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-8 py-4 text-center text-base font-bold text-white no-underline sm:w-auto sm:whitespace-nowrap" style={{ background: "var(--green)", fontFamily: "var(--font-inter)", boxShadow: "0 8px 32px rgba(46,168,42,0.35)" }}>
               {tr.ctaApply}
             </Link>
             <Link href="/contact" style={{ color: "var(--mint)", fontWeight: 600, fontSize: "0.9rem", textDecoration: "none", opacity: 0.65 }}>

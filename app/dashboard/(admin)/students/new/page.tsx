@@ -174,7 +174,7 @@ export default async function NewStudentPage() {
           </div>
 
           {/* ── Section 4: Emergency Contact ── */}
-          <SectionTitle>Emergency Contact — Guardian or Parent (optional)</SectionTitle>
+          <SectionTitle>Emergency Contact: Guardian or Parent (optional)</SectionTitle>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16, marginBottom: 32 }}>
             <div>
               <label style={labelStyle}>Full name</label>
