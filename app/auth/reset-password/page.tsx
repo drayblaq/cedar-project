@@ -57,6 +57,15 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
     const supabase = createClient();
+
+    const { data: { session } } = await supabase.auth.getSession();
+    console.log('[reset-password] session exists:', !!session);
+    if (!session) {
+      setLoading(false);
+      setError('Your session has expired. Please request a new invite link from the admin.');
+      return;
+    }
+
     const { error: updateError } = await supabase.auth.updateUser({ password });
     setLoading(false);
 

@@ -194,8 +194,8 @@ function LoginForm() {
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-5">
-            Don&apos;t have an account?{" "}
-            <a href={`${MARKETING_URL}/register`} className="text-green-600 font-semibold hover:text-green-700 transition-colors">Register here</a>
+            Need access?{" "}
+            <a href={`${MARKETING_URL}/contact`} className="text-green-600 font-semibold hover:text-green-700 transition-colors">Contact us</a>
           </p>
           <div className="text-center mt-2.5">
             <a href={MARKETING_URL} className="text-xs text-gray-400 hover:text-gray-500 transition-colors">← Back to website</a>
