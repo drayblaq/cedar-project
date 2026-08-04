@@ -24,7 +24,7 @@ export default async function CalendarPage() {
       </div>
 
       <div className="cd-grid-2-1">
-        {/* LEFT — Events (main, 2/3 width) */}
+        {/* LEFT, Events (main, 2/3 width) */}
         <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
           <div className="cd-card" style={{ padding:22 }}>
             <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:14 }}>Upcoming events</h3>
@@ -69,7 +69,7 @@ export default async function CalendarPage() {
           </div>
         </div>
 
-        {/* RIGHT — Forms (secondary, 1/3 width) */}
+        {/* RIGHT, Forms (secondary, 1/3 width) */}
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
           <div className="cd-card" style={{ padding:18 }}>
             <h3 style={{ fontSize:13.5, fontWeight:700, color:C.ink, marginBottom:14 }}>+ New event</h3>

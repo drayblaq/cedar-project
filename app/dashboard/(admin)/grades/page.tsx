@@ -22,7 +22,7 @@ export default async function GradesPage() {
     const lvl = Array.isArray(s.levels)
       ? (s.levels[0] as { name?: string })?.name
       : (s.levels as { name?: string } | null)?.name;
-    return { id: s.id as string, full_name: s.full_name as string, programLevel: lvl ?? "—" };
+    return { id: s.id as string, full_name: s.full_name as string, programLevel: lvl ?? "-" };
   });
 
   const termList = (terms ?? []) as { id: string; name: string; start_date: string; end_date: string }[];

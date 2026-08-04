@@ -39,7 +39,7 @@ export default async function ClassesPage() {
       id: c.id,
       name: c.name,
       level_id: c.level_id as string,
-      levelName: lvl ?? "—",
+      levelName: lvl ?? "-",
       staff: staffByClass[c.id] ?? [] as { profileId: string; name: string }[],
       studentCount: c.level_id ? (countByLevel[c.level_id as string] ?? 0) : 0,
     };
@@ -64,7 +64,7 @@ export default async function ClassesPage() {
     return {
       id: s.id as string,
       class_id: s.class_id as string,
-      className: cls ?? "—",
+      className: cls ?? "-",
       day_of_week: s.day_of_week as number,
       start_time: s.start_time as string,
       end_time: s.end_time as string,

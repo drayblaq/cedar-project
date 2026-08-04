@@ -70,7 +70,7 @@ export default async function NewStudentPage() {
             <div>
               <label style={labelStyle}>Gender</label>
               <select name="gender" defaultValue="" style={inputStyle}>
-                <option value="">— Select —</option>
+                <option value="">- Select -</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Prefer not to say</option>
@@ -96,7 +96,7 @@ export default async function NewStudentPage() {
             <div>
               <label style={labelStyle}>Program</label>
               <select name="program" defaultValue="" style={inputStyle}>
-                <option value="">— Select —</option>
+                <option value="">- Select -</option>
                 <option value="general_english">General English</option>
                 <option value="business_english">Business English</option>
                 <option value="ielts_toefl_toeic">IELTS / TOEFL / TOEIC</option>
@@ -107,7 +107,7 @@ export default async function NewStudentPage() {
             <div>
               <label style={labelStyle}>Level</label>
               <select name="level_id" defaultValue="" style={inputStyle}>
-                <option value="">— Select level —</option>
+                <option value="">- Select level -</option>
                 {(levels ?? []).map(l => (
                   <option key={l.id} value={l.id}>{l.name}</option>
                 ))}
@@ -120,7 +120,7 @@ export default async function NewStudentPage() {
             <div>
               <label style={labelStyle}>Educational level</label>
               <select name="educational_level" defaultValue="" style={inputStyle}>
-                <option value="">— Select —</option>
+                <option value="">- Select -</option>
                 <option value="high_school">High school graduate</option>
                 <option value="undergraduate">Undergraduate (In the university)</option>
                 <option value="graduate">Graduate (Bachelors/Masters)</option>
@@ -130,7 +130,7 @@ export default async function NewStudentPage() {
             <div>
               <label style={labelStyle}>How did they hear about us?</label>
               <select name="discovery" defaultValue="" style={inputStyle}>
-                <option value="">— Select —</option>
+                <option value="">- Select -</option>
                 <option value="social_media">Social media</option>
                 <option value="friends_family">Friends/Family</option>
                 <option value="former_student">Former student</option>

@@ -150,7 +150,7 @@ export default async function StudentDashboardPage() {
         {/* Stat cards */}
         <div className="cedar-stat-grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
           <StatCard
-            value={knownLevel ?? "—"}
+            value={knownLevel ?? "-"}
             label="Current Level"
             sub={knownLevel ? CEFR_LABEL[knownLevel] : "Pending"}
             color={lc.dot}
@@ -162,7 +162,7 @@ export default async function StudentDashboardPage() {
             color={S.green}
           />
           <StatCard
-            value={daysSinceEnrolled !== null ? daysSinceEnrolled : "—"}
+            value={daysSinceEnrolled !== null ? daysSinceEnrolled : "-"}
             label="Days Enrolled"
             sub="at Cedar Training Center"
             color="#6366f1"
@@ -173,7 +173,7 @@ export default async function StudentDashboardPage() {
         {knownLevel && (
           <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 16, padding: "22px 24px", marginBottom: 24, boxShadow: S.card }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: S.muted, marginBottom: 4 }}>Your Learning Journey</p>
-            <h2 style={{ fontSize: 15, fontWeight: 800, color: S.ink, marginBottom: 20 }}>CEFR Level Progression — A1 to C2</h2>
+            <h2 style={{ fontSize: 15, fontWeight: 800, color: S.ink, marginBottom: 20 }}>CEFR Level Progression, A1 to C2</h2>
             <LevelTrack current={knownLevel} />
           </div>
         )}

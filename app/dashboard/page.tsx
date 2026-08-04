@@ -173,7 +173,7 @@ export default async function DashboardPage() {
                 <tbody>
                   {(recentPayRes.data ?? []).map(p => {
                     const st = Array.isArray(p.students)?p.students[0]:p.students;
-                    const name = (st as {full_name?:string}|null)?.full_name ?? "—";
+                    const name = (st as {full_name?:string}|null)?.full_name ?? "-";
                     const method = (p as {payment_method?:string}).payment_method ?? "momo";
                     return (
                       <tr key={p.id} className="cd-trow">

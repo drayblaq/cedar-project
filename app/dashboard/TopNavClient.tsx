@@ -265,7 +265,7 @@ export function TopNavClient({ items, userName, userRole, notifications = [], un
             </span>
           </a>
 
-          {/* Horizontal nav — primary tabs + "More" overflow (hidden on mobile) */}
+          {/* Horizontal nav, primary tabs + "More" overflow (hidden on mobile) */}
           <nav className="cedar-topnav-nav" aria-label="Main navigation">
             {(items.length > MAX_PRIMARY_TABS ? items.slice(0, MAX_PRIMARY_TABS) : items).map(({ href, label, iconKey }) => (
               <Link
@@ -301,7 +301,7 @@ export function TopNavClient({ items, userName, userRole, notifications = [], un
             <button onClick={handleSignOut} className="cedar-icon-btn cedar-signout-btn" title="Sign out">
               <NavIcon name="logout" size={18} />
             </button>
-            {/* Hamburger — mobile only */}
+            {/* Hamburger, mobile only */}
             <button
               className="cedar-hamburger"
               onClick={() => setMenuOpen((o) => !o)}

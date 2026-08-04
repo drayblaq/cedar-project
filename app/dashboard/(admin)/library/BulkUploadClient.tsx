@@ -156,7 +156,7 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
       >
         <div style={{ fontSize: 32, marginBottom: 8 }}>📁</div>
         <p style={{ fontWeight: 700, color: C.ink, fontSize: 15 }}>Click or drag files here</p>
-        <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>PDF, DOCX, MP3, MP4, WAV — up to 100 MB each</p>
+        <p style={{ color: C.muted, fontSize: 13, marginTop: 4 }}>PDF, DOCX, MP3, MP4, WAV, up to 100 MB each</p>
         <input
           ref={fileInputRef}
           type="file"
@@ -177,7 +177,7 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
               onChange={(e) => setGlobalLevel(e.target.value)}
               style={{ fontSize: 13, padding: "7px 10px", borderRadius: 8, border: `1px solid ${C.border}`, background: "#fff", color: C.ink }}
             >
-              <option value="">— Level —</option>
+              <option value="">- Level -</option>
               {levels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
             </select>
             <input
@@ -255,7 +255,7 @@ export function BulkUploadClient({ levels }: { levels: Level[] }) {
                   onChange={(e) => updateEntry(entry.id, { level_id: e.target.value })}
                   style={{ fontSize: 12, padding: "5px 8px", borderRadius: 7, border: `1px solid ${C.border}`, background: entry.status !== "pending" ? C.bg : "#fff", color: C.ink, flexShrink: 0 }}
                 >
-                  <option value="">— Level —</option>
+                  <option value="">- Level -</option>
                   {levels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
                 </select>
 

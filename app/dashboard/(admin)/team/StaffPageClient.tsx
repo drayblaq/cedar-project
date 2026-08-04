@@ -34,7 +34,7 @@ function RoleBadge({ role }: { role: string | null }) {
       padding: "3px 10px", borderRadius: 7, whiteSpace: "nowrap", textTransform: "capitalize",
       background: isAdmin ? "rgba(46,168,42,.12)" : "rgba(63,125,140,.14)",
       color: isAdmin ? C.greenDark : "#2f5f6b",
-    }}>{role ?? "—"}</span>
+    }}>{role ?? "-"}</span>
   );
 }
 
@@ -57,7 +57,7 @@ function EditRoleRow({ user, currentUserId }: { user: StaffUser; currentUserId: 
   return (
     <tr style={{ borderBottom: `1px solid ${C.border}` }}>
       <td style={{ padding: "13px 16px", verticalAlign: "middle" }}>
-        <div style={{ fontWeight: 600, color: C.ink, fontSize: 13.5 }}>{user.full_name || "—"}</div>
+        <div style={{ fontWeight: 600, color: C.ink, fontSize: 13.5 }}>{user.full_name || "-"}</div>
         {isSelf && <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>You</div>}
       </td>
       <td style={{ padding: "13px 16px", verticalAlign: "middle" }}>
@@ -72,14 +72,14 @@ function EditRoleRow({ user, currentUserId }: { user: StaffUser; currentUserId: 
         )}
       </td>
       <td style={{ padding: "13px 16px", verticalAlign: "middle", color: C.muted, fontSize: 13 }}>
-        {user.email ?? "—"}
+        {user.email ?? "-"}
       </td>
       <td style={{ padding: "13px 16px", verticalAlign: "middle", color: C.muted, fontSize: 13 }}>
-        {user.created_at ? new Date(user.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+        {user.created_at ? new Date(user.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "-"}
       </td>
       <td style={{ padding: "13px 16px", verticalAlign: "middle", textAlign: "right" }}>
         {isSelf ? (
-          <span style={{ fontSize: 12, color: C.muted }}>—</span>
+          <span style={{ fontSize: 12, color: C.muted }}>-</span>
         ) : editing ? (
           <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
             <button onClick={save} disabled={pending}
@@ -164,7 +164,7 @@ export function StaffPageClient({ staffUsers, currentUserId }: { staffUsers: Sta
 
   return (
     <div className="cd-staff-layout" style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 24, alignItems: "start" }}>
-      {/* Left — current staff */}
+      {/* Left, current staff */}
       <div className="cd-card" style={{ padding: 0 }}>
         <div style={{ padding: "20px 20px 14px", borderBottom: `1px solid ${C_local.border}` }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, color: C_local.ink }}>Current staff accounts</h2>
@@ -198,7 +198,7 @@ export function StaffPageClient({ staffUsers, currentUserId }: { staffUsers: Sta
         )}
       </div>
 
-      {/* Right — invite form */}
+      {/* Right, invite form */}
       <div className="cd-card" style={{ padding: 24 }}>
         <h2 style={{ fontSize: 15, fontWeight: 700, color: C_local.ink, marginBottom: 4 }}>Invite new staff member</h2>
         <p style={{ fontSize: 13, color: C_local.muted, marginBottom: 20 }}>They'll get an email to set their password.</p>

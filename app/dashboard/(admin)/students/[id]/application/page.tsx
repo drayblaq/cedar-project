@@ -31,7 +31,7 @@ const EDU_LABELS: Record<string, string> = {
   graduate: "Graduate (Bachelors/Masters)",
   postgraduate: "Post graduate",
 };
-function eduLabel(v: string) { return EDU_LABELS[v] ?? (v || "—"); }
+function eduLabel(v: string) { return EDU_LABELS[v] ?? (v || "-"); }
 
 export default async function StudentApplicationPage({
   params,
@@ -65,23 +65,23 @@ export default async function StudentApplicationPage({
   const hasLogin = !!s.user_id;
 
   const rows: { label: string; value: string }[] = [
-    { label: "First name", value: String(s.first_name ?? "—") },
-    { label: "Last name", value: String(s.last_name ?? "—") },
-    { label: "Email", value: String(s.email ?? "—") },
-    { label: "Gender", value: String(s.gender ?? "—") },
-    { label: "Date of birth", value: s.date_of_birth ? String(s.date_of_birth) : "—" },
-    { label: "Phone / WhatsApp", value: String(s.whatsapp ?? s.phone ?? "—") },
-    { label: "Resident address", value: String(s.resident_address ?? s.address_line ?? "—") },
+    { label: "First name", value: String(s.first_name ?? "-") },
+    { label: "Last name", value: String(s.last_name ?? "-") },
+    { label: "Email", value: String(s.email ?? "-") },
+    { label: "Gender", value: String(s.gender ?? "-") },
+    { label: "Date of birth", value: s.date_of_birth ? String(s.date_of_birth) : "-" },
+    { label: "Phone / WhatsApp", value: String(s.whatsapp ?? s.phone ?? "-") },
+    { label: "Resident address", value: String(s.resident_address ?? s.address_line ?? "-") },
     { label: "Educational level", value: eduLabel(String(s.educational_level ?? "")) },
-    { label: "How they heard about us", value: String(s.discovery_channel ?? "—") },
-    { label: "Notes", value: String(s.notes ?? "—") },
+    { label: "How they heard about us", value: String(s.discovery_channel ?? "-") },
+    { label: "Notes", value: String(s.notes ?? "-") },
   ];
 
   const guardianRows: { label: string; value: string }[] = [
-    { label: "Full name", value: String(s.guardian_name ?? "—") },
-    { label: "Phone number", value: String(s.guardian_phone ?? s.parent_whatsapp ?? "—") },
-    { label: "Resident address", value: String(s.guardian_address ?? "—") },
-    { label: "Parent email", value: String(s.parent_email ?? "—") },
+    { label: "Full name", value: String(s.guardian_name ?? "-") },
+    { label: "Phone number", value: String(s.guardian_phone ?? s.parent_whatsapp ?? "-") },
+    { label: "Resident address", value: String(s.guardian_address ?? "-") },
+    { label: "Parent email", value: String(s.parent_email ?? "-") },
   ];
   const hasGuardian = !!(s.guardian_name || s.guardian_phone || s.guardian_address || s.parent_email);
   const declarationAgreed = s.declaration_agreed === true;
@@ -132,7 +132,7 @@ export default async function StudentApplicationPage({
         )}
       </div>
 
-      {/* Why learn English — prominent */}
+      {/* Why learn English, prominent */}
       <div className="cd-card" style={{ padding: 22, marginBottom: 18, background: C.greenWash, border: `1px solid ${C.green}` }}>
         <h2 style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: C.greenDark, marginBottom: 8 }}>Why they want to learn English</h2>
         <p style={{ fontSize: 15, color: C.ink, lineHeight: 1.6, fontWeight: 500 }}>
@@ -180,7 +180,7 @@ export default async function StudentApplicationPage({
                 <p className="text-sm font-medium text-gray-900">No portal access yet</p>
                 <p className="text-xs text-gray-500">
                   {s.last_invite_sent_at
-                    ? `Invite sent ${new Date(String(s.last_invite_sent_at)).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} — student hasn't accepted yet`
+                    ? `Invite sent ${new Date(String(s.last_invite_sent_at)).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}, student hasn't accepted yet`
                     : "Send an invite to give this student portal access"}
                 </p>
               </div>
@@ -246,7 +246,7 @@ export default async function StudentApplicationPage({
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           {/* Emergency contact / guardian */}
           <div className="cd-card" style={{ padding: 22 }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 14 }}>Emergency contact — guardian or parent</h2>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 14 }}>Emergency contact, guardian or parent</h2>
             {!hasGuardian ? (
               <p style={{ fontSize: 13.5, color: C.muted }}>No emergency contact provided.</p>
             ) : (
@@ -275,7 +275,7 @@ export default async function StudentApplicationPage({
                     <li key={a.id} style={{ background: "#f9fafb", border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 14px" }}>
                       <p style={{ fontSize: 13.5, fontWeight: 700, color: C.ink }}>{title ?? "Placement test"}</p>
                       <p style={{ fontSize: 12, color: C.muted, marginTop: 3 }}>
-                        Score: {a.score} / {a.max_score} ({pct}%) · Time: {a.time_taken_seconds ?? "—"}s · {new Date(a.completed_at).toLocaleString()}
+                        Score: {a.score} / {a.max_score} ({pct}%) · Time: {a.time_taken_seconds ?? "-"}s · {new Date(a.completed_at).toLocaleString()}
                       </p>
                     </li>
                   );
@@ -296,7 +296,7 @@ export default async function StudentApplicationPage({
         </div>
       </div>
 
-      {/* Danger zone — admin only */}
+      {/* Danger zone, admin only */}
       <div className="cd-card" style={{ padding: 22, marginTop: 18, border: "1px solid #fecaca", background: "#fffafa" }}>
         <h2 style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#b91c1c", marginBottom: 6 }}>Danger zone</h2>
         <p style={{ fontSize: 13, color: C.muted, marginBottom: 14, maxWidth: 520, lineHeight: 1.6 }}>

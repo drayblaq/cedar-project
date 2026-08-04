@@ -210,7 +210,7 @@ export function StudentLibraryExplorer({ materials }: Props) {
         ))}
       </nav>
 
-      {/* Folders — 2 columns max on mobile */}
+      {/* Folders, 2 columns max on mobile */}
       {currentFolders.length > 0 && (
         <div className="cedar-folder-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 6, marginBottom: currentFiles.length > 0 ? 28 : 0 }}>
           {currentFolders.map((folder) => (

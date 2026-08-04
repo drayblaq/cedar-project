@@ -35,7 +35,7 @@ function levelToNum(level: string): number {
   return idx >= 0 ? idx + 1 : 0;
 }
 function numToLevel(n: number): string {
-  return CEFR[n - 1] ?? "—";
+  return CEFR[n - 1] ?? "-";
 }
 
 export function ProgressGraph({ history }: { history: AssessmentItem[] }) {

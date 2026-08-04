@@ -39,8 +39,8 @@ function cleanFileName(filename: string): string {
   return filename
     .replace(/\.[^/.]+$/, "")
     .replace(/^Lesson \d+_/, "")
-    .replace(/^EXERCISES /i, "Exercises — ")
-    .replace(/^TRANSCRIPT /i, "Transcript — ")
+    .replace(/^EXERCISES /i, "Exercises, ")
+    .replace(/^TRANSCRIPT /i, "Transcript, ")
     .replace(/^LearnEnglish-/i, "")
     .replace(/-/g, " ")
     .trim();
@@ -160,7 +160,7 @@ export function UploadPanel({ folderId, folderName, onClose, onSuccess }: Upload
             <p style={{ fontSize: 14, fontWeight: 600, color: S.sub, marginBottom: 2 }}>Drag files here</p>
             <p style={{ fontSize: 12, color: S.muted }}>or</p>
             <p style={{ fontSize: 13, fontWeight: 700, color: S.green, marginTop: 4 }}>Browse files</p>
-            <p style={{ fontSize: 11, color: S.muted, marginTop: 6 }}>PDF, DOC, DOCX — up to 100 MB each</p>
+            <p style={{ fontSize: 11, color: S.muted, marginTop: 6 }}>PDF, DOC, DOCX, up to 100 MB each</p>
             <input
               ref={fileInputRef}
               type="file"
@@ -187,7 +187,7 @@ export function UploadPanel({ folderId, folderName, onClose, onSuccess }: Upload
                   style={{ marginTop: 2, accentColor: "#7c3aed", flexShrink: 0 }} />
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>Teachers only</p>
-                  <p style={{ fontSize: 11.5, color: S.muted, marginTop: 2 }}>Lesson plans — only staff can see</p>
+                  <p style={{ fontSize: 11.5, color: S.muted, marginTop: 2 }}>Lesson plans, only staff can see</p>
                 </div>
               </label>
               {/* Visible to students */}

@@ -176,8 +176,8 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
   const [lvl, setLvl] = useState("All");
 
   function levelName(l: Student["levels"]) {
-    if (!l) return "—";
-    return Array.isArray(l) ? (l[0] as {name?:string})?.name ?? "—" : (l as {name?:string})?.name ?? "—";
+    if (!l) return "-";
+    return Array.isArray(l) ? (l[0] as {name?:string})?.name ?? "-" : (l as {name?:string})?.name ?? "-";
   }
   function className(c: Student["classes"]) {
     if (!c) return null;
@@ -273,7 +273,7 @@ export function StudentsTableClient({ students, bestTestPct, paymentTotals, tuit
                       {cls ? (
                         <span style={{ fontSize:12.5, fontWeight:600, color:C.ink }}>{cls}</span>
                       ) : (
-                        <span style={{ fontSize:11.5, color:C.muted }}>—</span>
+                        <span style={{ fontSize:11.5, color:C.muted }}>-</span>
                       )}
                     </td>
                     {/* Status (application_status) */}

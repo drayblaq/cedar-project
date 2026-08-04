@@ -27,7 +27,7 @@ function getWeekDates(): string[] {
 }
 
 function LevelBadge({ level }: { level?: string }) {
-  if (!level) return <span style={{ fontSize: 12, color: S.muted }}>—</span>;
+  if (!level) return <span style={{ fontSize: 12, color: S.muted }}>-</span>;
   const c = level.startsWith("A") ? { bg: "#fef3c7", fg: "#92400e" }
     : level.startsWith("B") ? { bg: "#dbeafe", fg: "#1e3a8a" }
     : { bg: S.greenMid, fg: S.greenDark };

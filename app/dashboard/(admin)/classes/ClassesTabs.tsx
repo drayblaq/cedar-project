@@ -228,7 +228,7 @@ export function ClassesTabs({ levels, staff, classes, timetable, students }: {
             <div className="cd-card" style={{ padding: 22, marginBottom: 22 }}>
               <h3 style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 16 }}>New class</h3>
               <form action={createClass as unknown as (fd: FormData) => Promise<void>} style={{ display: "grid", gridTemplateColumns: "2fr 1fr auto", gap: 12, alignItems: "end" }}>
-                <label className="cd-fld"><span>Class name</span><input name="name" type="text" required placeholder="e.g. General English — B1 Morning" /></label>
+                <label className="cd-fld"><span>Class name</span><input name="name" type="text" required placeholder="e.g. General English, B1 Morning" /></label>
                 <label className="cd-fld"><span>Level</span>
                   <select name="level_id" required defaultValue=""><option value="" disabled>Select…</option>{levels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</select>
                 </label>

@@ -45,7 +45,7 @@ function SkillBadge({ level }: { level?: string }) {
       background: level ? t.bg : "#f1f5ee",
       color: level ? t.fg : "#d1d5db",
     }}>
-      {level ?? "—"}
+      {level ?? "-"}
     </span>
   );
 }
@@ -123,7 +123,7 @@ function StudentPanel({
             <div>
               <h2 style={{ fontSize: 16, fontWeight: 800, color: C.ink, margin: 0 }}>{student.full_name}</h2>
               <p style={{ fontSize: 12, color: C.muted, margin: "2px 0 0" }}>
-                {termName ? `Assessment — ${termName}` : "Select a term first"} · {student.programLevel}
+                {termName ? `Assessment, ${termName}` : "Select a term first"} · {student.programLevel}
               </p>
             </div>
           </div>
@@ -136,7 +136,7 @@ function StudentPanel({
           ) : (
             <>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, marginBottom: 18 }}>
-                Click a level to set it — saves instantly
+                Click a level to set it, saves instantly
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 {SKILLS.map((skill) => (
@@ -241,7 +241,7 @@ export function SkillMatrix({ rows, terms }: { rows: Row[]; terms: Term[] }) {
                 cursor: "pointer", outline: "none",
               }}
             >
-              <option value="">— select —</option>
+              <option value="">- select -</option>
               {terms.map((t) => (
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}

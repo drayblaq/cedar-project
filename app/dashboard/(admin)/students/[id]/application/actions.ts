@@ -50,7 +50,7 @@ export async function createMomoPayment(formData: FormData) {
       );
       if (!inviteErr) authUserId = inviteData?.user?.id ?? null;
     } catch {
-      // invite failure is non-fatal — payment still recorded
+      // invite failure is non-fatal, payment still recorded
     }
   }
 

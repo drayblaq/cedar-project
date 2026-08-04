@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Cedar dashboard shared UI primitives — ported from cedar-dashboards prototype.
+ * Cedar dashboard shared UI primitives, ported from cedar-dashboards prototype.
  * All components are client-side so they can be used anywhere.
  */
 

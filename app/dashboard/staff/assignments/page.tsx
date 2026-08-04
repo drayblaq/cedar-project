@@ -87,7 +87,7 @@ export default async function StaffAssignmentsPage() {
           <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>New assignment</h3>
           <form action={createAssignment as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
             <label className="cd-fld"><span>Title</span>
-              <input name="title" type="text" required placeholder="e.g. Essay — My future career" />
+              <input name="title" type="text" required placeholder="e.g. Essay, My future career" />
             </label>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
               <label className="cd-fld"><span>Due date</span>

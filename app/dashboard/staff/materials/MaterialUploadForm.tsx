@@ -60,7 +60,7 @@ export function MaterialUploadForm({ levels, defaultLevelId }: { levels: Level[]
         <label className="cd-fld">
           <span>Level</span>
           <select name="level_id" defaultValue={defaultLevelId ?? ""}>
-            <option value="">— Select level —</option>
+            <option value="">- Select level -</option>
             {levels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
           </select>
         </label>

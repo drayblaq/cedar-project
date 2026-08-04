@@ -76,7 +76,7 @@ export function DocumentViewer({ material, onClose }: Props) {
 
       {/* Iframe */}
       <div style={{ flex: 1, background: S.bg, overflow: "hidden", position: "relative" }}>
-        {/* Loading backdrop — iframe renders on top once loaded */}
+        {/* Loading backdrop, iframe renders on top once loaded */}
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <p style={{ fontSize: 13, color: S.muted }}>Loading document…</p>
         </div>

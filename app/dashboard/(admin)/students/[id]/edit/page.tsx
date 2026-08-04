@@ -83,7 +83,7 @@ export default async function EditStudentPage({
             <div>
               <label style={labelStyle}>Gender</label>
               <select name="gender" defaultValue={s.gender ?? ""} style={inputStyle}>
-                <option value="">— Select —</option>
+                <option value="">- Select -</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Prefer not to say</option>
@@ -101,7 +101,7 @@ export default async function EditStudentPage({
             <div>
               <label style={labelStyle}>Level</label>
               <select name="level_id" defaultValue={student.level_id ?? ""} style={inputStyle}>
-                <option value="">— Select level —</option>
+                <option value="">- Select level -</option>
                 {(levels ?? []).map(l => (
                   <option key={l.id} value={l.id}>{l.name}</option>
                 ))}
@@ -110,7 +110,7 @@ export default async function EditStudentPage({
             <div>
               <label style={labelStyle}>Class</label>
               <select name="class_id" defaultValue={student.class_id ?? ""} style={inputStyle}>
-                <option value="">— No class assigned —</option>
+                <option value="">- No class assigned -</option>
                 {(classes ?? []).map(c => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
@@ -123,7 +123,7 @@ export default async function EditStudentPage({
             <div>
               <label style={labelStyle}>How did they hear about us?</label>
               <select name="discovery" defaultValue={s.discovery_channel ?? ""} style={inputStyle}>
-                <option value="">— Select —</option>
+                <option value="">- Select -</option>
                 <option value="whatsapp">WhatsApp</option>
                 <option value="tiktok">TikTok</option>
                 <option value="instagram">Instagram</option>

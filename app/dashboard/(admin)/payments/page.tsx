@@ -72,7 +72,7 @@ export default async function PaymentsPage() {
                 <tbody>
                   {payments.map(p => {
                     const st = Array.isArray(p.students)?p.students[0]:p.students;
-                    const name = (st as {full_name?:string}|null)?.full_name ?? "—";
+                    const name = (st as {full_name?:string}|null)?.full_name ?? "-";
                     const method = (p as {payment_method?:string}).payment_method ?? "momo";
                     const mt = methodTone[method] ?? { bg:"#eef2ec", fg:"#4a5a4d" };
                     const receiptNo = (p as {receipt_number?:string|null}).receipt_number ?? "PAY-"+p.id.slice(0,8).toUpperCase();

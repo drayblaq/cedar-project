@@ -80,7 +80,7 @@ export default async function StudentLevelPage() {
           <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", color: S.ink }}>
             {result.student.full_name}
           </h1>
-          {displayLevel !== "—" && (
+          {displayLevel !== "-" && (
             <span style={{
               display: "inline-flex", alignItems: "center", justifyContent: "center",
               background: lvlStyle.bg, color: lvlStyle.fg,
@@ -147,7 +147,7 @@ export default async function StudentLevelPage() {
                       background: ls.bg, color: ls.fg, fontSize: isOverall ? 15 : 13, fontWeight: 800,
                       padding: isOverall ? "5px 14px" : "3px 10px", borderRadius: 8, flexShrink: 0, letterSpacing: "0.03em",
                     }}>
-                      {lvl ?? "—"}
+                      {lvl ?? "-"}
                     </span>
                   </div>
 

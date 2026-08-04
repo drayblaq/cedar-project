@@ -167,7 +167,7 @@ export async function deleteStudent(id: string) {
       const admin = createAdminClient();
       await admin.auth.admin.deleteUser(linkedUserId);
     } catch {
-      // Service role not configured or user already gone — student record is still deleted.
+      // Service role not configured or user already gone, student record is still deleted.
     }
   }
 
@@ -212,7 +212,7 @@ export async function inviteStudentLogin(studentId: string) {
     const admin = createAdminClient();
 
     if (student.user_id) {
-      // Student already has an account — send a magic link so they can log back in
+      // Student already has an account, send a magic link so they can log back in
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: student.email,
         options: { shouldCreateUser: false, emailRedirectTo: redirectTo },
@@ -220,7 +220,7 @@ export async function inviteStudentLogin(studentId: string) {
       console.log("[invite] signInWithOtp error:", otpError);
       if (otpError) return { success: false, error: otpError.message };
     } else {
-      // New user — send invite email (triggers Resend via Supabase)
+      // New user, send invite email (triggers Resend via Supabase)
       const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(student.email, {
         redirectTo,
         data: { full_name: student.full_name },
@@ -232,7 +232,7 @@ export async function inviteStudentLogin(studentId: string) {
         const alreadyExists = msg.includes("already") || msg.includes("registered") || msg.includes("exists");
         if (!alreadyExists) return { success: false, error: inviteError.message };
 
-        // User was invited before but never accepted — resend magic link
+        // User was invited before but never accepted, resend magic link
         const { error: otpError } = await supabase.auth.signInWithOtp({
           email: student.email,
           options: { shouldCreateUser: false, emailRedirectTo: redirectTo },

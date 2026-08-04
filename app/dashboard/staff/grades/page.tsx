@@ -70,11 +70,11 @@ export default async function StaffGradesPage() {
                     return (
                       <tr key={g.id} className="cd-trow">
                         <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, fontWeight:600, color:C.ink }}>
-                          {(st as {full_name?:string})?.full_name ?? "—"}
+                          {(st as {full_name?:string})?.full_name ?? "-"}
                         </td>
                         <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, color:C.muted, textTransform:"capitalize" }}>{g.subject_or_type}</td>
-                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"center", fontWeight:800, color:scoreColor(g.score!=null?Number(g.score):null) }}>{g.score ?? "—"}</td>
-                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, color:C.muted, fontSize:12.5 }}>{g.remarks ?? "—"}</td>
+                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, textAlign:"center", fontWeight:800, color:scoreColor(g.score!=null?Number(g.score):null) }}>{g.score ?? "-"}</td>
+                        <td style={{ padding:"12px 14px", borderBottom:`1px solid ${C.border}`, color:C.muted, fontSize:12.5 }}>{g.remarks ?? "-"}</td>
                       </tr>
                     );
                   })}
@@ -96,7 +96,7 @@ export default async function StaffGradesPage() {
             </label>
             <label className="cd-fld"><span>Term</span>
               <select name="academic_term_id" defaultValue="">
-                <option value="">— None —</option>
+                <option value="">- None -</option>
                 {(terms ?? []).map(t=><option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             </label>

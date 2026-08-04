@@ -28,7 +28,7 @@ export default async function AdminStaffPage() {
     const { data: { users: authUsers } } = await adminSupabase.auth.admin.listUsers({ perPage: 1000 });
     for (const u of authUsers) emailMap[u.id] = u.email ?? "";
   } catch {
-    // Service role not configured — emails won't show
+    // Service role not configured, emails won't show
   }
 
   const roleNameMap = Object.fromEntries((roles ?? []).map(r => [r.id, r.name]));
@@ -46,7 +46,7 @@ export default async function AdminStaffPage() {
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>Staff Management</h1>
         <p style={{ fontSize: 13.5, color: C.muted, marginTop: 4 }}>
-          Invite teachers and admins — no Supabase dashboard needed.
+          Invite teachers and admins, no Supabase dashboard needed.
         </p>
       </div>
       <StaffPageClient staffUsers={staffUsers} currentUserId={user.id} />

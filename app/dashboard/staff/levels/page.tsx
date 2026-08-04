@@ -47,9 +47,9 @@ export default async function StaffLevelsPage() {
     if (!cls) continue;
     const lvl = Array.isArray(cls.level) ? cls.level[0]?.name : (cls.level as { name?: string } | null)?.name;
     const rows = (cls.students ?? []).map((s) => ({
-      id: s.id, full_name: s.full_name, programLevel: lvl ?? "—",
+      id: s.id, full_name: s.full_name, programLevel: lvl ?? "-",
     }));
-    classes.push({ id: cls.id, name: cls.name, levelName: lvl ?? "—", rows });
+    classes.push({ id: cls.id, name: cls.name, levelName: lvl ?? "-", rows });
   }
 
   const termList = (terms ?? []) as { id: string; name: string; start_date: string; end_date: string }[];
@@ -57,7 +57,7 @@ export default async function StaffLevelsPage() {
   return (
     <div style={{ padding: "30px 30px 60px" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>My Students — English Level</h1>
+        <h1 style={{ fontSize: 23, fontWeight: 800, letterSpacing: "-0.02em", color: C.ink }}>My Students, English Level</h1>
       </div>
 
       {!classes.length ? (

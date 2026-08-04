@@ -67,7 +67,7 @@ export default async function ReceiptPage({
   return (
     <div className="min-h-screen bg-slate-100 px-4 py-10 print:bg-white print:p-0">
       <PrintStyles />
-      {/* Print button — hidden when printing */}
+      {/* Print button, hidden when printing */}
       <div className="mb-6 flex justify-center print:hidden">
         <PrintButton />
       </div>
@@ -113,20 +113,20 @@ export default async function ReceiptPage({
             <Row
               label="Student:"
               value={
-                (student as { full_name?: string } | null)?.full_name ?? "—"
+                (student as { full_name?: string } | null)?.full_name ?? "-"
               }
             />
             <Row
               label="Email:"
-              value={(student as { email?: string } | null)?.email ?? "—"}
+              value={(student as { email?: string } | null)?.email ?? "-"}
             />
             <Row
               label="Phone:"
               value={
-                (student as { phone?: string | null } | null)?.phone ?? "—"
+                (student as { phone?: string | null } | null)?.phone ?? "-"
               }
             />
-            <Row label="Level:" value={level ?? "—"} />
+            <Row label="Level:" value={level ?? "-"} />
           </tbody>
         </table>
 

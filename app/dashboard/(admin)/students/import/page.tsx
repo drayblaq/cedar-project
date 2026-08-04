@@ -194,10 +194,10 @@ export default function ImportStudentsPage() {
                         <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, textAlign: "center" }}>
                           <input type="checkbox" checked={isSelected} onChange={() => toggleRow(i)} style={{ cursor: "pointer" }} />
                         </td>
-                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, fontWeight: 600, color: C.ink }}>{r.full_name || <span style={{ color: C.muted }}>—</span>}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, fontWeight: 600, color: C.ink }}>{r.full_name || <span style={{ color: C.muted }}>-</span>}</td>
                         <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, color: warn ? "#b3402f" : C.muted }}>{r.email || "⚠ missing"}</td>
-                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, color: C.muted }}>{r.phone || "—"}</td>
-                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, color: C.muted, textTransform: "capitalize" }}>{r.gender ?? "—"}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, color: C.muted }}>{r.phone || "-"}</td>
+                        <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, color: C.muted, textTransform: "capitalize" }}>{r.gender ?? "-"}</td>
                         <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, textAlign: "center" }}>
                           {warn ? (
                             <span style={{ fontSize: 11, fontWeight: 700, background: "rgba(201,74,58,.1)", color: "#b3402f", padding: "3px 8px", borderRadius: 6 }}>No email</span>
@@ -272,7 +272,7 @@ export default function ImportStudentsPage() {
                         {r.status === "skipped" && <span style={{ fontSize: 11, fontWeight: 700, background: "#eef2ec", color: "#4a5a4d", padding: "3px 8px", borderRadius: 6 }}>Skipped</span>}
                         {r.status === "error"   && <span style={{ fontSize: 11, fontWeight: 700, background: "rgba(201,74,58,.1)", color: "#b3402f", padding: "3px 8px", borderRadius: 6 }}>Error</span>}
                       </td>
-                      <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, fontSize: 12.5, color: C.muted }}>{r.reason ?? "—"}</td>
+                      <td style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, fontSize: 12.5, color: C.muted }}>{r.reason ?? "-"}</td>
                     </tr>
                   ))}
                 </tbody>

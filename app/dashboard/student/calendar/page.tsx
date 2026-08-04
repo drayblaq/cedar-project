@@ -57,7 +57,7 @@ export default async function StudentCalendarPage(props: {
     }
   }
 
-  // Group by day_of_week — only days that have sessions
+  // Group by day_of_week, only days that have sessions
   const slotsByDay: Record<number, TimetableSlot[]> = {};
   for (const s of timetableSlots) {
     if (!slotsByDay[s.day_of_week]) slotsByDay[s.day_of_week] = [];
