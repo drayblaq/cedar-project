@@ -92,113 +92,143 @@ function FolderCard({
 }) {
   const [hovered, setHovered] = useState(false);
 
-  return (
-    <div
-      style={{ position: "relative" }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <button
-        onClick={isRenaming ? undefined : onClick}
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "11px 13px",
-          borderRadius: 10,
-          border: `1px solid ${isRenaming ? S.blueBorder : hovered ? S.borderHover : S.border}`,
-          background: isRenaming ? S.blueLight : hovered ? S.bg : S.surface,
-          cursor: isRenaming ? "default" : "pointer",
-          textAlign: "left",
-          transition: "background .1s, border-color .1s",
-          boxShadow: hovered && !isRenaming ? S.shadow : "none",
-        }}
-      >
+  // ── Renaming mode: standalone row, NOT inside a button ────────────────────
+  if (isRenaming) {
+    return (
+      <div style={{
+        display: "flex", alignItems: "center", gap: 10,
+        padding: "10px 14px",
+        border: `2px solid ${S.blue}`, borderRadius: 10,
+        background: S.surface,
+      }}>
         <div style={{
           width: 36, height: 36, borderRadius: 8, flexShrink: 0,
           display: "flex", alignItems: "center", justifyContent: "center",
           background: S.blueLight, border: `1px solid ${S.blueBorder}`,
         }}>
-          <IconFolder size={18} color={S.blue} />
+          <IconFolder size={20} color={S.blue} />
         </div>
+        <input
+          autoFocus
+          value={renameValue}
+          onChange={e => onRenameChange(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === "Enter") onRenameSave();
+            if (e.key === "Escape") onRenameCancel();
+          }}
+          style={{
+            flex: 1, minWidth: 0,
+            fontSize: 14, fontWeight: 600, color: S.ink,
+            border: `1px solid ${S.blueBorder}`, borderRadius: 7,
+            padding: "6px 10px", outline: "none", background: S.surface,
+          }}
+        />
+        <button
+          onClick={onRenameSave}
+          style={{
+            flexShrink: 0, padding: "6px 14px",
+            background: S.green, color: "#fff", border: "none",
+            borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer",
+          }}
+        >
+          Save
+        </button>
+        <button
+          onClick={onRenameCancel}
+          style={{
+            flexShrink: 0, padding: "6px 12px",
+            background: S.surface, color: S.muted,
+            border: `1px solid ${S.border}`, borderRadius: 7,
+            fontSize: 13, fontWeight: 500, cursor: "pointer",
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    );
+  }
 
+  // ── Normal mode ───────────────────────────────────────────────────────────
+  return (
+    <div
+      style={{ display: "flex", alignItems: "center", gap: 0 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Clickable area */}
+      <button
+        onClick={onClick}
+        style={{
+          flex: 1, minWidth: 0,
+          display: "flex", alignItems: "center", gap: 10,
+          padding: "10px 12px",
+          borderRadius: isAdmin && hovered ? "10px 0 0 10px" : 10,
+          border: `1px solid ${hovered ? S.borderHover : S.border}`,
+          borderRight: isAdmin && hovered ? "none" : `1px solid ${hovered ? S.borderHover : S.border}`,
+          background: hovered ? S.bg : S.surface,
+          cursor: "pointer", textAlign: "left",
+          transition: "background .1s, border-color .1s",
+        }}
+      >
+        <div style={{
+          width: 38, height: 38, borderRadius: 9, flexShrink: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: "#dbeafe", border: `1.5px solid #93c5fd`,
+        }}>
+          <IconFolder size={20} color="#1d4ed8" />
+        </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          {isRenaming ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }} onClick={e => e.stopPropagation()}>
-              <input
-                autoFocus
-                value={renameValue}
-                onChange={e => onRenameChange(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === "Enter") onRenameSave();
-                  if (e.key === "Escape") onRenameCancel();
-                }}
-                style={{
-                  flex: 1, fontSize: 13, border: `1px solid ${S.blueBorder}`,
-                  borderRadius: 6, padding: "3px 7px", outline: "none", color: S.ink,
-                  minWidth: 0, background: S.surface,
-                }}
-                onClick={e => e.stopPropagation()}
-              />
-              <button
-                onClick={e => { e.stopPropagation(); onRenameSave(); }}
-                style={{ background: S.green, border: "none", borderRadius: 5, color: "#fff", fontSize: 11, fontWeight: 700, padding: "3px 8px", cursor: "pointer", flexShrink: 0 }}
-              >
-                Save
-              </button>
-              <button
-                onClick={e => { e.stopPropagation(); onRenameCancel(); }}
-                style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 5, color: S.muted, fontSize: 11, padding: "3px 7px", cursor: "pointer", flexShrink: 0 }}
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <p style={{
-              fontSize: 13.5, fontWeight: 600, color: S.ink,
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>
-              {folder.name}
-            </p>
-          )}
-          {!isRenaming && (
-            <p style={{ fontSize: 11.5, color: S.muted, marginTop: 1 }}>
-              {count === undefined ? "Loading..." : `${count} item${count !== 1 ? "s" : ""}`}
-            </p>
-          )}
+          <p style={{
+            fontSize: 14, fontWeight: 700, color: S.ink,
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          }}>
+            {folder.name}
+          </p>
+          <p style={{ fontSize: 12, color: S.muted, marginTop: 1 }}>
+            {count === undefined ? "..." : `${count} item${count !== 1 ? "s" : ""}`}
+          </p>
         </div>
       </button>
 
-      {isAdmin && hovered && !isRenaming && (
-        <div style={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 4 }}>
+      {/* Admin action buttons — appear as attached right segment on hover */}
+      {isAdmin && hovered && (
+        <div style={{
+          display: "flex", flexShrink: 0,
+          border: `1px solid ${S.borderHover}`, borderLeft: "none",
+          borderRadius: "0 10px 10px 0",
+          overflow: "hidden",
+        }}>
           <button
             onClick={e => { e.stopPropagation(); onRenameStart(); }}
+            title="Rename"
             style={{
-              width: 26, height: 26, borderRadius: 6, border: `1px solid ${S.blueBorder}`,
-              background: S.blueLight, color: S.blue,
+              width: 38, height: 58,
               display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", flexShrink: 0,
+              background: S.blueLight, border: "none",
+              borderRight: `1px solid ${S.blueBorder}`,
+              cursor: "pointer", color: S.blue,
             }}
-            title="Rename folder"
           >
-            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
               <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
           </button>
           <button
             onClick={e => { e.stopPropagation(); onDelete(); }}
+            title="Delete"
             style={{
-              width: 26, height: 26, borderRadius: 6, border: `1px solid ${S.redBorder}`,
-              background: S.redLight, color: S.red,
+              width: 38, height: 58,
               display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", flexShrink: 0,
+              background: S.redLight, border: "none",
+              cursor: "pointer", color: S.red,
             }}
-            title="Delete folder"
           >
-            <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/>
+              <path d="M9 6V4h6v2"/>
             </svg>
           </button>
         </div>
@@ -229,26 +259,26 @@ function FileRow({ file, isAdmin, isLast, onOpen, onDelete }: {
       }}
     >
       <div style={{
-        width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+        width: 40, height: 40, borderRadius: 9, flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: isPdf ? S.redLight : S.blueLight,
-        border: `1px solid ${isPdf ? S.redBorder : S.blueBorder}`,
+        background: isPdf ? "#fee2e2" : "#dbeafe",
+        border: `1.5px solid ${isPdf ? "#fca5a5" : "#93c5fd"}`,
       }}>
         <IconFile isPdf={isPdf} />
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 13.5, fontWeight: 600, color: S.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: S.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {file.title}
         </p>
-        <p style={{ fontSize: 11.5, color: S.muted, marginTop: 1 }}>{added}</p>
+        <p style={{ fontSize: 12, color: S.muted, marginTop: 2 }}>{added}</p>
       </div>
 
       <span style={{
-        fontSize: 10, fontWeight: 800, padding: "2px 7px", borderRadius: 5, flexShrink: 0, letterSpacing: "0.04em",
-        background: isPdf ? S.redLight : S.blueLight,
-        color: isPdf ? S.red : S.blueDark,
-        border: `1px solid ${isPdf ? S.redBorder : S.blueBorder}`,
+        fontSize: 10, fontWeight: 800, padding: "3px 8px", borderRadius: 5, flexShrink: 0, letterSpacing: "0.05em",
+        background: isPdf ? "#fee2e2" : "#dbeafe",
+        color: isPdf ? "#991b1b" : "#1e40af",
+        border: `1px solid ${isPdf ? "#fca5a5" : "#93c5fd"}`,
       }}>
         {isPdf ? "PDF" : "DOC"}
       </span>
@@ -342,10 +372,16 @@ function GridFileCard({ file, isAdmin, onOpen, onDelete }: {
     >
       <div style={{
         height: 80, display: "flex", alignItems: "center", justifyContent: "center",
-        background: isPdf ? S.redLight : S.blueLight,
-        borderBottom: `1px solid ${isPdf ? S.redBorder : S.blueBorder}`,
+        background: isPdf ? "#fee2e2" : "#dbeafe",
+        borderBottom: `1.5px solid ${isPdf ? "#fca5a5" : "#93c5fd"}`,
       }}>
-        <IconFile isPdf={isPdf} />
+        <svg width={32} height={32} viewBox="0 0 24 24" fill="none" stroke={isPdf ? "#dc2626" : "#2563eb"} strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
       </div>
 
       <div style={{
@@ -358,7 +394,7 @@ function GridFileCard({ file, isAdmin, onOpen, onDelete }: {
 
       <div style={{ padding: "10px 12px 12px", flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
         <p style={{
-          fontSize: 12, fontWeight: 600, color: S.ink, lineHeight: 1.4,
+          fontSize: 12.5, fontWeight: 700, color: S.ink, lineHeight: 1.4,
           display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
           {file.title}
