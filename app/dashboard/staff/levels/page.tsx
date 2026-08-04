@@ -4,14 +4,11 @@ import { SkillMatrix } from "@/app/dashboard/(admin)/grades/SkillMatrix";
 
 const C = { ink: "#16241a", muted: "#687a6c", border: "#e6ece4" };
 
-const SKILL_AREAS = ["speaking", "listening", "grammar_vocabulary", "reading", "writing", "overall"] as const;
-
 export default async function StaffLevelsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) notFound();
 
-  // Find this staff member's profile
   const { data: profile } = await supabase
     .from("profiles")
     .select("id")
@@ -19,46 +16,43 @@ export default async function StaffLevelsPage() {
     .single();
   if (!profile) notFound();
 
-  // Fetch classes assigned to this staff member, with students and grades
-  const { data: staffClasses } = await supabase
-    .from("staff_classes")
-    .select(`
-      class:classes(
-        id, name,
-        level:levels(name),
-        students:students(
-          id, full_name,
-          grades(skill_area, skill_level)
+  const [{ data: staffClasses }, { data: terms }] = await Promise.all([
+    supabase
+      .from("staff_classes")
+      .select(`
+        class:classes(
+          id, name,
+          level:levels(name),
+          students:students(id, full_name)
         )
-      )
-    `)
-    .eq("profile_id", profile.id);
+      `)
+      .eq("profile_id", profile.id),
+    supabase
+      .from("academic_terms")
+      .select("id, name, start_date, end_date")
+      .order("start_date", { ascending: false }),
+  ]);
 
-  type GradeRow = { skill_area: string | null; skill_level: string | null };
-  type StudentRaw = { id: string; full_name: string; grades: GradeRow[] };
+  type StudentRaw = { id: string; full_name: string };
   type ClassRaw = {
     id: string; name: string;
     level: { name?: string } | { name?: string }[] | null;
     students: StudentRaw[] | null;
   };
 
-  const classes: { id: string; name: string; levelName: string; rows: { id: string; full_name: string; programLevel: string; levels: Record<string, string> }[] }[] = [];
+  const classes: { id: string; name: string; levelName: string; rows: { id: string; full_name: string; programLevel: string }[] }[] = [];
 
   for (const sc of staffClasses ?? []) {
     const cls = (Array.isArray(sc.class) ? sc.class[0] : sc.class) as ClassRaw | null;
     if (!cls) continue;
     const lvl = Array.isArray(cls.level) ? cls.level[0]?.name : (cls.level as { name?: string } | null)?.name;
-    const rows = (cls.students ?? []).map((s) => {
-      const levels: Record<string, string> = {};
-      for (const g of s.grades ?? []) {
-        if (g.skill_area && g.skill_level && SKILL_AREAS.includes(g.skill_area as typeof SKILL_AREAS[number])) {
-          levels[g.skill_area] = g.skill_level;
-        }
-      }
-      return { id: s.id, full_name: s.full_name, programLevel: lvl ?? "—", levels };
-    });
+    const rows = (cls.students ?? []).map((s) => ({
+      id: s.id, full_name: s.full_name, programLevel: lvl ?? "—",
+    }));
     classes.push({ id: cls.id, name: cls.name, levelName: lvl ?? "—", rows });
   }
+
+  const termList = (terms ?? []) as { id: string; name: string; start_date: string; end_date: string }[];
 
   return (
     <div style={{ padding: "30px 30px 60px" }}>
@@ -83,7 +77,7 @@ export default async function StaffLevelsPage() {
                   <p style={{ color: C.muted, fontSize: 13.5 }}>No students enrolled in this class.</p>
                 </div>
               ) : (
-                <SkillMatrix rows={cls.rows} />
+                <SkillMatrix rows={cls.rows} terms={termList} />
               )}
             </div>
           ))}

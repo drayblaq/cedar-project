@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStudentForCurrentUser, levelName } from "@/lib/student-auth";
+import { getStudentAssessmentHistory } from "@/app/dashboard/actions/index";
+import { ProgressGraph } from "@/components/dashboard/ProgressGraph";
 
 const S = {
   ink: "#0f172a", sub: "#475569", muted: "#94a3b8",
@@ -54,8 +56,10 @@ export default async function StudentLevelPage() {
   }
 
   const supabase = await createClient();
-  const { data: grades } = await supabase
-    .from("grades").select("skill_area, skill_level").eq("student_id", result.student.id);
+  const [{ data: grades }, assessmentHistory] = await Promise.all([
+    supabase.from("grades").select("skill_area, skill_level").eq("student_id", result.student.id),
+    getStudentAssessmentHistory(result.student.id),
+  ]);
 
   const levels: Record<string, string> = {};
   for (const g of (grades ?? []) as { skill_area: string | null; skill_level: string | null }[]) {
@@ -88,6 +92,14 @@ export default async function StudentLevelPage() {
           {tc("level")}: {tc("level")} {studentLevel} · CEFR Assessment Results
         </p>
       </div>
+
+      {/* Progress over time */}
+      {assessmentHistory.length > 0 && (
+        <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 20, padding: "22px 24px", marginBottom: 28, boxShadow: S.card }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: S.muted, marginBottom: 16 }}>Progress Over Time</p>
+          <ProgressGraph history={assessmentHistory} />
+        </div>
+      )}
 
       {!hasAny ? (
         <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 20, padding: "60px 32px", textAlign: "center", boxShadow: S.card, maxWidth: 520 }}>

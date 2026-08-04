@@ -24,50 +24,8 @@ export default async function CalendarPage() {
       </div>
 
       <div className="cd-grid-2-1">
-        {/* Forms */}
+        {/* LEFT — Events (main, 2/3 width) */}
         <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
-          <div className="cd-card" style={{ padding:22 }}>
-            <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>New academic term</h3>
-            <form action={createAcademicTerm as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
-              <label className="cd-fld"><span>Name</span><input name="name" type="text" required placeholder="e.g. Term 1 2026" /></label>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-                <label className="cd-fld"><span>Start date</span><input name="start_date" type="date" required /></label>
-                <label className="cd-fld"><span>End date</span><input name="end_date" type="date" required /></label>
-              </div>
-              <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Add term</button>
-            </form>
-          </div>
-          <div className="cd-card" style={{ padding:22 }}>
-            <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:16 }}>New calendar event</h3>
-            <form action={createCalendarEvent as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:14 }}>
-              <label className="cd-fld"><span>Title</span><input name="title" type="text" required placeholder="e.g. IELTS mock exam" /></label>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-                <label className="cd-fld"><span>Date</span><input name="event_date" type="date" required /></label>
-                <label className="cd-fld"><span>Type</span>
-                  <select name="event_type" defaultValue="other"><option value="other">Other</option><option value="holiday">Holiday</option><option value="exam">Exam</option><option value="deadline">Deadline</option></select>
-                </label>
-              </div>
-              <label className="cd-fld"><span>Description</span><textarea name="description" rows={2} /></label>
-              <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Add event</button>
-            </form>
-          </div>
-        </div>
-
-        {/* Lists */}
-        <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
-          <div className="cd-card" style={{ padding:22 }}>
-            <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:14 }}>Academic terms</h3>
-            {!terms?.length ? <p style={{ color:C.muted, fontSize:13 }}>No terms yet.</p> : (
-              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                {terms.map((t: {id:string; name:string; start_date:string; end_date:string}) => (
-                  <div key={t.id} style={{ paddingBottom:10, borderBottom:`1px solid ${C.border}` }}>
-                    <div style={{ fontSize:13.5, fontWeight:700, color:C.ink }}>{t.name}</div>
-                    <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{fmtDate(t.start_date)} – {fmtDate(t.end_date)}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
           <div className="cd-card" style={{ padding:22 }}>
             <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:14 }}>Upcoming events</h3>
             {!events?.length ? <p style={{ color:C.muted, fontSize:13 }}>No events yet.</p> : (
@@ -95,6 +53,48 @@ export default async function CalendarPage() {
                 })}
               </div>
             )}
+          </div>
+          <div className="cd-card" style={{ padding:22 }}>
+            <h3 style={{ fontSize:15, fontWeight:700, color:C.ink, marginBottom:14 }}>Academic terms</h3>
+            {!terms?.length ? <p style={{ color:C.muted, fontSize:13 }}>No terms yet.</p> : (
+              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                {terms.map((t: {id:string; name:string; start_date:string; end_date:string}) => (
+                  <div key={t.id} style={{ paddingBottom:10, borderBottom:`1px solid ${C.border}` }}>
+                    <div style={{ fontSize:13.5, fontWeight:700, color:C.ink }}>{t.name}</div>
+                    <div style={{ fontSize:12, color:C.muted, marginTop:2 }}>{fmtDate(t.start_date)} – {fmtDate(t.end_date)}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT — Forms (secondary, 1/3 width) */}
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          <div className="cd-card" style={{ padding:18 }}>
+            <h3 style={{ fontSize:13.5, fontWeight:700, color:C.ink, marginBottom:14 }}>+ New event</h3>
+            <form action={createCalendarEvent as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              <label className="cd-fld"><span>Title</span><input name="title" type="text" required placeholder="e.g. IELTS mock exam" /></label>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                <label className="cd-fld"><span>Date</span><input name="event_date" type="date" required /></label>
+                <label className="cd-fld"><span>Type</span>
+                  <select name="event_type" defaultValue="other"><option value="other">Other</option><option value="holiday">Holiday</option><option value="exam">Exam</option><option value="deadline">Deadline</option></select>
+                </label>
+              </div>
+              <label className="cd-fld"><span>Description</span><textarea name="description" rows={2} /></label>
+              <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Add event</button>
+            </form>
+          </div>
+          <div className="cd-card" style={{ padding:18 }}>
+            <h3 style={{ fontSize:13.5, fontWeight:700, color:C.ink, marginBottom:14 }}>+ New academic term</h3>
+            <form action={createAcademicTerm as unknown as (fd: FormData) => Promise<void>} style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              <label className="cd-fld"><span>Name</span><input name="name" type="text" required placeholder="e.g. Term 1 2026" /></label>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                <label className="cd-fld"><span>Start date</span><input name="start_date" type="date" required /></label>
+                <label className="cd-fld"><span>End date</span><input name="end_date" type="date" required /></label>
+              </div>
+              <button type="submit" className="cd-btn-primary" style={{ width:"100%", justifyContent:"center" }}>Add term</button>
+            </form>
           </div>
         </div>
       </div>

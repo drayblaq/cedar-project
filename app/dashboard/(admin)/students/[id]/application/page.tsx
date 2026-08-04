@@ -2,9 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getTuitionAmount, getSetting } from "@/lib/settings";
+import { getStudentAssessmentHistory } from "@/app/dashboard/actions/index";
 import { AdmissionActions } from "../../AdmissionActions";
 import { DeleteStudentButton } from "../../DeleteStudentButton";
 import { ResendInviteButton } from "../../ResendInviteButton";
+import { ProgressGraph } from "@/components/dashboard/ProgressGraph";
 
 const C = { ink: "#16241a", muted: "#687a6c", border: "#e6ece4", green: "#2ea82a", greenWash: "#eef6ec", greenDark: "#1a6b18" };
 
@@ -41,11 +43,14 @@ export default async function StudentApplicationPage({
   const { data: s, error } = await supabase.from("students").select("*").eq("id", id).maybeSingle();
   if (error || !s) notFound();
 
-  const { data: attempts } = await supabase
-    .from("test_attempts")
-    .select("id, score, max_score, time_taken_seconds, completed_at, tests(title)")
-    .eq("student_id", id)
-    .order("completed_at", { ascending: false });
+  const [{ data: attempts }, assessmentHistory] = await Promise.all([
+    supabase
+      .from("test_attempts")
+      .select("id, score, max_score, time_taken_seconds, completed_at, tests(title)")
+      .eq("student_id", id)
+      .order("completed_at", { ascending: false }),
+    getStudentAssessmentHistory(id),
+  ]);
 
   // Payment balance
   const TUITION = await getTuitionAmount();
@@ -216,6 +221,12 @@ export default async function StudentApplicationPage({
             )}
           </div>
         </div>
+      </div>
+
+      {/* English Level Progress */}
+      <div className="cd-card" style={{ padding: 22, marginBottom: 18 }}>
+        <h2 style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: C.muted, marginBottom: 16 }}>English Level Progress</h2>
+        <ProgressGraph history={assessmentHistory} />
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18 }}>

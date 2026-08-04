@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { deleteMaterial, createFolder, deleteFolder } from "@/app/dashboard/actions/classes";
+import { deleteMaterial, createFolder, deleteFolder, renameFolder } from "@/app/dashboard/actions/classes";
 import { DocumentViewer, type ViewerDoc } from "./DocumentViewer";
 import { UploadPanel } from "./UploadPanel";
 
@@ -72,31 +72,73 @@ function TypeChip({ type }: { type: string }) {
   );
 }
 
-function FolderCard({ folder, count, isAdmin, onClick, onDelete }: { folder: Folder; count?: number; isAdmin: boolean; onClick: () => void; onDelete: () => void }) {
+function FolderCard({ folder, count, isAdmin, onClick, onDelete, isRenaming, renameValue, onRenameStart, onRenameChange, onRenameSave, onRenameCancel }: {
+  folder: Folder; count?: number; isAdmin: boolean; onClick: () => void; onDelete: () => void;
+  isRenaming: boolean; renameValue: string;
+  onRenameStart: () => void; onRenameChange: (v: string) => void; onRenameSave: () => void; onRenameCancel: () => void;
+}) {
   const [hovered, setHovered] = useState(false);
   const [deleteBtnHovered, setDeleteBtnHovered] = useState(false);
   return (
     <div style={{ position: "relative" }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setDeleteBtnHovered(false); }}>
       <button
-        onClick={onClick}
+        onClick={isRenaming ? undefined : onClick}
         style={{
           width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
           padding: "16px 8px 12px", borderRadius: 14,
-          border: `1px solid ${hovered ? S.amberBorder : "transparent"}`,
-          background: hovered ? S.amberLight : "transparent",
-          cursor: "pointer", textAlign: "center",
+          border: `1px solid ${isRenaming ? "#93c5fd" : hovered ? S.amberBorder : "transparent"}`,
+          background: isRenaming ? "#eff6ff" : hovered ? S.amberLight : "transparent",
+          cursor: isRenaming ? "default" : "pointer", textAlign: "center",
           transition: "background .12s, border-color .12s",
         }}
       >
-        <FolderIcon size={48} color={hovered ? S.amberDark : S.amber} />
-        <span style={{ fontSize: 12, fontWeight: 600, color: hovered ? "#92400e" : S.ink, lineHeight: 1.3, wordBreak: "break-word" }}>
-          {folder.name}
-        </span>
+        <FolderIcon size={48} color={isRenaming ? "#60a5fa" : hovered ? S.amberDark : S.amber} />
+        {isRenaming ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 4, width: "100%", padding: "0 4px" }} onClick={e => e.stopPropagation()}>
+            <input
+              autoFocus
+              value={renameValue}
+              onChange={e => onRenameChange(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === "Enter") onRenameSave();
+                if (e.key === "Escape") onRenameCancel();
+              }}
+              style={{ flex: 1, fontSize: 11, border: "1px solid #93c5fd", borderRadius: 6, padding: "3px 6px", outline: "none", color: S.ink, minWidth: 0 }}
+              onClick={e => e.stopPropagation()}
+            />
+            <button onClick={e => { e.stopPropagation(); onRenameSave(); }} style={{ background: "none", border: "none", cursor: "pointer", color: S.green, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>✓</button>
+            <button onClick={e => { e.stopPropagation(); onRenameCancel(); }} style={{ background: "none", border: "none", cursor: "pointer", color: S.muted, fontSize: 13, flexShrink: 0 }}>✗</button>
+          </div>
+        ) : (
+          <span style={{ fontSize: 12, fontWeight: 600, color: hovered ? "#92400e" : S.ink, lineHeight: 1.3, wordBreak: "break-word" }}>
+            {folder.name}
+          </span>
+        )}
         <span style={{ fontSize: 10.5, color: S.muted }}>
           {count === undefined ? "…" : `${count} item${count !== 1 ? "s" : ""}`}
         </span>
       </button>
-      {isAdmin && hovered && (
+
+      {/* Rename button (pencil) */}
+      {isAdmin && hovered && !isRenaming && (
+        <button
+          onClick={e => { e.stopPropagation(); onRenameStart(); }}
+          style={{
+            position: "absolute", top: 6, left: 6,
+            width: 22, height: 22, borderRadius: 7,
+            background: "#eff6ff", border: "1px solid #93c5fd",
+            color: "#3b82f6", fontSize: 13, lineHeight: 1, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "background .1s",
+          }}
+          title="Rename folder"
+        >
+          ✎
+        </button>
+      )}
+
+      {/* Delete button */}
+      {isAdmin && hovered && !isRenaming && (
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
           onMouseEnter={() => setDeleteBtnHovered(true)}
@@ -281,6 +323,9 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+
   const [folderCounts, setFolderCounts] = useState<Record<string, number>>({});
   const [questionCounts, setQuestionCounts] = useState<Record<string, number>>({});
   const [viewingDoc, setViewingDoc] = useState<ViewerDoc | null>(null);
@@ -390,6 +435,17 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
       }
     } finally {
       setCreatingFolder(false);
+    }
+  }
+
+  async function handleRenameFolder(folder: Folder) {
+    if (!renameValue.trim()) { setRenamingId(null); return; }
+    const result = await renameFolder(folder.id, renameValue.trim());
+    if (result.success) {
+      setRenamingId(null);
+      loadContents(currentFolder?.id ?? null);
+    } else {
+      alert("Failed to rename: " + result.error);
     }
   }
 
@@ -599,6 +655,12 @@ export function ResourceExplorer({ isAdmin, filterTeacherOnly }: ResourceExplore
                 isAdmin={isAdmin}
                 onClick={() => openFolder(folder)}
                 onDelete={() => handleDeleteFolder(folder)}
+                isRenaming={renamingId === folder.id}
+                renameValue={renamingId === folder.id ? renameValue : folder.name}
+                onRenameStart={() => { setRenamingId(folder.id); setRenameValue(folder.name); }}
+                onRenameChange={setRenameValue}
+                onRenameSave={() => handleRenameFolder(folder)}
+                onRenameCancel={() => setRenamingId(null)}
               />
             ))}
           </div>
