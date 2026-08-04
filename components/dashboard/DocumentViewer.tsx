@@ -11,29 +11,6 @@ interface Props {
   onClose: () => void;
 }
 
-const S = {
-  ink: "#0f172a",
-  muted: "#64748b",
-  border: "#e2e8f0",
-  bg: "#f1f5f9",
-  surface: "#ffffff",
-};
-
-function TypeBadge({ type }: { type: string }) {
-  const isPdf = type === "pdf";
-  return (
-    <div style={{
-      width: 34, height: 34, borderRadius: 8,
-      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-      background: isPdf ? "#fef2f2" : "#eff6ff",
-    }}>
-      <span style={{ fontSize: 10, fontWeight: 800, color: isPdf ? "#b91c1c" : "#1d4ed8" }}>
-        {isPdf ? "PDF" : "DOC"}
-      </span>
-    </div>
-  );
-}
-
 export function DocumentViewer({ material, onClose }: Props) {
   if (!material) return null;
 
@@ -43,48 +20,37 @@ export function DocumentViewer({ material, onClose }: Props) {
     : `https://docs.google.com/gview?url=${encodeURIComponent(material.url)}&embedded=true`;
 
   return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 9999,
-      display: "flex", flexDirection: "column",
-      background: "rgba(15,23,42,0.8)",
-    }}>
-      {/* Top bar */}
-      <div style={{
-        background: S.surface, borderBottom: `1px solid ${S.border}`,
-        padding: "10px 20px", display: "flex", alignItems: "center",
-        gap: 12, flexShrink: 0,
-      }}>
-        <TypeBadge type={material.material_type} />
-        <span style={{ flex: 1, fontSize: 14, fontWeight: 700, color: S.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+    <div className="fixed inset-0 z-50 flex flex-col bg-black/60 backdrop-blur-sm">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-green-700 flex-shrink-0">
+        <div className={`px-2 py-0.5 rounded text-xs font-bold ${
+          isPdf ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
+        }`}>
+          {isPdf ? "PDF" : "DOC"}
+        </div>
+        <span className="text-white font-semibold text-sm flex-1 truncate">
           {material.title}
         </span>
         <button
           onClick={onClose}
-          style={{
-            flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
-            padding: "7px 16px", borderRadius: 8,
-            border: `1px solid ${S.border}`, background: S.surface,
-            fontSize: 13, fontWeight: 600, color: S.muted, cursor: "pointer",
-          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0"
         >
-          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
           Close
         </button>
       </div>
 
-      {/* Iframe */}
-      <div style={{ flex: 1, background: S.bg, overflow: "hidden", position: "relative" }}>
-        {/* Loading backdrop, iframe renders on top once loaded */}
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <p style={{ fontSize: 13, color: S.muted }}>Loading document…</p>
+      {/* Document area */}
+      <div className="flex-1 relative bg-gray-100">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <p className="text-gray-400 text-sm">Opening document...</p>
         </div>
         <iframe
           src={src}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+          className="absolute inset-0 w-full h-full border-0"
           title={material.title}
-          allow="autoplay"
         />
       </div>
     </div>

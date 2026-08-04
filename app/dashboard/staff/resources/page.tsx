@@ -5,13 +5,6 @@ import { createClient } from "@/lib/supabase/client";
 import { ResourceExplorer } from "@/components/dashboard/ResourceExplorer";
 import { DocumentViewer, type ViewerDoc } from "@/components/dashboard/DocumentViewer";
 
-const C = {
-  ink: "#0f172a", muted: "#64748b", sub: "#475569",
-  border: "#e2e8f0", green: "#16a34a", greenDark: "#15803d",
-  greenLight: "#f0fdf4", bg: "#f8fafc", surface: "#ffffff",
-  shadow: "0 1px 3px rgba(0,0,0,.06)",
-};
-
 type StudentMaterial = {
   id: string;
   title: string;
@@ -52,18 +45,31 @@ function StudentMaterialsPreview() {
 
   if (loading) {
     return (
-      <div style={{ padding: "48px 28px", textAlign: "center" }}>
-        <p style={{ fontSize: 13, color: C.muted }}>Loading…</p>
+      <div className="space-y-2 p-6">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100">
+            <div className="w-9 h-9 bg-gray-100 rounded-lg animate-pulse" />
+            <div className="flex-1 space-y-1.5">
+              <div className="h-3 bg-gray-100 rounded animate-pulse w-48" />
+              <div className="h-2.5 bg-gray-100 rounded animate-pulse w-32" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
   if (materials.length === 0) {
     return (
-      <div style={{ padding: "64px 28px", textAlign: "center" }}>
-        <p style={{ fontSize: 14, fontWeight: 600, color: C.sub, marginBottom: 6 }}>No student materials assigned yet</p>
-        <p style={{ fontSize: 12, color: C.muted }}>
-          Go to My Resources and upload files marked as "Visible to students".
+      <div className="text-center py-16">
+        <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-amber-300" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z" />
+          </svg>
+        </div>
+        <p className="text-gray-700 font-semibold text-sm mb-1">No student materials assigned yet</p>
+        <p className="text-gray-400 text-xs">
+          Upload files marked as &quot;Visible to students&quot; in My Resources.
         </p>
       </div>
     );
@@ -72,29 +78,49 @@ function StudentMaterialsPreview() {
   return (
     <>
       {viewingDoc && <DocumentViewer material={viewingDoc} onClose={() => setViewingDoc(null)} />}
-      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-        {levelOrder.map((level) => {
+      <div className="flex flex-col gap-6">
+        {levelOrder.map(level => {
           const files = grouped[level];
           return (
             <div key={level}>
-              <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: C.muted, marginBottom: 10 }}>
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
                 {level} · {files.length} file{files.length !== 1 ? "s" : ""}
               </p>
-              <div style={{ background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`, overflow: "hidden", boxShadow: C.shadow }}>
+              <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
                 {files.map((file, i) => {
                   const isPdf = file.material_type === "pdf";
                   const canView = !!file.url && (file.material_type === "pdf" || file.material_type === "document");
-                  const folderName = Array.isArray(file.library_folders) ? file.library_folders[0]?.name : (file.library_folders as { name: string } | null)?.name;
+                  const folderName = Array.isArray(file.library_folders)
+                    ? file.library_folders[0]?.name
+                    : (file.library_folders as { name: string } | null)?.name;
                   return (
-                    <FilePreviewRow
+                    <div
                       key={file.id}
-                      title={file.title}
-                      isPdf={isPdf}
-                      folderName={folderName ?? null}
-                      isLast={i === files.length - 1}
-                      canView={canView}
-                      onOpen={canView ? () => setViewingDoc({ title: file.title, url: file.url!, material_type: file.material_type }) : undefined}
-                    />
+                      className={`flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group${i < files.length - 1 ? " border-b border-gray-50" : ""}`}
+                    >
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${isPdf ? "bg-red-50" : "bg-blue-50"}`}>
+                        <span className={`text-xs font-bold ${isPdf ? "text-red-500" : "text-blue-500"}`}>
+                          {isPdf ? "PDF" : "DOC"}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{file.title}</p>
+                        {folderName && (
+                          <p className="text-xs text-gray-400 mt-0.5">in {folderName}</p>
+                        )}
+                      </div>
+                      <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
+                        Visible to students
+                      </span>
+                      {canView && (
+                        <button
+                          onClick={() => setViewingDoc({ title: file.title, url: file.url!, material_type: file.material_type })}
+                          className="px-3 py-1.5 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 transition-colors flex-shrink-0"
+                        >
+                          Open
+                        </button>
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -106,69 +132,32 @@ function StudentMaterialsPreview() {
   );
 }
 
-function FilePreviewRow({ title, isPdf, folderName, isLast, canView, onOpen }: {
-  title: string; isPdf: boolean; folderName: string | null;
-  isLast: boolean; canView: boolean; onOpen?: () => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={canView ? onOpen : undefined}
-      style={{
-        display: "flex", alignItems: "center", gap: 12, padding: "11px 16px",
-        borderBottom: isLast ? "none" : `1px solid ${C.border}`,
-        background: hovered && canView ? C.bg : C.surface,
-        cursor: canView ? "pointer" : "default",
-        transition: "background .12s",
-      }}
-    >
-      <div style={{ width: 34, height: 34, borderRadius: 8, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: isPdf ? "#fef2f2" : "#eff6ff" }}>
-        <span style={{ fontSize: 9, fontWeight: 800, color: isPdf ? "#b91c1c" : "#1d4ed8" }}>{isPdf ? "PDF" : "DOC"}</span>
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 13.5, fontWeight: 600, color: C.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</p>
-        {folderName && <p style={{ fontSize: 11, color: C.muted, marginTop: 1 }}>in {folderName}</p>}
-      </div>
-      <span style={{ fontSize: 10.5, fontWeight: 700, background: C.greenLight, color: C.greenDark, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>
-        Visible to students
-      </span>
-      {canView && (
-        <span style={{ fontSize: 12, fontWeight: 700, color: C.greenDark, opacity: hovered ? 1 : 0, transition: "opacity .12s", flexShrink: 0 }}>
-          Open →
-        </span>
-      )}
-    </div>
-  );
-}
-
 export default function StaffResourcesPage() {
   const [tab, setTab] = useState<"teacher" | "student">("teacher");
 
   return (
     <div>
-      <div style={{ padding: "24px 28px 0", borderBottom: `1px solid ${C.border}`, background: C.surface }}>
-        <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.02em", color: C.ink, marginBottom: 4 }}>
-          Library
-        </h1>
-        <p style={{ fontSize: 13, color: C.muted, paddingBottom: 16 }}>
-          Browse teaching materials and see what students can access.
+      {/* Green header */}
+      <div className="bg-gradient-to-r from-green-700 to-green-600 px-6 py-5">
+        <h1 className="text-xl font-bold text-white">Library</h1>
+        <p className="text-green-200 text-sm mt-0.5">
+          Browse teaching materials and see what students can access
         </p>
       </div>
 
       {/* Tab switcher */}
-      <div style={{ padding: "16px 28px 0", background: C.surface, borderBottom: `1px solid ${C.border}` }}>
-        <div style={{ display: "inline-flex", gap: 2, background: "#f1f5f9", padding: 4, borderRadius: 10 }}>
-          {(["teacher", "student"] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)} style={{
-              padding: "7px 18px", borderRadius: 7, border: "none", cursor: "pointer",
-              fontSize: 13, fontWeight: 700,
-              background: tab === t ? C.surface : "transparent",
-              color: tab === t ? C.ink : C.muted,
-              boxShadow: tab === t ? "0 1px 3px rgba(0,0,0,.08)" : "none",
-              transition: "background .12s, color .12s",
-            }}>
+      <div className="px-6 pt-4 pb-0 bg-white border-b border-gray-100">
+        <div className="inline-flex gap-1 bg-gray-100 p-1 rounded-xl">
+          {(["teacher", "student"] as const).map(t => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                tab === t
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
               {t === "teacher" ? "My Resources" : "Student Materials"}
             </button>
           ))}
@@ -177,7 +166,7 @@ export default function StaffResourcesPage() {
 
       {tab === "teacher" && <ResourceExplorer isAdmin={false} filterTeacherOnly={true} />}
       {tab === "student" && (
-        <div style={{ padding: "24px 28px 48px", background: C.bg, minHeight: "100%" }}>
+        <div className="p-6 bg-gray-50 min-h-full">
           <StudentMaterialsPreview />
         </div>
       )}
