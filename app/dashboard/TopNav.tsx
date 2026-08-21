@@ -18,6 +18,8 @@ const ADMIN_NAV: NavItem[] = [
 const STAFF_NAV: NavItem[] = [
   { href: "/staff",              label: "My Classes",    iconKey: "myClasses" },
   { href: "/staff/levels",       label: "English Level", iconKey: "grades" },
+  { href: "/staff/grades",       label: "Grades",        iconKey: "grades" },
+  { href: "/staff/assignments",  label: "Assignments",   iconKey: "classes" },
   { href: "/staff/resources",    label: "Library",       iconKey: "book" },
 ];
 
