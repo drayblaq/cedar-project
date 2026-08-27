@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const inter = Inter({
@@ -40,6 +41,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
+        <Analytics />
         {isDev && (
           <div className="dev-bar" style={{ position:"fixed", bottom:0, left:0, right:0, background:"#1e293b", padding:"6px 16px", display:"flex", gap:"12px", zIndex:9999, fontSize:"12px", alignItems:"center" }}>
             <span style={{ color:"#64748b", fontWeight:600 }}>Dev:</span>
